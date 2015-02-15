@@ -1,0 +1,415 @@
+// Dota Heroes File
+"DOTAAbilities"
+{
+	"Version"		"1"
+
+	"iw_test_debuff"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"					"ability_datadriven"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
+		"AbilityUnitTargetTeam"				"DOTA_UNIT_TARGET_TEAM_BOTH"
+		"AbilityUnitTargetType"				"DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_BASIC | DOTA_UNIT_TARGET_MECHANICAL"
+
+		// Casting
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCastRange"				"100000"
+		
+		// Time		
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCooldown"				"0.0 0.0 0.0 0.0"
+
+		// Data-Driven
+		//-------------------------------------------------------------------------------------------------------------
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"scripts/vscripts/ext_ability.lua"
+				"Function"			"DataDrivenApplyExtendedModifier"
+				"ModifierName"			"iw_test_debuff"
+			}
+		}
+
+		"Modifiers"
+		{
+			"modifier_iw_test_debuff"
+			{
+				"Attributes"			"MODIFIER_ATTRIBUTE_MULTIPLE"
+				"StatusEffectName"		"particles/status_fx/status_effect_burn.vpcf"
+				"StatusEffectPriority"		"20"
+
+				//"IsHidden"						"1"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"      "-50"
+				}
+			}
+		}
+	}
+
+	"iw_test_buff"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"					"ability_datadriven"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET | DOTA_ABILITY_BEHAVIOR_DIRECTIONAL"
+		"AbilityUnitTargetTeam"				"DOTA_UNIT_TARGET_TEAM_FRIENDLY"
+		"AbilityUnitTargetType"				"DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_BASIC | DOTA_UNIT_TARGET_MECHANICAL"
+
+		// Casting
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCastRange"				"100000"
+		
+		// Time		
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCooldown"				"0.0 0.0 0.0 0.0"
+
+		// Data-Driven
+		//-------------------------------------------------------------------------------------------------------------
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"scripts/vscripts/ext_ability.lua"
+				"Function"			"DataDrivenApplyExtendedModifier"
+				"ModifierName"			"iw_test_buff"
+			}
+		}
+
+		"Modifiers"
+		{
+			"modifier_iw_test_buff"
+			{
+				"Attributes"			"MODIFIER_ATTRIBUTE_MULTIPLE"
+				"StatusEffectName"		"particles/status_fx/status_effect_avatar.vpcf"
+				"StatusEffectPriority"		"10"
+
+				//"IsHidden"						"1"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"      "50"
+				}
+			}
+		}
+	}
+
+	"item_iw_skadi_debuff"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_PASSIVE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		
+		"precache"
+		{
+			"particle"				"particles/units/heroes/hero_lich/lich_slowed_cold.vpcf"
+			"particle"				"particles/status_fx/status_effect_frost_lich.vpcf"
+		}
+
+		// Data-Driven
+		//-------------------------------------------------------------------------------------------------------------
+		"Modifiers"
+		{
+			"modifier_item_iw_skadi_debuff"
+			{
+				"Attributes"			"MODIFIER_ATTRIBUTE_MULTIPLE"
+				"EffectName"			"particles/units/heroes/hero_lich/lich_slowed_cold.vpcf"
+				"StatusEffectName"		"particles/status_fx/status_effect_frost_lich.vpcf"
+				"StatusEffectPriority"		"19"
+
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"		"-50"
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"-50"
+				}
+			}
+		}
+	}
+	
+
+	"iw_status_burning"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_PASSIVE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		
+		"precache"
+		{
+			"particle"				"particles/units/heroes/hero_huskar/huskar_burning_spear_debuff.vpcf"
+		}
+
+		// Data-Driven
+		//-------------------------------------------------------------------------------------------------------------
+		"Modifiers"
+		{
+			"modifier_iw_status_burning"
+			{
+				"Attributes"			"MODIFIER_ATTRIBUTE_MULTIPLE"
+				"EffectName"			"particles/units/heroes/hero_huskar/huskar_burning_spear_debuff.vpcf"
+				"ThinkInterval"			"0.1"
+            			"OnIntervalThink"
+            			{
+					"RunScript"
+					{
+						"ScriptFile"			"scripts/vscripts/spells.lua"
+						"Function"			"BurningDamage"
+						"Target"			"CASTER"
+					}
+				}
+			}
+		}
+	}
+
+
+	"iw_status_wet"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_PASSIVE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		
+		"precache"
+		{
+			"particle"				"particles/units/heroes/hero_siren/naga_siren_riptide_debuff_b.vpcf"
+			"particle"				"particles/status_fx/status_effect_naga_riptide.vpcf"
+		}
+
+		// Data-Driven
+		//-------------------------------------------------------------------------------------------------------------
+		"Modifiers"
+		{
+			"modifier_iw_status_wet"
+			{
+				"EffectName"			"particles/units/heroes/hero_siren/naga_siren_riptide_debuff_b.vpcf"
+				"StatusEffectName"		"particles/status_fx/status_effect_naga_riptide.vpcf"
+				"StatusEffectPriority"		"18"
+
+				"OnCreated"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"scripts/vscripts/spells.lua"
+						"Function"			"WetOnApply"
+					}
+				}
+				"OnDestroy"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"scripts/vscripts/spells.lua"
+						"Function"			"WetOnRemove"
+					}
+				}
+			}
+		}
+	}
+
+	"iw_status_chilled"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_PASSIVE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		
+		"precache"
+		{
+			"particle"				"particles/units/heroes/hero_lich/lich_slowed_cold.vpcf"
+			"particle"				"particles/status_fx/status_effect_frost_lich.vpcf"
+		}
+
+		// Data-Driven
+		//-------------------------------------------------------------------------------------------------------------
+		"Modifiers"
+		{
+			"modifier_iw_status_chilled"
+			{
+				"EffectName"			"particles/units/heroes/hero_lich/lich_slowed_cold.vpcf"
+				"StatusEffectName"		"particles/status_fx/status_effect_frost_lich.vpcf"
+				"StatusEffectPriority"		"19"
+
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"		"-50"
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"-50"
+				}
+			}
+		}
+	}
+
+	"iw_status_frozen"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_PASSIVE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		
+		"precache"
+		{
+			"EffectName"				"particles/units/heroes/hero_jakiro/jakiro_icepath_debuff.vpcf"
+			"particle"				"particles/status_fx/status_effect_iceblast.vpcf"
+		}
+
+		// Data-Driven
+		//-------------------------------------------------------------------------------------------------------------
+		"Modifiers"
+		{
+			"modifier_iw_status_frozen"
+			{
+				"EffectName"			"particles/units/heroes/hero_jakiro/jakiro_icepath_debuff.vpcf"
+				"StatusEffectName"		"particles/status_fx/status_effect_iceblast.vpcf"
+				"StatusEffectPriority"		"20"
+
+				"States"
+				{
+					"MODIFIER_STATE_FROZEN"					"MODIFIER_STATE_VALUE_ENABLED"
+					"MODIFIER_STATE_STUNNED"				"MODIFIER_STATE_VALUE_ENABLED"
+				}
+			}
+		}
+	}
+
+	"iw_internal_empty1"
+	{
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
+		"AbilityTextureName"			"iw_empty"
+		"MaxLevel"				"0"
+	}
+
+	"iw_internal_empty2"
+	{
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
+		"AbilityTextureName"			"iw_empty"
+		"MaxLevel"				"0"
+	}
+
+	"iw_internal_empty3"
+	{
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
+		"AbilityTextureName"			"iw_empty"
+		"MaxLevel"				"0"
+	}
+
+	"iw_internal_empty4"
+	{
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
+		"AbilityTextureName"			"iw_empty"
+		"MaxLevel"				"0"
+	}
+
+	"iw_internal_empty5"
+	{
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
+		"AbilityTextureName"			"iw_empty"
+		"MaxLevel"				"0"
+	}
+
+	"iw_internal_empty6"
+	{
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
+		"AbilityTextureName"			"iw_empty"
+		"MaxLevel"				"0"
+	}
+
+
+	"iw_internal_cancel"
+	{
+		 General
+		-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+	}
+
+	"iw_internal_move_away_from_enemies"
+	{
+		 General
+		-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+	}
+
+	"iw_internal_move_towards_enemies"
+	{
+		 General
+		-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+	}
+
+	"iw_internal_attack_nearest_enemy"
+	{
+		 General
+		-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+	}
+	
+
+	"iw_internal_attack_target"
+	{
+		 General
+		-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+	}
+
+	"iw_corpse_vision_buff"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_PASSIVE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		
+		// Data-Driven
+		//-------------------------------------------------------------------------------------------------------------
+		"Modifiers"
+		{
+			"modifier_iw_corpse_vision_buff"
+			{
+				"Passive"						"1"
+				"IsHidden"						"1"
+				"States"
+				{
+					"MODIFIER_STATE_PROVIDES_VISION"		"MODIFIER_STATE_VALUE_ENABLED"
+				}
+			}
+		}
+	}
+
+	"iw_dummy_buff"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_PASSIVE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		
+		// Data-Driven
+		//-------------------------------------------------------------------------------------------------------------
+		"Modifiers"
+		{
+			"modifier_iw_dummy_buff"
+			{
+				"Passive"						"1"
+				"IsHidden"						"1"
+				"States"
+				{
+					"MODIFIER_STATE_INVULNERABLE"			"MODIFIER_STATE_VALUE_ENABLED"
+					"MODIFIER_STATE_UNSELECTABLE"			"MODIFIER_STATE_VALUE_ENABLED"
+					"MODIFIER_STATE_NOT_ON_MINIMAP"			"MODIFIER_STATE_VALUE_ENABLED"
+					"MODIFIER_STATE_NOT_ON_MINIMAP_FOR_ENEMIES"	"MODIFIER_STATE_VALUE_ENABLED"
+					"MODIFIER_STATE_NO_HEALTH_BAR"			"MODIFIER_STATE_VALUE_ENABLED"
+					"MODIFIER_STATE_NO_UNIT_COLLISION"		"MODIFIER_STATE_VALUE_ENABLED"
+					"MODIFIER_STATE_PROVIDES_VISION"		"MODIFIER_STATE_VALUE_DISABLED"
+				}
+			}
+		}
+	}
+}

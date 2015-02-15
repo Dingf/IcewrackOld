@@ -1,0 +1,2 @@
+cd "C:\Program Files (x86)\Steam\SteamApps\common\dota 2 beta\dota_ugc\game\bin\win64"
+resourcecompiler -i "C:\Program Files (x86)\Steam\SteamApps\common\dota 2 beta\dota_ugc\content\dota_addons\icewrack_mod\materials\particle\iw_msg_01\iw_msg_01.*" -v

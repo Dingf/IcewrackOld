@@ -1,0 +1,92 @@
+// No spaces in event names, max length 32
+// All strings are case sensitive
+//
+// valid data key types are:
+//   string : a zero terminated string
+//   bool   : unsigned int, 1 bit
+//   byte   : unsigned int, 8 bit
+//   short  : signed int, 16 bit
+//   long   : signed int, 32 bit
+//   float  : float, 32 bit
+//   uint64 : unsigned int 64 bit
+//   local  : any data, but not networked to clients
+//
+// following key names are reserved:
+//   local      : if set to 1, event is not networked to clients
+//   unreliable : networked, but unreliable
+//   suppress   : never fire this event
+//   time	: firing server time
+//   eventid	: holds the event ID
+
+"CustomEvents"
+{
+	"iw_damage_taken"
+	{
+		"attacker"	"long"
+		"victim"	"long"
+		"damage"	"float"
+		"damage_type"	"byte"
+		"threat"	"float"
+		"crit"		"bool"
+	}
+
+	"iw_damage_missed"
+	{
+		"attacker"	"long"
+		"victim"	"long"
+		"damage"	"float"
+		"damage_type"	"byte"
+	}
+
+	"iw_ui_mainbar_return_values"
+	{
+		"current_hp"	"float"
+		"maximum_hp"	"float"
+		"current_mp"	"float"
+		"maximum_mp"	"float"
+		"current_sp"	"float"
+		"maximum_sp"	"float"
+	}
+
+	"iw_ui_spellbar_return_abilities"
+	{
+		"ability1"	"string"
+		"ability2"	"string"
+		"ability3"	"string"
+		"ability4"	"string"
+		"ability5"	"string"
+		"ability6"	"string"
+	}
+
+	"iw_ui_spellbar_send_known_list"
+	{
+		"ability_list"	"string"
+	}
+	
+
+
+
+	"iw_ui_hpbar_query" {}
+
+	"iw_ui_hpbar_hide" {}
+
+	"iw_ui_hpbar_return_values"
+	{
+		"name"		"string"
+		"current_hp"	"float"
+		"maximum_hp"	"float"
+		"game_time"	"float"		//Because apparently calling GetGameTime() in the UI makes it freeze...
+	}
+
+	"iw_ui_hpbar_start_modifiers" {}
+
+	"iw_ui_hpbar_return_modifier"
+	{
+		"name"		"string"
+		"debuff"	"bool"
+		"start_time"	"float"
+		"end_time"	"float"
+	}
+
+	"iw_ui_hpbar_finished_modifiers" {}
+}

@@ -1,0 +1,82 @@
+"IcewrackExtendedAbilityDefinitions"
+{
+	"iw_test_debuff"
+	{
+		"Duration"			"30"
+		"IsDebuff"			"TRUE"
+
+		//"MaxStacks"			"7"
+		//"MaxStacksPerCaster"		"2"
+		"StatusEffect"			"IW_STATUS_EFFECT_HEX"
+
+		"Properties"
+		{
+			"IEE_MODIFIER_PROPERTY_MANA_REGEN"		"-100"
+		}
+	}
+
+	"iw_test_buff"
+	{
+		"Duration"			"30"
+
+		//"MaxStacks"			"7"
+		//"MaxStacksPerCaster"		"2"
+		"StatusEffect"			"IW_STATUS_EFFECT_EMPOWERED"
+
+		"Properties"
+		{
+			"IEE_MODIFIER_PROPERTY_WISDOM"			"100"
+			"IEE_MODIFIER_PROPERTY_CUNNING"			"10000"
+			"IEE_MODIFIER_PROPERTY_OUT_DAMAGE"		"20000"
+			"IEE_MODIFIER_PROPERTY_HEALTH_REGEN"		"100"
+		}
+	}
+
+	"item_iw_skadi_debuff"
+	{
+		"Duration"			"5"
+
+		"MaxStacks"			"1"
+		"StatusEffect"			"IW_STATUS_EFFECT_CHILLED"
+		
+	}
+
+	"iw_status_burning"
+	{
+		"Duration"			"20"
+
+		"StatusEffect"			"IW_STATUS_EFFECT_BURNING"
+	}
+
+	"iw_status_wet"
+	{
+		"Duration"			"20"
+
+		"MaxStacks"			"1"
+		"StatusEffect"			"IW_STATUS_EFFECT_WET"
+
+		"Properties"
+		{
+			"IEE_MODIFIER_PROPERTY_DURATION_BURNING"	"-1.0"
+			"IEE_MODIFIER_PROPERTY_RESIST_LIGHTNING"	"-0.5"
+			"IEE_MODIFIER_PROPERTY_RESIST_ICE"		"-0.5"
+			"IEE_MODIFIER_PROPERTY_RESIST_FIRE"		"0.25"
+		}
+	}
+
+	"iw_status_chilled"
+	{
+		"Duration"			"10"
+
+		"MaxStacks"			"1"
+		"StatusEffect"			"IW_STATUS_EFFECT_CHILLED"
+	}
+
+	"iw_status_frozen"
+	{
+		"Duration"			"10"
+
+		"MaxStacks"			"1"
+		"StatusEffect"			"IW_STATUS_EFFECT_FROZEN"
+	}
+}

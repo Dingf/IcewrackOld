@@ -1,0 +1,353 @@
+"IcewrackExtendedUnitDefinitions"
+{
+	"npc_dota_hero_sven"
+	{
+		"UnitClass"			"IEE_UNIT_CLASS_HERO"
+		"UnitType"			"IEE_UNIT_TYPE_MELEE"
+		"UnitSubtype"			"IEE_UNIT_SUBTYPE_BIOLOGICAL"
+
+		"Stamina"			"60"
+		"StaminaRegen"			"20.0"
+		"HealthRegen"			"0.0"
+		"ManaRegen"			"0.25"
+
+		"BaseCritChance"		"0.05"
+		"BaseCritMultiplier"		"1.5"
+
+		"AccuracyScore"			"140"
+		"DodgeScore"			"0"
+
+		"CarryCapacity"			"120"
+
+		"Attributes"
+		{
+			"Strength"		"79"
+			"Vigor"			"56"
+			"Agility"		"43"
+			"Cunning"		"31"
+			"Intelligence"		"24"
+			"Wisdom"		"22"
+		}
+
+		"AttributeGrowth"
+		{
+			"StrengthGrowth"	"3.3"
+			"VigorGrowth"		"2.8"
+			"AgilityGrowth"		"1.8"
+			"CunningGrowth"		"1.5"
+			"IntelligenceGrowth"	"1.3"
+			"WisdomGrowth"		"2.6"
+		}
+
+		"MaxResistance"
+		{
+			"ResistPhysicalMax"	"0.75"
+			"ResistFireMax"		"0.75"
+			"ResistIceMax"		"0.75"
+			"ResistLightningMax"	"0.75"
+			"ResistDeathMax"	"0.75"
+		}
+	}
+
+	"npc_dota_hero_dragon_knight"
+	{
+		"UnitClass"			"IEE_UNIT_CLASS_HERO"
+		"UnitType"			"IEE_UNIT_TYPE_MELEE"
+		"UnitSubtype"			"IEE_UNIT_SUBTYPE_BIOLOGICAL"
+
+		"Stamina"			"75"
+		"StaminaRegen"			"25.0"
+		"HealthRegen"			"1.0"
+		"ManaRegen"			"0.25"
+
+		"BaseCritChance"		"0.05"
+		"BaseCritMultiplier"		"1.5"
+
+		"AccuracyScore"			"120"
+		"DodgeScore"			"20"
+
+		"CarryCapacity"			"110"
+
+		"Attributes"
+		{
+			"Strength"		"52"
+			"Vigor"			"59"
+			"Agility"		"44"
+			"Cunning"		"30"
+			"Intelligence"		"37"
+			"Wisdom"		"52"
+		}
+
+		"AttributeGrowth"
+		{
+			"Strength"		"2.5"
+			"Vigor"			"2.9"
+			"Agility"		"2.3"
+			"Cunning"		"1.0"
+			"Intelligence"		"1.9"
+			"Wisdom"		"2.0"
+		}
+
+		"BaseResistance"
+		{
+			"Fire"			"0.5"
+		}
+
+		"MaxResistance"
+		{
+			"Physical"		"0.75"
+			"Fire"			"0.95"
+			"Ice"			"0.75"
+			"Lightning"		"0.75"
+			"Death"			"0.75"
+		}
+	}
+
+	"npc_dota_hero_drow_ranger"
+	{
+		"UnitClass"			"IEE_UNIT_CLASS_HERO"
+		"UnitType"			"IEE_UNIT_TYPE_RANGED"
+		"UnitSubtype"			"IEE_UNIT_SUBTYPE_BIOLOGICAL"
+
+		"Stamina"			"60"
+		"StaminaRegen"			"30.0"
+		"HealthRegen"			"0.0"
+		"ManaRegen"			"0.25"
+
+		"BaseCritChance"		"0.075"
+		"BaseCritMultiplier"		"1.5"
+
+		"AccuracyScore"			"290"
+		"DodgeScore"			"160"
+
+		"CarryCapacity"			"60"
+
+		"Attributes"
+		{
+			"Strength"		"41"
+			"Vigor"			"32"
+			"Agility"		"70"
+			"Cunning"		"55"
+			"Intelligence"		"27"
+			"Wisdom"		"31"
+		}
+
+		"AttributeGrowth"
+		{
+			"Strength"		"2.0"
+			"Vigor"			"1.7"
+			"Agility"		"3.3"
+			"Cunning"		"3.0"
+			"Intelligence"		"1.4"
+			"Wisdom"		"1.5"
+		}
+
+		"BaseResistance"
+		{
+			"Ice"			"0.3"
+		}
+
+		"MaxResistance"
+		{
+			"Physical"		"0.75"
+			"Fire"			"0.75"
+			"Ice"			"0.85"
+			"Lightning"		"0.75"
+			"Death"			"0.75"
+		}
+	}
+
+	"npc_dota_hero_bounty_hunter"
+	{
+		"UnitClass"			"IEE_UNIT_CLASS_HERO"
+		"UnitType"			"IEE_UNIT_TYPE_MELEE"
+		"UnitSubtype"			"IEE_UNIT_SUBTYPE_BIOLOGICAL"
+
+		"Stamina"			"55"
+		"StaminaRegen"			"20.0"
+		"HealthRegen"			"0.0"
+		"ManaRegen"			"0.25"
+
+		"BaseCritChance"		"0.05"
+		"BaseCritMultiplier"		"2.5"
+
+		"AccuracyScore"			"220"
+		"DodgeScore"			"70"
+
+		"CarryCapacity"			"70"
+
+		"Attributes"
+		{
+			"Strength"		"34"
+			"Vigor"			"29"
+			"Agility"		"47"
+			"Cunning"		"59"
+			"Intelligence"		"52"
+			"Wisdom"		"14"
+		}
+		
+
+		"AttributeGrowth"
+		{
+			"Strength"		"1.5"
+			"Vigor"			"1.4"
+			"Agility"		"1.9"
+			"Cunning"		"2.9"
+			"Intelligence"		"2.1"
+			"Wisdom"		"1.6"
+		}
+
+		"MaxResistance"
+		{
+			"Physical"		"0.75"
+			"Fire"			"0.75"
+			"Ice"			"0.75"
+			"Lightning"		"0.75"
+			"Death"			"0.75"
+		}
+	}
+
+	"npc_dota_hero_lina"
+	{
+		"UnitClass"			"IEE_UNIT_CLASS_HERO"
+		"UnitType"			"IEE_UNIT_TYPE_MAGIC"
+		"UnitSubtype"			"IEE_UNIT_SUBTYPE_BIOLOGICAL"
+
+		"Stamina"			"40"
+		"StaminaRegen"			"10.0"
+		"HealthRegen"			"0.0"
+		"ManaRegen"			"0.6"
+
+		"BaseCritChance"		"0.05"
+		"BaseCritMultiplier"		"1.5"
+
+		"AccuracyScore"			"60"
+		"DodgeScore"			"-30"
+
+		"CarryCapacity"			"60"
+
+		"Attributes"
+		{
+			"Strength"		"25"
+			"Vigor"			"27"
+			"Agility"		"34"
+			"Cunning"		"61"
+			"Intelligence"		"65"
+			"Wisdom"		"44"
+		}
+
+		"AttributeGrowth"
+		{
+			"Strength"		"1.3"
+			"Vigor"			"1.7"
+			"Agility"		"1.1"
+			"Cunning"		"2.65"
+			"Intelligence"		"3.2"
+			"Wisdom"		"1.9"
+		}
+
+		"MaxResistance"
+		{
+			"Physical"		"0.75"
+			"Fire"			"0.75"
+			"Ice"			"0.75"
+			"Lightning"		"0.75"
+			"Death"			"0.75"
+		}
+	}
+
+	"npc_dota_hero_omniknight"
+	{
+		"UnitClass"			"IEE_UNIT_CLASS_HERO"
+		"UnitType"			"IEE_UNIT_TYPE_MELEE"
+		"UnitSubtype"			"IEE_UNIT_SUBTYPE_BIOLOGICAL"
+
+		"Stamina"			"40"
+		"StaminaRegen"			"10.0"
+		"HealthRegen"			"0.0"
+		"ManaRegen"			"0.6"
+
+		"BaseCritChance"		"0.05"
+		"BaseCritMultiplier"		"1.5"
+
+		"AccuracyScore"			"60"
+		"DodgeScore"			"-30"
+
+		"CarryCapacity"			"60"
+
+		"Attributes"
+		{
+			"Strength"		"65"
+			"Vigor"			"53"
+			"Agility"		"28"
+			"Cunning"		"12"
+			"Intelligence"		"39"
+			"Wisdom"		"52"
+		}
+
+		"AttributeGrowth"
+		{
+			"Strength"		"2.5"
+			"Vigor"			"2.2"
+			"Agility"		"1.3"
+			"Cunning"		"0.8"
+			"Intelligence"		"2.5"
+			"Wisdom"		"2.7"
+		}
+
+		"BaseResistance"
+		{
+			"Fire"			"0.25"
+			"Ice"			"0.25"
+			"Lightning"		"0.25"
+			"Death"			"0.25"
+		}
+
+		"MaxResistance"
+		{
+			"Physical"		"0.75"
+			"Fire"			"0.75"
+			"Ice"			"0.75"
+			"Lightning"		"0.75"
+			"Death"			"0.75"
+		}
+	}
+
+	"iw_npc_expedition_merc_1"
+	{
+		"UnitClass"			"IEE_UNIT_CLASS_HERO"
+		"UnitType"			"IEE_UNIT_TYPE_MELEE"
+		"UnitSubtype"			"IEE_UNIT_SUBTYPE_BIOLOGICAL"
+
+		"Stamina"			"100"
+		"StaminaRegen"			"20.0"
+		"HealthRegen"			"0.0"
+		"ManaRegen"			"0.0"
+
+		"BaseCritChance"		"0.05"
+		"BaseCritMultiplier"		"1.5"
+
+		"AccuracyScore"			"100"
+		"DodgeScore"			"0"
+	}
+
+	
+
+	"iw_npc_expedition_merc_2"
+	{
+		"UnitClass"			"IEE_UNIT_CLASS_HERO"
+		"UnitType"			"IEE_UNIT_TYPE_RANGED"
+		"UnitSubtype"			"IEE_UNIT_SUBTYPE_BIOLOGICAL"
+
+		"Stamina"			"50"
+		"StaminaRegen"			"10.0"
+		"HealthRegen"			"0.0"
+		"ManaRegen"			"0.5"
+
+		"BaseCritChance"		"0.05"
+		"BaseCritMultiplier"		"1.5"
+
+		"AccuracyScore"			"100"
+		"DodgeScore"			"0"
+	}
+}

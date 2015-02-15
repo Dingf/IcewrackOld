@@ -1,0 +1,691 @@
+"DOTAAbilities"
+{
+	"item_iw_skadi"
+	{
+		"ID"					"1000"
+
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"item_datadriven"
+		"AbilityTextureName"			"item_skadi"
+		"ItemKillable"				"0"
+
+		// Item Info
+		//-------------------------------------------------------------------------------------------------------------
+		"ItemCost"				"9000"
+		//"ItemShopTags"			"consumable"
+		//"ItemQuality"				"consumable"
+		//"ItemStackable"			"1"
+		//"ItemShareability"			"ITEM_FULLY_SHAREABLE_STACKING"
+		"ItemPermanent"				"0"
+
+		"Modifiers"
+		{
+			"modifier_item_iw_skadi"
+			{
+				"IsHidden"		"1"
+				"EffectName" 		"particles/units/heroes/hero_ancient_apparition/ancient_apparition_chilling_touch_buff.vpcf"
+				"Orb"
+				{
+					"Priority"	"DOTA_ORB_PRIORITY_ABILITY"
+				}
+				
+				"OnOrbImpact"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"scripts/vscripts/ext_ability.lua"
+						"Function"			"DataDrivenApplyExtendedModifier"
+						"ModifierName"			"item_iw_skadi_debuff"
+					}
+				}
+			}
+		}	
+	}
+
+	"internal_mana_drain_visual"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"BaseClass"				"item_datadriven"
+ 
+		"Modifiers"
+		{
+			"modifier_internal_mana_drain_visual"
+        		{
+           			"IsHidden"				"1"
+				"Duration"				"0.1"
+				"EffectName"				"particles/wisp_tether_slow.vpcf"
+			}
+		}
+	}
+
+	"internal_buff_cleanup"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"BaseClass"				"item_datadriven"
+ 
+		"Modifiers"
+		{
+			"modifier_internal_buff_cleanup"
+        		{
+				"Passive"					"1"
+           			"IsHidden"					"1"
+				"OnOwnerDied"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"scripts/vscripts/ext_entity.lua"
+						"Function"			"ClearExtendedModifierList"
+					}
+				}
+			}
+		}
+	}
+		
+	"internal_dodge_cleanup"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"BaseClass"				"item_datadriven"
+ 
+		"Modifiers"
+		{
+			"modifier_internal_dodge_cleanup"
+        		{
+				"Passive"					"1"
+           			"IsHidden"					"1"
+				"OnTakeDamage"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"scripts/vscripts/mechanics.lua"
+						"Function"			"RemoveDodgeInvulnerability"
+					}
+				}
+			}
+		}
+	}
+
+	"internal_dodge_invulnerability"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"BaseClass"				"item_datadriven"
+ 
+		"Modifiers"
+		{
+			"modifier_internal_dodge_invulnerability"
+			{
+				"IsHidden"					"1"  
+				"Duration" 					"0.01"
+				"States"
+				{
+					"MODIFIER_STATE_INVULNERABLE"		"MODIFIER_STATE_VALUE_ENABLED"
+				}
+			}
+		}
+	}
+
+	"internal_attack_converter"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+
+		// Data-Driven
+		//-------------------------------------------------------------------------------------------------------------
+		"Modifiers"
+		{
+			"modifier_internal_attack_converter"
+        		{
+				"Passive"					"1"
+           			"IsHidden"					"1"
+				"Properties"
+    				{
+					"MODIFIER_PROPERTY_DAMAGEOUTGOING_PERCENTAGE_ILLUSION"		"-100"
+   				}
+				"OnAttackLanded"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"scripts/vscripts/mechanics.lua"
+						"Function"			"DealWeaponDamage"
+						"DamageType"			"IW_DAMAGE_TYPE_PHYSICAL"
+						"Percent"			"100"
+						"CanCrit"			"TRUE"
+						"CanDodge"			"TRUE"
+						"CanLifesteal"			"TRUE"
+						"CanManasteal"			"TRUE"
+						"UseStrengthBonus"		"TRUE"
+						"IgnoreMagicImmunity"		"TRUE"
+					}
+				}
+			}
+		}
+		
+	}
+
+	"mod_health"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"BaseClass"				"item_datadriven"
+ 
+		"Modifiers"
+		{
+			"modifier_mod_health_1"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"1"
+				}
+			}
+			"modifier_mod_health_2"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"2"
+				}
+			}
+			"modifier_mod_health_4"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"4"
+				}
+			}
+			"modifier_mod_health_8"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"8"
+				}
+			}
+			"modifier_mod_health_16"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"16"
+				}
+			}
+			"modifier_mod_health_32"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"32"
+				}
+			}
+			"modifier_mod_health_64"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"64"
+				}
+			}
+			"modifier_mod_health_128"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"128"
+				}
+			}
+			"modifier_mod_health_256"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"256"
+				}
+			}
+			"modifier_mod_health_512"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"512"
+				}
+			}
+			"modifier_mod_health_1024"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"1024"
+				}
+			}
+			"modifier_mod_health_2048"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"2048"
+				}
+			}
+			"modifier_mod_health_4096"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"4096"
+				}
+			}
+			"modifier_mod_health_8192"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"8192"
+				}
+			}
+			"modifier_mod_health_16384"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"16384"
+				}
+			}
+			"modifier_mod_health_32768"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_BONUS"	"32768"
+				}
+			}
+		}
+	}
+
+
+	"mod_mana"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"BaseClass"				"item_datadriven"
+ 
+		"Modifiers"
+		{
+			"modifier_mod_mana_1"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"1"
+				}
+			}
+			"modifier_mod_mana_2"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"2"
+				}
+			}
+			"modifier_mod_mana_4"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"4"
+				}
+			}
+			"modifier_mod_mana_8"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"8"
+				}
+			}
+			"modifier_mod_mana_16"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"16"
+				}
+			}
+			"modifier_mod_mana_32"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"32"
+				}
+			}
+			"modifier_mod_mana_64"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"64"
+				}
+			}
+			"modifier_mod_mana_128"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"128"
+				}
+			}
+			"modifier_mod_mana_256"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"256"
+				}
+			}
+			"modifier_mod_mana_512"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"512"
+				}
+			}
+			"modifier_mod_mana_1024"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"1024"
+				}
+			}
+			"modifier_mod_mana_2048"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"2048"
+				}
+			}
+			"modifier_mod_mana_4096"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"4096"
+				}
+			}
+			"modifier_mod_mana_8192"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"8192"
+				}
+			}
+			"modifier_mod_mana_16384"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"16384"
+				}
+			}
+			"modifier_mod_mana_32768"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MANA_BONUS"		"32768"
+				}
+			}
+		}
+	}
+
+	"mod_ias"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"BaseClass"				"item_datadriven"
+ 
+		"Modifiers"
+		{
+			"modifier_mod_ias_1"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"1"
+				}
+			}
+			"modifier_mod_ias_2"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"2"
+				}
+			}
+			"modifier_mod_ias_4"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"4"
+				}
+			}
+			"modifier_mod_ias_8"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"8"
+				}
+			}
+			"modifier_mod_ias_16"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"16"
+				}
+			}
+			"modifier_mod_ias_32"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"32"
+				}
+			}
+			"modifier_mod_ias_64"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"64"
+				}
+			}
+			"modifier_mod_ias_128"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"128"
+				}
+			}
+			"modifier_mod_ias_256"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"256"
+				}
+			}
+			"modifier_mod_ias_512"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"512"
+				}
+			}
+			"modifier_mod_ias_1024"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"1024"
+				}
+			}
+			"modifier_mod_ias_2048"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"2048"
+				}
+			}
+			"modifier_mod_ias_4096"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"4096"
+				}
+			}
+			"modifier_mod_ias_8192"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"4096"
+				}
+			}
+			"modifier_mod_ias_16384"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"16384"
+				}
+			}
+			"modifier_mod_ias_32768"
+			{
+				"Passive"           				"1"
+				"IsHidden"					"1"  
+				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"		"32768"
+				}
+			}
+		}
+	}
+}
