@@ -40,6 +40,8 @@
 				"StatusEffectName"		"particles/status_fx/status_effect_burn.vpcf"
 				"StatusEffectPriority"		"20"
 
+				"EffectName"			"particles/units/heroes/hero_stormspirit/stormspirit_ball_lightning_sphere.vpcf"
+
 				//"IsHidden"						"1"
 				"Properties"
 				{
@@ -90,6 +92,15 @@
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"      "50"
+				}
+				"OnOrder"
+				{
+					"RunScript"
+					
+					{
+						"ScriptFile"			"scripts/vscripts/addon_game_mode.lua"
+						"Function"			"Test"
+					}
 				}
 			}
 		}
@@ -264,63 +275,62 @@
 
 				"States"
 				{
-					"MODIFIER_STATE_FROZEN"					"MODIFIER_STATE_VALUE_ENABLED"
-					"MODIFIER_STATE_STUNNED"				"MODIFIER_STATE_VALUE_ENABLED"
+					"MODIFIER_STATE_FROZEN"				"MODIFIER_STATE_VALUE_ENABLED"
+					"MODIFIER_STATE_STUNNED"			"MODIFIER_STATE_VALUE_ENABLED"
 				}
 			}
 		}
 	}
 
-	"iw_internal_empty1"
+	"ui_spellbar_empty1"
 	{
 		"BaseClass"				"ability_datadriven"
 		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
-		"AbilityTextureName"			"iw_empty"
+		"AbilityTextureName"			"empty"
 		"MaxLevel"				"0"
 	}
 
-	"iw_internal_empty2"
+	"ui_spellbar_empty2"
 	{
 		"BaseClass"				"ability_datadriven"
 		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
-		"AbilityTextureName"			"iw_empty"
+		"AbilityTextureName"			"empty"
 		"MaxLevel"				"0"
 	}
 
-	"iw_internal_empty3"
+	"ui_spellbar_empty3"
 	{
 		"BaseClass"				"ability_datadriven"
 		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
-		"AbilityTextureName"			"iw_empty"
+		"AbilityTextureName"			"empty"
 		"MaxLevel"				"0"
 	}
 
-	"iw_internal_empty4"
+	"ui_spellbar_empty4"
 	{
 		"BaseClass"				"ability_datadriven"
 		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
-		"AbilityTextureName"			"iw_empty"
+		"AbilityTextureName"			"empty"
 		"MaxLevel"				"0"
 	}
 
-	"iw_internal_empty5"
+	"ui_spellbar_empty5"
 	{
 		"BaseClass"				"ability_datadriven"
 		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
-		"AbilityTextureName"			"iw_empty"
+		"AbilityTextureName"			"empty"
 		"MaxLevel"				"0"
 	}
 
-	"iw_internal_empty6"
+	"ui_spellbar_empty6"
 	{
 		"BaseClass"				"ability_datadriven"
 		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
-		"AbilityTextureName"			"iw_empty"
+		"AbilityTextureName"			"empty"
 		"MaxLevel"				"0"
 	}
 
-
-	"iw_internal_cancel"
+	"ui_spellbar_cancel"
 	{
 		 General
 		-------------------------------------------------------------------------------------------------------------
@@ -328,7 +338,7 @@
 		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
 	}
 
-	"iw_internal_move_away_from_enemies"
+	"aam_move_away_from_enemies"
 	{
 		 General
 		-------------------------------------------------------------------------------------------------------------
@@ -336,7 +346,7 @@
 		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
 	}
 
-	"iw_internal_move_towards_enemies"
+	"aam_move_towards_enemies"
 	{
 		 General
 		-------------------------------------------------------------------------------------------------------------
@@ -344,7 +354,7 @@
 		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
 	}
 
-	"iw_internal_attack_nearest_enemy"
+	"aam_attack_nearest_enemy"
 	{
 		 General
 		-------------------------------------------------------------------------------------------------------------
@@ -353,7 +363,7 @@
 	}
 	
 
-	"iw_internal_attack_target"
+	"aam_attack_target"
 	{
 		 General
 		-------------------------------------------------------------------------------------------------------------
@@ -361,7 +371,79 @@
 		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
 	}
 
-	"iw_corpse_vision_buff"
+	"internal_walk_buff"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+ 		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		
+		"Modifiers"
+		{
+			"modifier_internal_walk_buff"
+			{
+				"Passive"					"1"
+           			"IsHidden"					"1"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"      "-50"
+				}
+			}
+		}
+	}
+
+
+	"internal_conversation_starter"
+	{
+		 General
+		-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+
+		"Modifiers"
+		{
+			"modifier_internal_conversation_starter"
+			{
+				"Passive"						"1"
+				"IsHidden"						"1"
+				"Attributes"						"MODIFIER_ATTRIBUTE_PERMANENT"
+				"OnOrder"
+				{
+					"RunScript"
+					
+					{
+						"ScriptFile"				"scripts/vscripts/addon_game_mode.lua"
+						"Function"				"Test"
+					}
+				}
+			}
+			
+		}
+			
+	}
+
+	
+	"internal_loadout_stance"
+	{
+		 General
+		-------------------------------------------------------------------------------------------------------------
+		"BaseClass"				"ability_datadriven"
+		"AbilityBehavior"			"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+
+		"Modifiers"
+		{
+			"modifier_internal_loadout_stance"
+			{
+				"Passive"						"1"
+				"IsHidden"						"1"
+				"OverrideAnimation"					"ACT_DOTA_LOADOUT"
+			}
+			
+		}
+			
+	}
+
+	"internal_corpse_vision_buff"
 	{
 		// General
 		//-------------------------------------------------------------------------------------------------------------
@@ -372,7 +454,7 @@
 		//-------------------------------------------------------------------------------------------------------------
 		"Modifiers"
 		{
-			"modifier_iw_corpse_vision_buff"
+			"modifier_internal_corpse_vision_buff"
 			{
 				"Passive"						"1"
 				"IsHidden"						"1"
@@ -384,7 +466,7 @@
 		}
 	}
 
-	"iw_dummy_buff"
+	"internal_dummy_buff"
 	{
 		// General
 		//-------------------------------------------------------------------------------------------------------------
@@ -395,7 +477,7 @@
 		//-------------------------------------------------------------------------------------------------------------
 		"Modifiers"
 		{
-			"modifier_iw_dummy_buff"
+			"modifier_internal_dummy_buff"
 			{
 				"Passive"						"1"
 				"IsHidden"						"1"

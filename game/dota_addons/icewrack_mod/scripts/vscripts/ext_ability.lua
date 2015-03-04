@@ -2,6 +2,9 @@
     Icewrack Extended Ability
 ]]
 
+--It's technically more like an extended modifier than an extended ability, although that may change in the future
+--		*Stamina cost for spells?
+
 require("timer")
 require("status_effects")
 require("ext_entity")
@@ -20,8 +23,8 @@ if CIcewrackExtendedAbility == nil then
 			end
 			
 			local hBuffDummy = CreateUnitByName("iw_npc_generic_dummy", Vector(0, 0, 0), false, nil, nil, 0)
-			hBuffDummy:AddAbility("iw_dummy_buff")
-			hBuffDummy:FindAbilityByName("iw_dummy_buff"):SetLevel(1)
+			hBuffDummy:AddAbility("internal_dummy_buff")
+			hBuffDummy:FindAbilityByName("internal_dummy_buff"):SetLevel(1)
 					
 			hBuffDummy:AddAbility(szAbilityName)
 			self._hBaseAbility = hBuffDummy:FindAbilityByName(szAbilityName)
@@ -61,6 +64,12 @@ if CIcewrackExtendedAbility == nil then
 				self._bIsDebuff = true
 			else
 				self._bIsDebuff = false
+			end
+			
+			if tAbilityData.ApplyOnInvulerable and tAbilityData.ApplyOnInvulerable ~= "FALSE" then
+				self._bApplyOnInvulnerable = true
+			else
+				self._bApplyOnInvulnerable = false
 			end
 			
 			self._fMaxStacks = tAbilityData.MaxStacks
@@ -184,9 +193,10 @@ function CIcewrackExtendedAbility:ApplyExtendedAbility(hSource, hTarget)
 			self._hTarget = hTarget
 			
 			--Prevent missed attacks/abilities from clearing or refreshing previous buffs
-			if hTarget:IsInvulnerable() then
+			if hTarget:IsInvulnerable() and not self._bApplyOnInvulnerable then
 				return
 			end
+			
 			self:CullMaxStacks()
 			hExtTarget:ApplyModifierProperties(self._tProperties)
 			self._bIsModifierActive = true
@@ -207,7 +217,7 @@ function CIcewrackExtendedAbility:ApplyExtendedAbility(hSource, hTarget)
 					CTimer(function()
 							if self._bIsModifierActive and (not hTarget:IsAlive() or GameRules:GetGameTime() > self._fEndTime) then
 								self:RemoveExtendedModifier()
-								hTarget._bModifierUpdateFlag = true
+								--hTarget._bModifierUpdateFlag = true
 								return TIMER_STOP
 							end
 						end, 0, 0.1)
@@ -215,7 +225,7 @@ function CIcewrackExtendedAbility:ApplyExtendedAbility(hSource, hTarget)
 			else
 				self._hBaseAbility:ApplyDataDrivenModifier(self._hEntity, hTarget, "modifier_" .. self:GetAbilityName(), {})
 			end
-			hTarget._bModifierUpdateFlag = true
+			--hTarget._bModifierUpdateFlag = true
 		end
 	end
 end

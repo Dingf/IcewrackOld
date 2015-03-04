@@ -1,0 +1,70 @@
+//Note: Each entry is a unique ID. Do not repeat these throughout maps
+"IcewrackSpawnData"
+{
+	"1"
+	{
+		"Name"		"npc_dota_hero_sven"
+		"Position"	"-360 -200 128"
+		"Orientation"	"296 -56 0"
+		"Team"		"DOTA_TEAM_GOODGUYS"
+		"Modifiers"
+		{
+			"internal_walk_buff"	"1"
+		}
+	}
+	"2"
+	{
+		"Name"		"npc_dota_hero_dragon_knight"
+		"Position"	"-272 -96 128"
+		"Orientation"	"208 -160 0"
+		"Team"		"DOTA_TEAM_GOODGUYS"
+		"Modifiers"
+		{
+			"internal_walk_buff"	"2"
+		}
+	}
+	"3"
+	{
+		"Name"		"npc_dota_hero_drow_ranger"
+		"Position"	"-160 -48 128"
+		"Orientation"	"96 -208 0"
+		"Team"		"DOTA_TEAM_GOODGUYS"
+		"Modifiers"
+		{
+			"internal_walk_buff"	"3"
+		}
+	}
+	"4"
+	{
+		"Name"		"npc_dota_hero_bounty_hunter"
+		"Position"	"32 -48 128"
+		"Orientation"	"-96 -208 0"
+		"Team"		"DOTA_TEAM_GOODGUYS"
+		"Modifiers"
+		{
+			"internal_walk_buff"	"4"
+		}
+	}
+	"5"
+	{
+		"Name"		"npc_dota_hero_lina"
+		"Position"	"144 -96 128"
+		"Orientation"	"-208 -160 0"
+		"Team"		"DOTA_TEAM_GOODGUYS"
+		"Modifiers"
+		{
+			"internal_walk_buff"	"5"
+		}
+	}
+	"6"
+	{
+		"Name"		"npc_dota_hero_warlock"
+		"Position"	"232 -200 128"
+		"Orientation"	"-296 -56 0"
+		"Team"		"DOTA_TEAM_GOODGUYS"
+		"Modifiers"
+		{
+			"internal_walk_buff"	"6"
+		}
+	}
+}

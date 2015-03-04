@@ -20,7 +20,7 @@ if CIcewrackSpellbook == nil then
 			for i=0,(hEntity:GetAbilityCount() - 1) do
 				local hAbility = hEntity:GetAbilityByIndex(i)
 				if hAbility then
-					if string.find(hAbility:GetAbilityName(), "iw_internal_empty") == nil then
+					if string.find(hAbility:GetAbilityName(), "ui_spellbar_empty") == nil then
 						self._tKnownAbilities[hAbility:GetAbilityName()] = hAbility:GetLevel()
 					end
 					self._tBoundAbilities[i] = hAbility:GetAbilityName()
@@ -33,13 +33,12 @@ if CIcewrackSpellbook == nil then
 end
 
 function CIcewrackSpellbook:UnbindAbility(nSlot)
-	print("Cancelling ability " .. nSlot)
-	if self._tBoundAbilities[nSlot] and string.find(self._tBoundAbilities[nSlot], "iw_internal_empty") == nil then
+	if self._tBoundAbilities[nSlot] and string.find(self._tBoundAbilities[nSlot], "ui_spellbar_empty") == nil then
 		local hEntity = self._hEntity
 		local hAbility = hEntity:FindAbilityByName(self._tBoundAbilities[nSlot])
 		if hAbility then
 			local szAbilityName = hAbility:GetAbilityName()
-			local szEmptySlotName = "iw_internal_empty" .. (nSlot + 1)
+			local szEmptySlotName = "ui_spellbar_empty" .. (nSlot + 1)
 			hEntity:AddAbility(szEmptySlotName)
 			hEntity:SwapAbilities(szEmptySlotName, szAbilityName, true, true)
 			hEntity:RemoveAbility(szAbilityName)
@@ -126,7 +125,7 @@ end
 
 function CIcewrackSpellbook:GetBoundAbilityName(nSlot)
 	local szAbilityName = self._tBoundAbilities[nSlot]
-	if szAbilityName and string.find(szAbilityName, "iw_internal_empty") == nil then
+	if szAbilityName and string.find(szAbilityName, "ui_spellbar_empty") == nil then
 		return szAbilityName
 	end
 	return nil

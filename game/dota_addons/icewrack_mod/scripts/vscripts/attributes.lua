@@ -4,20 +4,20 @@
     Values listed are per point of that attribute
     
     STRENGTH (STR):
-        *Increases damage with attacks and abilities that use a STR-based multiplier by 0.8%
+        *Increases damage with attacks and abilities that use a STR-based multiplier by 1%
         *Increases carry capacity by 0.2
         *Requirement to use some items (NYI)
         
     VIGOR (VIG):
         *Increases HP by 2.5
-        *Increases HP regen by 0.03 HP/s
-        *Increases SP by 0.5
-        *Increases SP regen by 0.1 SP/s
+        *Increases HP regen by 0.05 HP/s
+        *Increases SP by 0.25
+        *Increases SP regen by 0.05 SP/s
         
     AGILITY (AGI):
         *Increases dodge score by 1
         *Increases accuracy score by 1
-        *Increases attack speed by 0.5%
+        *Increases attack speed by 1%
         
     CUNNING (CUN):
         *Increases base critical strike chance by 2%
@@ -26,10 +26,10 @@
         
     INTELLIGENCE (INT):
 		*Reduces enemy non-Physical resistances with attacks and abilities that use an INT-based multiplier by 0.5% 
-        *Increases cast speed by 0.5%
+        *Increases cast speed by 1%
         
     WISDOM (WIS):
-        *Increases MP by 2.0
+        *Increases MP by 1.0
         *Increases MP regen by 0.05 MP/s
         *Increases all non-Physical resistances by 0.2%
 ]]

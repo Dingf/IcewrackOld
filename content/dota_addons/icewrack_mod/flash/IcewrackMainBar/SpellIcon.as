@@ -4,6 +4,7 @@
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	import flash.filters.ColorMatrixFilter;
 
 	public class SpellIcon extends MovieClip
 	{
@@ -16,10 +17,18 @@
 		private var secondary : Boolean;
 		
 		private var texture : Sprite;
+		//private var desaturatedTexture : Sprite;
 		private var overState : Sprite;
 		private var border : Sprite;
 		
+		//private var extras : SpellIconExtras = null;
 		private var tooltip : Tooltip = null;
+		
+		private static var desaturateFilter : ColorMatrixFilter = new ColorMatrixFilter(
+			[0.299, 0.587, 0.114, 0, 0,
+			 0.299, 0.587, 0.114, 0, 0,
+			 0.299, 0.587, 0.114, 0, 0,
+			 0,     0,     0,     1, 0])
 		
 		public function SpellIcon() : void
 		{
@@ -30,7 +39,7 @@
 			trace("MouseOver");
 			overState.visible = true;
 			
-			if (spellName != "iw_empty")
+			if (spellName != "empty")
 			{
 				var point : Point = this.localToGlobal(new Point(0, 0));
 				var adjScale : Number = scale * (this.secondary ? this.parent.parent.parent.scaleY : this.parent.scaleY);
@@ -98,7 +107,7 @@
 		//szName - name of spell
 		//szTextureName - name of spell texture (should be the same as above)
 		//nSize - size of the spell icon (in px)
-		public function Create(gameAPI:Object, globals:Object, resName:String, slot:Number, size:Number, isSecondary:Boolean = false)
+		public function Create(gameAPI:Object, globals:Object, resName:String, /*manaCost:Number, */slot:Number, size:Number, isSecondary:Boolean = false)
 		{
 			this.gameAPI = gameAPI;
 			this.globals = globals;
@@ -109,8 +118,18 @@
 			this.secondary = isSecondary;
 			
 			texture = LoadImage("images/spellicons/" + resName + ".png", 128.0 * scale, 128.0 * scale);
+			//desaturatedTexture = LoadImage("images/spellicons/" + resName + ".png", 128.0 * scale, 128.0 * scale);
+			//desaturatedTexture.filters = [desaturateFilter];
+			//desaturatedTexture.visible = false;
 			overState = LoadImage("images/ui/spellicon_over_128px.png", 128.0 * scale, 128.0 * scale);
 			overState.visible = false;
+			
+			if (isSecondary == false)
+			{
+				//extras = new SpellIconExtras(manaCost);
+				//extras.width = 128.0 * scale;
+				//extras.height = 128.0 * scale;
+			}
 			
 			border = LoadImage("images/ui/spellicon_border_144px.png", 144.0 * scale, 144.0 * scale);
 			border.x = border.y = -8.0 * scale;
@@ -149,7 +168,7 @@
 				for (var i:int = 0; i < listSize; i++)
 				{
 					var spellIcon = new SpellIcon();
-					spellIcon.Create(gameAPI, globals, knownList[i], this.spellSlot, 64, true);
+					spellIcon.Create(gameAPI, globals, knownList[i], /*0,*/ this.spellSlot, 64, true);
 					tooltip.addChild(spellIcon);
 					
 					spellIcon.x = 10 + ((i % 4) * 70);

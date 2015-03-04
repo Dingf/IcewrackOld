@@ -6,8 +6,7 @@ require("timer")
 require("attributes")
 require("damage_types")
 require("ext_entity")
-
-require("ext_ability")
+require("party")
 
 _shDodgeModifier = CreateItem("internal_dodge_invulnerability", nil, nil)
 _shManaDrainModifier = CreateItem("internal_mana_drain_visual", nil, nil)
@@ -55,20 +54,24 @@ function DealDamage(args)
     
     local fDamageBlock = hVictim:GetDamageBlock(nDamageType) or 0.0
     local fDamagePierce = hAttacker:GetDamagePierce(nDamageType) or 0.0
-    local fResistance = (hVictim:GetResistance(nDamageType) or 0.0) * math.max(0.0, math.min(1.0, (1.0 - fDamagePierce)))
+    local fResistance = (hVictim:GetResistance(nDamageType) or 0.0) - fDamagePierce
+
 	
     local fDamageBase = RandomInt(args.MinDamage, args.MaxDamage)
 	if not args.NoOutMultiplier or args.NoOutMultiplier == "FALSE" then
 		fDamageBase = fDamageBase * hAttacker:GetOutgoingDamageMultiplier()
-	end
+	end	
 	
     if args.UseStrengthBonus and args.UseIntelligenceBonus ~= "FALSE" then
-        fDamageBase = fDamageBase * (1.00 + (hAttacker:GetAttributeValue(IW_ATTRIBUTE_STRENGTH) * 0.008))
+        fDamageBase = fDamageBase * (1.00 + (hAttacker:GetAttributeValue(IW_ATTRIBUTE_STRENGTH) * 0.01))
     end
+	
     if args.UseIntelligenceBonus and args.UseIntelligenceBonus ~= "FALSE" and nDamageType ~= IW_DAMAGE_TYPE_PHYSICAL and nDamageType ~= IW_DAMAGE_TYPE_PURE then
         fResistance = fResistance - (hAttacker:GetAttributeValue(IW_ATTRIBUTE_INTELLIGENCE) * 0.005)
     end
-	local fDamage = (fDamageBase - fDamageBlock) * (1.0 - math.min(fResistance, 1.0))
+	
+	fResistance = math.min(1.0, fResistance, hVictim:GetMaxResistance(nDamageType))
+	local fDamage = (fDamageBase - fDamageBlock) * (1.0 - fResistance)
 	if not args.NoInMultiplier or args.NoInMultiplier == "FALSE" then
 		fDamage = fDamage * hVictim:GetIncomingDamageMultiplier()
 	end
@@ -145,6 +148,12 @@ function DealDamage(args)
 	if fCurrentHealth <= math.ceil(fDamage) then
 		for k,v in pairs(hAttacker._tOnKillEntityList) do v(tDamageInfoTable) end
 		for k,v in pairs(hVictim._tOnSelfKilledList) do v(tDamageInfoTable) end
+		if hVictim:GetTeamNumber() ~= PlayerResource:GetTeam(0) then
+			local tActiveMemberList = CIcewrackParty:GetActiveMembers()
+			for k,v in pairs(tActiveMemberList) do
+				v:AddExperience(hVictim:GetDeathXP(), false, false)
+			end
+		end
 	end
 	
     FireGameEvent('iw_damage_taken', tDamageInfoTable)

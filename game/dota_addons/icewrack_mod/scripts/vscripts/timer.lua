@@ -2,7 +2,7 @@
     Timers
 ]]
 
-TIMER_THINK_INTERVAL = 0.03
+TIMER_THINK_INTERVAL = 0.0333
 TIMER_CLEANUP_INTERVAL = 10.0
 TIMER_STOP = -1
 
@@ -17,20 +17,20 @@ if CTimer == nil then
         if fFrequency and fFrequency <= 0 then
             error("Error creating timer: fFrequency must be greater than zero if defined")
         end
-		if fDelay and fDelay < 0 then
-            error("Error creating timer: fDelay must be greater than or equal to zero if defined")
-		end
 
+		self._bPauseFlag = false
+		self._bStopFlag = false
         self._hCallback = hCallback
         self._fDuration = fDuration
         self._fFrequency = fFrequency
 		self._bIgnorePause = bIgnorePause
 		self._fStartTime = bIgnorePause and Time() or GameRules:GetGameTime()
-		self._fLastTickTime = self._fStartTime
 		
 		if fDelay then
 			self._fStartTime = self._fStartTime + fDelay
 		end
+		self._fLastTickTime = self._fStartTime
+		self._fPauseTime = 0
         
         table.insert(CTimer._stTimerList, self)
     end},
@@ -39,6 +39,25 @@ end
 
 function CTimer:GetEndTime()
 	return self._fStartTime + self._fDuration
+end
+
+function CTimer:PauseTimer()
+	if not self._bPauseFlag then
+		self._bPauseFlag = true
+		self._fPauseTime = bIgnorePause and Time() or GameRules:GetGameTime()
+	end
+end
+
+function CTimer:UnpauseTimer()
+	if self._bPauseFlag then
+		self._bPauseFlag = false
+		local fCurrentTime = bIgnorePause and Time() or GameRules:GetGameTime()
+		self._fStartTime = self._fStartTime + (fCurrentTime - fPauseTime)
+	end
+end
+
+function CTimer:StopTimer()
+	self._bStopFlag = true
 end
 
 function CTimer:ResetTimer(fStartTime)
@@ -54,17 +73,21 @@ function ProcessTimers()
 	local fGameTime = GameRules:GetGameTime()
     for k,v in pairs(CTimer._stTimerList) do
         if v then
-			local fThinkTime = v._bIgnorePause and fRealTime() or fGameTime
-			if fThinkTime >= v._fStartTime then
-				--A zero duration timer will run indefinitely
-				if v._fDuration and v._fDuration ~= 0.0 and fThinkTime >= v._fStartTime + v._fDuration then
-					v._hCallback()
-					CTimer._stTimerList[k] = nil
-				elseif v._fFrequency and fThinkTime >= v._fLastTickTime + v._fFrequency then
-					if v._hCallback() == TIMER_STOP then
+			if v._bStopFlag then
+				CTimer._stTimerList[k] = nil
+			elseif not v._bPauseFlag then
+				local fThinkTime = v._bIgnorePause and fRealTime() or fGameTime
+				if fThinkTime >= v._fStartTime then
+					--A zero duration timer will run indefinitely
+					if v._fDuration and v._fDuration ~= 0.0 and fThinkTime >= v._fStartTime + v._fDuration then
+						v._hCallback()
 						CTimer._stTimerList[k] = nil
+					elseif v._fFrequency and fThinkTime >= v._fLastTickTime + v._fFrequency then
+						if v._hCallback() == TIMER_STOP then
+							CTimer._stTimerList[k] = nil
+						end
+						v._fLastTickTime = v._fLastTickTime + v._fFrequency
 					end
-					v._fLastTickTime = v._fLastTickTime + v._fFrequency
 				end
 			end
         end

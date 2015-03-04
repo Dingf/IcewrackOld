@@ -14,7 +14,7 @@
         
     FIRE:
 		*High damage, low variance
-        *Critical strikes deal 50% of the original damage dealt as burning damage, which does 1% max. HP per sec. (NYI)
+        *Critical strikes deal 50% of the original damage dealt as burning damage over 8 seconds. (NYI)
 		*Removes Chilled and Frozen and Wet on impact (NYI)
         *Used by fire spells and attacks (duh)
         

@@ -1,4 +1,5 @@
 require("timer")
+require("xp_values")
 require("ext_entity")
 require("spellbook")
 
@@ -9,13 +10,29 @@ end
 function CIcewrackUIMainBar:ReturnValues()
 	local hExtEntity = self._shSelectedEntity
 	if hExtEntity then
+		local nCurrentXP = nil
+		local nMaximumXP = nil
+		local bAliveFlag = hExtEntity:IsAlive()
+		if bAliveFlag and hExtEntity:IsHero() then
+			local nLevel = hExtEntity:GetLevel()
+			if nLevel == IW_MAXIMUM_LEVEL then
+				nCurrentXP = hExtEntity:GetCurrentXP()
+				nMaximumXP = hExtEntity:GetCurrentXP()
+			else
+				nCurrentXP = hExtEntity:GetCurrentXP() - stIcewrackXPTable[nLevel]
+				nMaximumXP = stIcewrackXPTable[nLevel + 1] - stIcewrackXPTable[nLevel]
+			end
+		end
+		
 		FireGameEvent("iw_ui_mainbar_return_values",
-                      { current_hp = hExtEntity:GetHealth(),
-                        maximum_hp = hExtEntity:GetMaxHealth(),
-                        current_mp = hExtEntity:IsAlive() and hExtEntity:GetMana() or 0.0,
-                        maximum_mp = hExtEntity:IsAlive() and hExtEntity:GetMaxMana() or 0.0,
-                        current_sp = hExtEntity:IsAlive() and hExtEntity:GetStamina() or 0.0,
-                        maximum_sp = hExtEntity:IsAlive() and hExtEntity:GetMaxStamina() or 0.0})
+                      { current_hp = bAliveFlag and hExtEntity:GetHealth() or 0.0,
+                        maximum_hp = bAliveFlag and hExtEntity:GetMaxHealth() or 0.0,
+                        current_mp = bAliveFlag and hExtEntity:GetMana() or 0.0,
+                        maximum_mp = bAliveFlag and hExtEntity:GetMaxMana() or 0.0,
+                        current_sp = bAliveFlag and hExtEntity:GetStamina() or 0.0,
+                        maximum_sp = bAliveFlag and hExtEntity:GetMaxStamina() or 0.0,
+						current_xp = nCurrentXP or 0.0,
+						maximum_xp = nMaximumXP or 0.0})
 	end
 end
 
@@ -26,12 +43,12 @@ function CIcewrackUIMainBar:ReturnAbilities()
 		if hSpellbook then
 			SetActiveSpellbookEntity(hExtEntity)
 			FireGameEvent("iw_ui_spellbar_return_abilities",
-						  { ability1 = hSpellbook:GetBoundAbilityName(0) or "iw_empty",
-							ability2 = hSpellbook:GetBoundAbilityName(1) or "iw_empty",
-							ability3 = hSpellbook:GetBoundAbilityName(2) or "iw_empty",
-							ability4 = hSpellbook:GetBoundAbilityName(3) or "iw_empty",
-							ability5 = hSpellbook:GetBoundAbilityName(4) or "iw_empty",
-							ability6 = hSpellbook:GetBoundAbilityName(5) or "iw_empty"})
+						  { ability1 = hSpellbook:GetBoundAbilityName(0) or "empty",
+							ability2 = hSpellbook:GetBoundAbilityName(1) or "empty",
+							ability3 = hSpellbook:GetBoundAbilityName(2) or "empty",
+							ability4 = hSpellbook:GetBoundAbilityName(3) or "empty",
+							ability5 = hSpellbook:GetBoundAbilityName(4) or "empty",
+							ability6 = hSpellbook:GetBoundAbilityName(5) or "empty"})
 		end
 	end
 end
@@ -43,7 +60,7 @@ function CIcewrackUIMainBar:ReturnKnownList()
 		if hSpellbook then
 			SetActiveSpellbookEntity(hExtEntity)
 			local tKnownList = hSpellbook:GetAvailableAbilities()
-			local szKnownList = "iw_internal_cancel"
+			local szKnownList = "ui_spellbar_cancel"
 			for k,v in pairs(tKnownList) do
 				szKnownList = szKnownList .. " " .. k
 			end
@@ -60,7 +77,10 @@ function CIcewrackUIMainBar:RegisterHandlers()
 				if hEntity then
 					local hExtEntity = LookupExtendedEntity(hEntity)
 					if hExtEntity then
-						self._shSelectedEntity = hExtEntity
+						local nTeam = PlayerResource:GetTeam(0)
+						if hEntity:GetTeamNumber() == nTeam then
+							self._shSelectedEntity = hExtEntity
+						end
 						self:ReturnValues()
 					end
 				end
@@ -74,7 +94,10 @@ function CIcewrackUIMainBar:RegisterHandlers()
 				if hEntity then
 					local hExtEntity = LookupExtendedEntity(hEntity)
 					if hExtEntity then
-						self._shSelectedEntity = hExtEntity
+						local nTeam = PlayerResource:GetTeam(0)
+						if hEntity:GetTeamNumber() == nTeam then
+							self._shSelectedEntity = hExtEntity
+						end
 						self:ReturnAbilities()
 					end
 				end
@@ -88,7 +111,10 @@ function CIcewrackUIMainBar:RegisterHandlers()
 				if hEntity then
 					local hExtEntity = LookupExtendedEntity(hEntity)
 					if hExtEntity then
-						self._shSelectedEntity = hExtEntity
+						local nTeam = PlayerResource:GetTeam(0)
+						if hEntity:GetTeamNumber() == nTeam then
+							self._shSelectedEntity = hExtEntity
+						end
 						self:ReturnKnownList()
 					end
 				end
@@ -97,7 +123,6 @@ function CIcewrackUIMainBar:RegisterHandlers()
 		
 	Convars:RegisterCommand("iw_ui_spellbar_rebind",
 		function(szCmdName, szArgs)
-			print("Received rebind request " .. szArgs)
 			local hSpellbook = self._shSelectedEntity._hSpellbook
 			if szArgs and hSpellbook then
 				local nSlot = nil
@@ -105,7 +130,7 @@ function CIcewrackUIMainBar:RegisterHandlers()
 					if nSlot == nil then
 						nSlot = tonumber(k)
 					else
-						if k == "iw_internal_cancel" then
+						if k == "ui_spellbar_cancel" then
 							hSpellbook:UnbindAbility(nSlot)
 						else
 							hSpellbook:BindAbility(k, nSlot)

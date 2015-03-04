@@ -5,7 +5,6 @@
 	
 	public class Tooltip extends MovieClip
 	{
-		
 		private function OnMouseOver(e:MouseEvent)
 		{
 			trace("TTMouseOver");
@@ -38,7 +37,7 @@
 			trace("TTMouseClick");
 		}
 		
-		public function Tooltip(gameAPI:Object, globals:Object)
+		public function Tooltip()
 		{
 			addEventListener(MouseEvent.ROLL_OVER, OnMouseOver);
 			addEventListener(MouseEvent.ROLL_OUT, OnMouseOut);

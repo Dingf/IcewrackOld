@@ -8,20 +8,14 @@ require("ext_item")
 
 if CIcewrackInventory == nil then
     CIcewrackInventory = class({
-		constructor = function(self, hEntity, fCarryCapacity)
+		constructor = function(self, hEntity)
 			if not hEntity or not hEntity._bIsExtendedEntity then
 				error("hEntity must be a valid extended entity")
-			end
-			if not fCarryCapacity or fCarryCapacity <= 0 then
-				error("fCarryCapacity must be greater than zero")
 			end
 			
 			self._bIsInventory = true
 			self._hEntity = hEntity
 			hEntity._hInventory = self
-			
-			self._fCarryCapacityBase = fCarryCapacity
-			self._fCarryCapacityBonus = 0.0
 		
 			self._tItemList = {}
 			self._tInventoryUnits = {}
@@ -75,8 +69,8 @@ function CIcewrackInventory:DeleteItem(hItem)
 		CreateUnitByNameAsync("iw_npc_inventory_storage_dummy", hEntity:GetAbsOrigin(), false, hOwner, hOwner, hEntity:GetTeamNumber(),
 			function(hCleanupDummy)
 				if hCleanupDummy then
-					hCleanupDummy:AddAbility("iw_dummy_buff")
-					hCleanupDummy:FindAbilityByName("iw_dummy_buff"):SetLevel(1)
+					hCleanupDummy:AddAbility("internal_dummy_buff")
+					hCleanupDummy:FindAbilityByName("internal_dummy_buff"):SetLevel(1)
 					
 					hCleanupDummy:SetThink(function() hInventoryUnit:SetAbsOrigin(hEntity:GetAbsOrigin()) return 0.1 end, "InventoryDummyMove", 0.1)
 					hCleanupDummy:SetThink(function() hCleanupDummy:RemoveSelf() return nil end, "InventoryDummyDelete", 1.0)
@@ -176,8 +170,9 @@ function CIcewrackInventory:PickupItem(hInventoryUnit, hItem)
 	self._hEntity:MoveToNPCToGiveItem(hInventoryUnit, hItem)
 	for k,v in pairs(self._tEquippedItems) do
 		if v == 0 and bit32.band(hItem._nItemSlots, bit32.lshift(1, k - 1)) ~= 0 then
-			self:EquipItem(hItem, k)
-			break
+			if self:EquipItem(hItem, k) then
+				break
+			end
 		end
 	end
 end
@@ -186,7 +181,7 @@ function CIcewrackInventory:AddItem(hItem)
     local hExtItem = LookupExtendedItem(hItem) or CIcewrackExtendedItem(hItem)
     if hExtItem and hExtItem._bIsExtendedItem then
         local nStackCount = hExtItem:GetStackCount()
-        if self:GetCurrentWeight() + (hExtItem:GetWeight() * nStackCount) > self:GetCarryCapacity() then
+        if self:GetCurrentWeight() + (hExtItem:GetWeight() * nStackCount) > self._hEntity:GetCarryCapacity() then
             --Trigger over carry capacity message in the UI (TODO)
             print("DEBUG: Unit is carrying too much!")
             return false
@@ -227,8 +222,8 @@ function CIcewrackInventory:AddItem(hItem)
 		CreateUnitByNameAsync("iw_npc_inventory_storage_dummy", hEntity:GetAbsOrigin(), false, hOwner, hOwner, hEntity:GetTeamNumber(),
 			function(hInventoryUnit)
 				if hInventoryUnit then
-					hInventoryUnit:AddAbility("iw_dummy_buff")
-					hInventoryUnit:FindAbilityByName("iw_dummy_buff"):SetLevel(1)
+					hInventoryUnit:AddAbility("internal_dummy_buff")
+					hInventoryUnit:FindAbilityByName("internal_dummy_buff"):SetLevel(1)
 						
 					hInventoryUnit:SetThink(function() hInventoryUnit:SetAbsOrigin(hEntity:GetAbsOrigin()) return 0.1 end, "InventoryDummyMove", 0.1)
 					hInventoryUnit:SetThink(function() self:PickupItem(hInventoryUnit, hExtItem) return nil end, DoUniqueString("InventoryDummyPickup"), 0.1)
@@ -241,9 +236,17 @@ function CIcewrackInventory:AddItem(hItem)
     return false
 end
 
+function CIcewrackInventory:GetEquippedItems()
+	return self._tEquippedItems
+end
+
+function CIcewrackInventory:GetItemList()
+	return self._tItemList
+end
+
 function CIcewrackInventory:DebugPrint()
     print("DEBUG: Printing items in inventory")
-    print("DEBUG: Carry capacity = " .. self:GetCurrentWeight() .. "/" .. self:GetCarryCapacity())
+    print("DEBUG: Carry capacity = " .. self:GetCurrentWeight() .. "/" .. self._hEntity:GetCarryCapacity())
     --Note: If you call DebugPrint() immediately after picking up an item, it won't show up below (since there is a 0.1s delay between the item pickup)
     for k,v in pairs(self._tInventoryUnits) do
         for i=0,5 do
@@ -263,10 +266,6 @@ function CIcewrackInventory:DebugPrint()
 			print(tDebugEquipPrintTable[k] or "unknown", v:GetName())
 		end
 	end
-end
-
-function CIcewrackInventory:GetCarryCapacity()
-    return self._fCarryCapacityBase + self._fCarryCapacityBonus + (self._hEntity:GetAttributeValue(IW_ATTRIBUTE_STRENGTH) * 0.2)
 end
 
 

@@ -61,6 +61,7 @@
 				else
 				{
 					selectedEntindex = 0;
+					xp_bar.width = 0;
 					mp_mask.rotation = 180;
 					sp_mask.rotation = -180;
 					hp_bar.hp_percent.scaleY = 2.0;
@@ -72,16 +73,31 @@
 		
 		private function OnUnitValuesReturn(args:Object) : void
 		{
-			mp_mask.rotation = (args.maximum_mp == 0) ? 180.0 : (1.0 - (args.current_mp/args.maximum_mp)) * 180.0;
-			sp_mask.rotation = (args.maximum_sp == 0) ? -180.0 : (1.0 - (args.current_sp/args.maximum_sp)) * -180.0;
-			
-			hp_bar.hp_percent.scaleY = (args.maximum_hp == 0) ? 1.0 : (1.0 - (args.current_hp/args.maximum_hp)) * 1.0;
-			hp_bar.hp_percent.visible = (hp_bar.hp_percent.scaleY >= 0.01);
-			
-			mp_indicator.rotation = mp_mask.rotation * 0.975;
-			mp_indicator.visible = ((mp_mask.rotation != 0) && (mp_mask.rotation != 180.0));
-			sp_indicator.rotation = sp_mask.rotation * 0.975;
-			sp_indicator.visible = ((sp_mask.rotation != 0) && (sp_mask.rotation != -180.0));
+			if (args != null)
+			{
+				mp_mask.rotation = (args.maximum_mp == 0) ? 180.0 : (1.0 - (args.current_mp/args.maximum_mp)) * 180.0;
+				sp_mask.rotation = (args.maximum_sp == 0) ? -180.0 : (1.0 - (args.current_sp/args.maximum_sp)) * -180.0;
+				
+				hp_bar.hp_percent.scaleY = (args.maximum_hp == 0) ? 1.0 : (1.0 - (args.current_hp/args.maximum_hp)) * 1.0;
+				hp_bar.hp_percent.visible = (hp_bar.hp_percent.scaleY >= 0.01);
+				
+				xp_bar.width = (args.current_xp/args.maximum_xp) * 320.0;
+				
+				mp_indicator.rotation = mp_mask.rotation * 0.975;
+				mp_indicator.visible = ((mp_mask.rotation != 0) && (mp_mask.rotation != 180.0));
+				sp_indicator.rotation = sp_mask.rotation * 0.975;
+				sp_indicator.visible = ((sp_mask.rotation != 0) && (sp_mask.rotation != -180.0));
+				
+				var values = IcewrackValues.GetInstance();
+				values.currentHP = args.current_hp;
+				values.maximumHP = args.maximum_hp;
+				values.currentMP = args.current_mp;
+				values.maximumMP = args.maximum_mp;
+				values.currentSP = args.current_sp;
+				values.maximumSP = args.maximum_sp;
+				values.currentXP = args.current_xp;
+				values.maximumXP = args.maximum_xp;
+			}
 		}
 		
 		//this handles the resizes - credits to SinZ

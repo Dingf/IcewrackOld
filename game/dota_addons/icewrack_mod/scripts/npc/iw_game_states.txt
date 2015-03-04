@@ -1,0 +1,28 @@
+//Note: These are default values. The actual values
+//      may change in-game and when the game loads a save
+"IcewrackGameStates"
+{
+	"IWGS_M00_PICKED_HERO"			"0"
+	//1 = Sven, 2 = DK, 3 = Drow, 4 = BH, 5 = Lina, 6 = Warlock
+
+	"IWGS_M01_TALKED_TO_LEGION"		"0"
+	"IWGS_M01_LEGION_QUEST"			"0"
+	"IWGS_M01_TALKED_TO_OMNI"		"0"
+	"IWGS_M01_OMNI_QUEST"			"0"
+	"IWGS_M01_TALKED_TO_SVEN"		"0"
+	"IWGS_M01_RECRUITED_SVEN"		"0"
+	"IWGS_M01_TALKED_TO_DK"			"0"
+	"IWGS_M01_RECRUITED_DK"			"0"
+	"IWGS_M01_TALKED_TO_DROW"		"0"
+	"IWGS_M01_RECRUITED_DROW"		"0"
+	"IWGS_M01_TALKED_TO_BH"			"0"
+	"IWGS_M01_RECRUITED_BH"			"0"
+	"IWGS_M01_TALKED_TO_LINA"		"0"
+	"IWGS_M01_RECRUITED_LINA"		"0"
+	"IWGS_M01_TALKED_TO_WARLOCK"		"0"
+	"IWGS_M01_RECRUITED_WARLOCK"		"0"
+
+	"IWGS_M01_WCAXE_INSPECTED"		"0"
+	"IWGS_M01_WHEELBARROW_INSPECTED"	"0"
+	"IWGS_M01_SECRET_ITEM_FOUND"		"0"
+}

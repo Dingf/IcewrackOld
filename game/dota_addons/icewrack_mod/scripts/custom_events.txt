@@ -46,6 +46,8 @@
 		"maximum_mp"	"float"
 		"current_sp"	"float"
 		"maximum_sp"	"float"
+		"current_xp"	"float"
+		"maximum_xp"	"float"
 	}
 
 	"iw_ui_spellbar_return_abilities"
@@ -62,14 +64,14 @@
 	{
 		"ability_list"	"string"
 	}
-	
 
-
-
+	//Deprecated
 	"iw_ui_hpbar_query" {}
 
+	//Deprecated
 	"iw_ui_hpbar_hide" {}
 
+	//Deprecated
 	"iw_ui_hpbar_return_values"
 	{
 		"name"		"string"
@@ -78,8 +80,10 @@
 		"game_time"	"float"		//Because apparently calling GetGameTime() in the UI makes it freeze...
 	}
 
+	//Deprecated
 	"iw_ui_hpbar_start_modifiers" {}
 
+	//Deprecated
 	"iw_ui_hpbar_return_modifier"
 	{
 		"name"		"string"
@@ -88,5 +92,6 @@
 		"end_time"	"float"
 	}
 
+	//Deprecated
 	"iw_ui_hpbar_finished_modifiers" {}
 }

@@ -128,9 +128,9 @@ end
 
 stInternalAbilityLookupTable = 
 {
-	["iw_internal_do_nothing"]             = DoNothing,
-    ["iw_internal_move_away_from_enemies"] = MoveAwayFromEnemies,
-    ["iw_internal_move_towards_enemies"]   = MoveTowardsEnemies,
-    ["iw_internal_attack_nearest_enemy"]   = AttackNearestEnemy,
-    ["iw_internal_attack_target"]          = AttackTarget,
+	["aam_do_nothing"]             = DoNothing,
+    ["aam_move_away_from_enemies"] = MoveAwayFromEnemies,
+    ["aam_move_towards_enemies"]   = MoveTowardsEnemies,
+    ["aam_attack_nearest_enemy"]   = AttackNearestEnemy,
+    ["aam_attack_target"]          = AttackTarget,
 }

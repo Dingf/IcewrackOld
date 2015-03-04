@@ -61,7 +61,7 @@
 		}
 	}
 
-	"internal_buff_cleanup"
+	"internal_stamina_drain"
 	{
 		// General
 		//-------------------------------------------------------------------------------------------------------------
@@ -70,17 +70,26 @@
  
 		"Modifiers"
 		{
-			"modifier_internal_buff_cleanup"
+			"modifier_internal_stamina_drain"
         		{
 				"Passive"					"1"
            			"IsHidden"					"1"
-				"OnOwnerDied"
+				"OnUnitMoved"
 				{
 					"RunScript"
 					{
 						"ScriptFile"			"scripts/vscripts/ext_entity.lua"
-						"Function"			"ClearExtendedModifierList"
+						"Function"			"DrainStamina"
 					}
+				}
+			}
+			"modifier_internal_stamina_drain_slow"
+			{
+				"Passive"					"1"
+           			"IsHidden"					"1"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"      "-50"
 				}
 			}
 		}
@@ -99,6 +108,7 @@
         		{
 				"Passive"					"1"
            			"IsHidden"					"1"
+				"Attributes"					"MODIFIER_ATTRIBUTE_PERMANENT"
 				"OnTakeDamage"
 				{
 					"RunScript"
@@ -124,6 +134,7 @@
 			{
 				"IsHidden"					"1"  
 				"Duration" 					"0.01"
+				"Attributes"					"MODIFIER_ATTRIBUTE_PERMANENT"
 				"States"
 				{
 					"MODIFIER_STATE_INVULNERABLE"		"MODIFIER_STATE_VALUE_ENABLED"
@@ -147,6 +158,7 @@
         		{
 				"Passive"					"1"
            			"IsHidden"					"1"
+				"Attributes"					"MODIFIER_ATTRIBUTE_PERMANENT"
 				"Properties"
     				{
 					"MODIFIER_PROPERTY_DAMAGEOUTGOING_PERCENTAGE_ILLUSION"		"-100"
@@ -358,7 +370,6 @@
 			{
 				"Passive"           				"1"
 				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"1"
@@ -367,8 +378,7 @@
 			"modifier_mod_mana_2"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1"
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"2"
@@ -377,8 +387,7 @@
 			"modifier_mod_mana_4"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1"
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"4"
@@ -387,8 +396,7 @@
 			"modifier_mod_mana_8"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1"
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"8"
@@ -397,8 +405,7 @@
 			"modifier_mod_mana_16"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1" 
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"16"
@@ -407,8 +414,7 @@
 			"modifier_mod_mana_32"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1" 
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"32"
@@ -417,8 +423,7 @@
 			"modifier_mod_mana_64"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1" 
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"64"
@@ -427,8 +432,7 @@
 			"modifier_mod_mana_128"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1"
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"128"
@@ -437,8 +441,7 @@
 			"modifier_mod_mana_256"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1"
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"256"
@@ -447,8 +450,7 @@
 			"modifier_mod_mana_512"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1"
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"512"
@@ -457,8 +459,7 @@
 			"modifier_mod_mana_1024"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1"
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"1024"
@@ -467,8 +468,7 @@
 			"modifier_mod_mana_2048"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1"
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"2048"
@@ -477,8 +477,7 @@
 			"modifier_mod_mana_4096"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1"
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"4096"
@@ -487,8 +486,7 @@
 			"modifier_mod_mana_8192"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1" 
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"8192"
@@ -498,7 +496,6 @@
 			{
 				"Passive"           				"1"
 				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"16384"
@@ -507,8 +504,7 @@
 			"modifier_mod_mana_32768"
 			{
 				"Passive"           				"1"
-				"IsHidden"					"1"  
-				"Attributes"					"MODIFIER_ATTRIBUTE_MULTIPLE"  
+				"IsHidden"					"1" 
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MANA_BONUS"		"32768"

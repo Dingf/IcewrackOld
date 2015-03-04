@@ -88,6 +88,19 @@ IEE_MODIFIER_PROPERTY_PERCENT_STAMINA = "TotalStaminaPercent"
 IEE_MODIFIER_PROPERTY_PERCENT_MANA = "TotalManaPercent"
 IEE_MODIFIER_PROPERTY_PERCENT_HEALTH = "TotalHealthPercent"
 
+
+--Flags
+--   *Does not leave a corpse
+--   *uh...
+
+
+stIEEPropertiesTable = nil
+stIEEPropertiesSet = nil
+
+tBaseEntityTemplate = nil
+tIcewrackExtendedEntityTemplate = nil
+
+
 stIEEPropertiesTable =
 {
 	"Stamina",           "StaminaRegen",       "StaminaMax",         "HealthRegen",        "ManaRegen", 
@@ -103,16 +116,14 @@ stIEEPropertiesTable =
 	"DurationStun",      "DurationSlow",       "DurationSilence",    "DurationRoot",       "DurationHex",
 	"DurationDisarm",    "DurationSleep",      "DurationFrozen",     "DurationChilled",    "DurationWet",
 	"DurationBurning",   "DurationPoison",     "DurationBleed",      "DurationBlind",      "DurationPetrify",
-	"MaxStaminaPercent", "MaxHealthPercent",   "MaxManaPercent",    
+	"MaxStaminaPercent", "MaxHealthPercent",   "MaxManaPercent",     "HealBonusPercent",   "StaminaDrainAttack",
+	"StaminaDrainMove",  "CarryCapacity",      "LifestealDuration",  "ManastealDuration",
 }
 
 stIEEPropertiesSet = {}
 for k,v in pairs(stIEEPropertiesTable) do
 	stIEEPropertiesSet[v] = true
 end
-
-tBaseEntityTemplate = nil
-tIcewrackExtendedEntityTemplate = nil
 
 if CIcewrackExtendedEntity == nil then
 	tBaseEntityTemplate = LoadKeyValues("scripts/npc/npc_units_custom.txt")
@@ -133,7 +144,7 @@ if CIcewrackExtendedEntity == nil then
 			end
 			
 			if CIcewrackExtendedEntity._stLookupTable[hEntity] ~= nil then
-				self = setmetatable({}, {__index = CIcewrackExtendedEntity._stLookupTable[hEntity]})
+				self = CIcewrackExtendedEntity._stLookupTable[hEntity]
 				return self
 			end
 			
@@ -144,16 +155,27 @@ if CIcewrackExtendedEntity == nil then
 			self._bIsExtendedEntity = true
 			self._hBaseEntity = hEntity
 			
-			--[[self._hBaseEntity.TestFunction = function() self._hBaseEntity._szTest = self._hBaseEntity:GetUnitName() 
-					print(self._hBaseEntity._szTest) end]]
+			setmetatable(self, {__index = function(t, k)
+				if string.find(k, "Bonus") then
+					local k2 = string.gsub(k, "Bonus", "", 1)
+					if self._tPropertiesBonus[k2] then
+						return self._tPropertiesBonus[k2]
+					end
+				end
+				return self._tPropertiesBase[k] or CIcewrackExtendedEntity[k] or hEntity[k] or nil
+			end})
 
+			self._bDeletedFlag = false
 			self._szDisplayName = tAddonLocaleTemplate.Tokens[hEntity:GetUnitName()] or hEntity:GetUnitName()
+			
+			self._nRefID = 0	--This should be set when the unit is spawned
 
 			self._nUnitClass = _G[tExtEntityData.UnitClass] or IEE_UNIT_CLASS_NONE
 			self._nUnitType = _G[tExtEntityData.UnitType] or IEE_UNIT_TYPE_NONE
 			self._nUnitSubtype = _G[tExtEntityData.UnitSubtype] or IEE_UNIT_SUBTYPE_NONE
 			
 			self._fModelScale = tBaseEntityData.ModelScale or 1.0
+			self._fTurnRate = tBaseEntityData.MovementTurnRate or 0.5
 			
 			local tValuesList = { tExtEntityData,
 								  tExtEntityData.Attributes or {},
@@ -167,11 +189,15 @@ if CIcewrackExtendedEntity == nil then
 			--Non-zero default values
 			self._tPropertiesBase = { CritChance = 0.05, 
 								      CritMultiplier = 1.5, 
-								      LifestealRate = 0.1, 
-								      ManastealRate = 0.1, 
+								      LifestealRate = 0.25, 
+								      ManastealRate = 0.25, 
 								      DrainEffectiveness = 1.0, 
 								      IncomingDamage = 1.0, 
-								      OutgoingDamage = 1.0 }
+								      OutgoingDamage = 1.0,
+									  StaminaDrainAttack = 1.0,
+									  StaminaDrainMove = 1.0,
+								      LifestealDuration = 4.0,
+									  ManastealDuration = 4.0 }
 								  
 			for k,v in pairs(tValuesList) do
 				for k2,v2 in pairs(v) do
@@ -199,23 +225,10 @@ if CIcewrackExtendedEntity == nil then
 					return nil
 				end})
 			
-			setmetatable(self, {__index = function(t, k)
-				if string.find(k, "Bonus") then
-					local k2 = string.gsub(k, "Bonus", "", 1)
-					if self._tPropertiesBonus[k2] then
-						return self._tPropertiesBonus[k2]
-					end
-				end
-				return self._tPropertiesBase[k] or CIcewrackExtendedEntity[k] or hEntity[k] or nil
-			end})
-			
-			--self._hInventory = CIcewrackInventory(self, tExtEntityData.CarryCapacity or 100.0)
-			
 			self._tAttacking = {}
 			self._tAttackedBy = {}
 			
-			--self._tExtendedModifierList = {}
-			
+			--TODO: Rework these?
 			self._tOnDealDamageList = {}
 			self._tOnTakeDamageList = {}
 			self._tOnKillEntityList = {}
@@ -224,32 +237,40 @@ if CIcewrackExtendedEntity == nil then
 			CIcewrackExtendedEntity._stLookupTable[hEntity] = self
 			
 			self:CalculateStatBonus()
-			self._fStamina = self:GetMaxStamina()
+			
+			self.Stamina = self:GetMaxStamina()
+			self._nStaminaRegenTime = 0
 			
 			CTimer(function()
-					if self:IsAlive() then
-						local fMaxStamina = self:GetMaxStamina()
-						if self.Stamina < fMaxStamina then
-							local fStaminaRegen = self.StaminaRegen + self.StaminaRegenBonus + (self:GetAttributeValue(IW_ATTRIBUTE_VIGOR) * 0.03) 
-							self.Stamina = math.max(0.0, math.min(fMaxStamina, self.Stamina + fStaminaRegen/20.0))
-						elseif self.Stamina > fMaxStamina then
-							self.Stamina = fMaxStamina
+				local bAliveFlag, bErrorFlag = self:IsAlive()
+				if bAliveFlag == true then
+					local fStamina = self.Stamina
+					local fMaxStamina = self:GetMaxStamina()
+					if fStamina < fMaxStamina and GameRules:GetGameTime() > self._nStaminaRegenTime then
+						if fStamina == 0 then	
+							self:RemoveModifierByName("modifier_internal_stamina_drain_slow")
 						end
+						local fStaminaRegen = self.StaminaRegen + self.StaminaRegenBonus + (self:GetAttributeValue(IW_ATTRIBUTE_VIGOR) * 0.05)
+						self.Stamina = math.max(0.0, math.min(fMaxStamina, fStamina + fStaminaRegen/30.0))
+					elseif fStamina > fMaxStamina then
+						self.Stamina = fMaxStamina
 					end
-					if not self:IsAlive() and not self:IsHero() then
-						return TIMER_STOP
-					end
-				end,
-				0, 0.05)
+				end
+				if bErrorFlag or (not bAliveFlag and (not hEntity:IsHero() or hEntity:IsIllusion())) then
+					return TIMER_STOP
+				end
+			end, 0, 0.033)
 		
 			return self
 		end},
 		{_stLookupTable = {},
+		 _stRefIDLookupTable = {},
 		 _shHealthModifier = CreateItem("mod_health", nil, nil),
 		 _shManaModifier = CreateItem("mod_mana", nil, nil),
 		 _shIASModifier = CreateItem("mod_ias", nil, nil),
 		 _shAttackConverter = CreateItem("internal_attack_converter", nil, nil),
-		 _shDodgeCleanup = CreateItem("internal_dodge_cleanup", nil, nil)},
+		 _shDodgeCleanup = CreateItem("internal_dodge_cleanup", nil, nil),
+		 _shStaminaDrain = CreateItem("internal_stamina_drain", nil, nil)},
 		 nil)
 end
 
@@ -273,8 +294,16 @@ function CIcewrackExtendedEntity:GetUnitSubtype()
     return self._nUnitSubtype
 end
 
+function CIcewrackExtendedEntity:GetRefID()
+	return self._nRefID
+end
+
 function CIcewrackExtendedEntity:GetModelScale()
 	return self._fModelScale
+end
+
+function CIcewrackExtendedEntity:GetCarryCapacity()
+	return self.CarryCapacity + self.CarryCapacityBonus + (self:GetAttributeValue(IW_ATTRIBUTE_STRENGTH) * 0.2)
 end
 
 function CIcewrackExtendedEntity:GetCriticalStrikeChance()
@@ -294,7 +323,7 @@ function CIcewrackExtendedEntity:GetDodgeScore()
 end
 
 function CIcewrackExtendedEntity:GetIncreasedCastSpeed()
-    return self.CastSpeed + self.CastSpeedBonus + (self:GetAttributeValue(IW_ATTRIBUTE_INTELLIGENCE) * 0.50)
+    return self.CastSpeed + self.CastSpeedBonus + (self:GetAttributeValue(IW_ATTRIBUTE_INTELLIGENCE) * 1.00)
 end
 
 function CIcewrackExtendedEntity:GetLifestealMultiplier()
@@ -341,16 +370,24 @@ function CIcewrackExtendedEntity:GetAttributeGrowth(nAttribute)
 	return nil
 end
 
+function CIcewrackExtendedEntity:GetMaxResistance(nDamageType)
+	if nDamageType >= IW_DAMAGE_TYPE_PHYSICAL and nDamageType <= IW_DAMAGE_TYPE_DEATH then
+		local szValueName = stIEEPropertiesTable[nDamageType + 35]
+		local fValueBase = self._tPropertiesBase[szValueName]
+		local fValueBonus = self._tPropertiesBonus[szValueName]
+		if fValueBase and fValueBonus then
+			return fValueBase + fValueBonus
+		end
+	end
+end
+
 function CIcewrackExtendedEntity:GetResistance(nDamageType)
 	if nDamageType >= IW_DAMAGE_TYPE_PHYSICAL and nDamageType <= IW_DAMAGE_TYPE_DEATH then
 		local szValueName = stIEEPropertiesTable[nDamageType + 30]
 		local fValueBase = self._tPropertiesBase[szValueName]
 		local fValueBonus = self._tPropertiesBonus[szValueName]
-		local szValueMaxName = stIEEPropertiesTable[nDamageType + 35]
-		local fValueMax = self._tPropertiesBase[szValueMaxName]
-		local fValueMaxBonus = self._tPropertiesBonus[szValueMaxName]
-		if fValueBase and fValueBonus and fValueMax and fValueMaxBonus then
-			return math.min(0.95, math.min(fValueMax + fValueMaxBonus, fValueBase + fValueBonus + (self:GetAttributeValue(IW_ATTRIBUTE_WISDOM) * 0.002)))
+		if fValueBase and fValueBonus then
+			return fValueBase + fValueBonus + (self:GetAttributeValue(IW_ATTRIBUTE_WISDOM) * 0.002)
 		end
 	end
     return nil
@@ -397,7 +434,7 @@ function CIcewrackExtendedEntity:GetStamina()
 end
 
 function CIcewrackExtendedEntity:GetMaxStamina()
-    return (self.StaminaMax + self.StaminaMaxBonus + (self:GetAttributeValue(IW_ATTRIBUTE_VIGOR) * 0.50)) * (1.0 + self.MaxStaminaPercentBonus)
+    return (self.StaminaMax + self.StaminaMaxBonus + (self:GetAttributeValue(IW_ATTRIBUTE_VIGOR) * 0.25)) * (1.0 + self.MaxStaminaPercentBonus)
 end
 
 function CIcewrackExtendedEntity:GetDrainEffectiveness()
@@ -412,46 +449,60 @@ function CIcewrackExtendedEntity:GetAttackedByList()
 	return self._tAttackedBy
 end
 
---function CIcewrackExtendedEntity:GetExtendedModifierList()
---	return self._tExtendedModifierList
---end
+function CIcewrackExtendedEntity:SetRefID(nRefID)
+	self._nRefID = nRefID
+	CIcewrackExtendedEntity._stRefIDLookupTable[nRefID] = self
+end
 
---function CIcewrackExtendedEntity:GetInventory()
---    return self._hInventory
---end
+--This is to prevent things like illusions which are instantly destroyed from throwing errors when we check to see if they're alive
+function CIcewrackExtendedEntity:IsAlive()
+	if pcall(self._hBaseEntity.IsAlive, self._hBaseEntity) then
+		return self._hBaseEntity:IsAlive(), false
+	else
+		return false, true
+	end
+end
 
 function CIcewrackExtendedEntity:RefreshHealthRegen()
 	local fMaxLifestealPerSec = self:GetMaxHealth() * self.LifestealRate
-	self:SetBaseHealthRegen(self.HealthRegen + self.HealthRegenBonus + self:GetAttributeValue(IW_ATTRIBUTE_VIGOR) * 0.03 + math.min(self.LifestealRegenBonus, fMaxLifestealPerSec))
+	self:SetBaseHealthRegen(self.HealthRegen + self.HealthRegenBonus + self:GetAttributeValue(IW_ATTRIBUTE_VIGOR) * 0.05 + math.min(self.LifestealRegenBonus, fMaxLifestealPerSec))
 end
 
 function CIcewrackExtendedEntity:AddLifesteal(fAmount)
-	local fLifestealPerSec = self:GetMaxHealth() * (self.LifestealRate * (1.0 + self.LifestealRateBonus))
-	self.LifestealRegenBonus = self.LifestealRegenBonus + fLifestealPerSec
-	
-	self:RefreshHealthRegen()
-	
-	CTimer(function()
-			self.LifestealRegenBonus = self.LifestealRegenBonus - fLifestealPerSec
-			self:RefreshHealthRegen()
-		end, fAmount/fLifestealPerSec)
+	local fLifestealDuration = self.LifestealDuration * math.max(0, 1.0 + self.LifestealDurationBonus)
+	if fLifestealDuration == 0 then
+		self:ModifyHealth(self:GetHealth() + math.min(fAmount, self:GetMaxHealth() * self.LifestealRate), self, true, 0)
+	else
+		local fLifestealPerSec = fAmount/fLifestealDuration
+		self.LifestealRegenBonus = self.LifestealRegenBonus + fLifestealPerSec
+		self:RefreshHealthRegen()
+		
+		CTimer(function()
+				self.LifestealRegenBonus = self.LifestealRegenBonus - fLifestealPerSec
+				self:RefreshHealthRegen()
+			end, fLifestealDuration)
+	end
 end
 
 function CIcewrackExtendedEntity:RefreshManaRegen()
-	local fMaxManastealPerSec = self:GetMaxMana() * self.ManastealRegenBonus
+	local fMaxManastealPerSec = self:GetMaxMana() * self.ManastealRate
 	self:SetBaseManaRegen(self.ManaRegen + self.ManaRegenBonus + self:GetAttributeValue(IW_ATTRIBUTE_WISDOM) * 0.05 + math.min(self.ManastealRegenBonus, fMaxManastealPerSec))
 end
 
 function CIcewrackExtendedEntity:AddManasteal(fAmount)
-	local fManastealPerSec = self:GetMaxMana() * (self.ManastealRate * (1.0 + self.ManastealRegenBonus))
-	self.ManastealRegenBonus = self.ManastealRegenBonus + fManastealPerSec
-	
-	self:RefreshManaRegen()
-	
-	CTimer(function()
-			self.ManastealRegenBonus = self.ManastealRegenBonus - fManastealPerSec
-			self:RefreshManaRegen()
-		end, fAmount/fManastealPerSec)
+	local fManastealDuration = self.ManastealDuration * math.max(0, 1.0 + self.ManastealDurationBonus)
+	if fManastealDuration == 0 then
+		self:GiveMana(math.min(fAmount, self:GetMaxMana() * self.ManastealRate))
+	else
+		local fManastealPerSec = fAmount/fManastealDuration
+		self.ManastealRegenBonus = self.ManastealRegenBonus + fManastealPerSec
+		self:RefreshManaRegen()
+		
+		CTimer(function()
+				self.ManastealRegenBonus = self.ManastealRegenBonus - fManastealPerSec
+				self:RefreshManaRegen()
+			end, fManastealDuration)
+	end
 end
 
 function CIcewrackExtendedEntity:ApplyModifierProperties(tProperties, bRemove)
@@ -518,8 +569,8 @@ function CIcewrackExtendedEntity:CalculateStatBonus()
     --Wisdom mana regen bonus (0.05 MP/sec per point)
     self:RefreshManaRegen()
 	
-    --Wisdom mana bonus (2.00 MP per point)
-    local fManaBonus = self:GetAttributeValue(IW_ATTRIBUTE_WISDOM) * 2.0 * (1.0 + self.MaxManaPercentBonus)
+    --Wisdom mana bonus (1.00 MP per point)
+    local fManaBonus = self:GetAttributeValue(IW_ATTRIBUTE_WISDOM) * 1.0 * (1.0 + self.MaxManaPercentBonus)
     local _shManaModifier = CreateItem("mod_mana", nil, nil) 
     for k,v in ipairs(tBitTable) do
         local szModifierName = "modifier_mod_mana_" .. v
@@ -533,8 +584,8 @@ function CIcewrackExtendedEntity:CalculateStatBonus()
         end
     end
     
-    --Agility attack speed bonus (0.50% per point)
-    local fIASBonus = self:GetAttributeValue(IW_ATTRIBUTE_AGILITY) * 0.50
+    --Agility attack speed bonus (1.00% per point)
+    local fIASBonus = self:GetAttributeValue(IW_ATTRIBUTE_AGILITY) * 1.00
     local _shIASModifier = CreateItem("mod_ias", nil, nil) 
     for k,v in ipairs(tBitTable) do
         local szModifierName = "modifier_mod_ias_" .. v
@@ -554,11 +605,30 @@ function CIcewrackExtendedEntity:CalculateStatBonus()
 	if not self:HasModifier("modifier_internal_dodge_cleanup") then
 		CIcewrackExtendedEntity._shDodgeCleanup:ApplyDataDrivenModifier(self, self, "modifier_internal_dodge_cleanup", {})
 	end
+	if not self:HasModifier("modifier_internal_stamina_drain") then
+		CIcewrackExtendedEntity._shStaminaDrain:ApplyDataDrivenModifier(self, self, "modifier_internal_stamina_drain", {})
+	end
 end
 
 function CIcewrackExtendedEntity:DeleteEntity()
-	CIcewrack._stLookupTable[self._hBaseEntity] = nil
+	CIcewrackExtendedEntity._stLookupTable[self._hBaseEntity] = nil
 	self:RemoveSelf()
+end
+
+function DrainStamina(args)
+	local hEntity = args.caster
+	if hEntity then
+		local hExtEntity = LookupExtendedEntity(hEntity)
+		if hExtEntity and hExtEntity._bIsExtendedEntity then
+			hExtEntity._nStaminaRegenTime = GameRules:GetGameTime() + 3.0
+			--TODO: Make inventory factor into stamina drain?
+			hExtEntity.Stamina = hExtEntity.Stamina - math.max(0, (0.1 * (hExtEntity.StaminaDrainMove + hExtEntity.StaminaDrainMoveBonus)))
+			if hExtEntity.Stamina < 0 then
+				hExtEntity.Stamina = 0
+				CIcewrackExtendedEntity._shStaminaDrain:ApplyDataDrivenModifier(hExtEntity, hExtEntity, "modifier_internal_stamina_drain_slow", {})
+			end
+		end
+	end
 end
 
 function LookupExtendedEntity(hEntity)
@@ -567,4 +637,8 @@ function LookupExtendedEntity(hEntity)
     else
         return nil
     end
+end
+
+function LookupExtendedEntityByRefID(nRefID)
+	return CIcewrackExtendedEntity._stRefIDLookupTable[nRefID]
 end

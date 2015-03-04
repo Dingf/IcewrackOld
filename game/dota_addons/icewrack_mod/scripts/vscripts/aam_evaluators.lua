@@ -5,7 +5,42 @@ end
 
 require("ext_entity")
 require("ext_ability")
+require("party")
 require("aam_search")
+
+--AAM Definitions are stored in two 32-bit integer values:
+--First int:
+--  Target relationship (2 bits, 4 values)
+--  Target selector (4 bits, 15 values)
+--  HP < comparisons (3 bits, 7 values)
+--  HP >= comparisons (3 bits, 7 values)
+--  MP < comparisons (3 bits, 7 values)
+--  MP >= comparisons (3 bits, 7 values)
+--  SP < comparisons (3 bits, 7 values)
+--  SP >= comparisons (3 bits, 7 values)
+--  Unit class (3 bits, 7 values)
+--  Unit Type (2 bits, 3 values)
+--  Unit Subtype (3 bits, 5 values)
+
+--Second int:
+--  Unit is dead (1 bit)
+--  Unit is a hero/party member (1 bit)
+--  Unit is not already affected (1 bit)
+--  Unit is not self (1 bit)
+--  Unit armor class (2 bits, 3 values)
+--  Unit move speed class (2 bits, 3 values)
+--  Unit status effects (5 bits, 21 values)
+--  Number of other units near the unit (8 bits)
+--      Relationship flag (2 bits)
+--      Range flag (3 bits)
+--      Number of units (3 bits)
+--  Save current targets for later conditions (1 bit)
+--  Target is attacking <previously saved targets> (1 bit)
+--  Target is attacked by <previously saved targets> (1 bit)
+--  Target is casting a spell on <previously saved targets> (1 bit)
+--  Target has been casted on by <previously saved targets> (1 bit)
+--  Number of wounded party members (3 bits, 6 values)
+--  Number of other dead party members (3 bits, 5 values)
 
 --2 bits
 AAM_TARGET_RELATION_SELF = 0
@@ -28,8 +63,8 @@ AAM_TARGET_SELECTOR_HIGHEST_ABS_SP = 10
 AAM_TARGET_SELECTOR_LOWEST_ABS_SP = 11
 AAM_TARGET_SELECTOR_HIGHEST_PCT_SP = 12
 AAM_TARGET_SELECTOR_LOWEST_PCT_SP = 13
+AAM_TARGET_SELECTOR_RANDOM = 14
 
---Min Distance (3 bits, 7 values)
 stAAMDistanceLookupTable =
 {
     [1] = 300.0,
@@ -41,8 +76,6 @@ stAAMDistanceLookupTable =
     [7] = 1800.0,
 }
 
---Max Distance (3 bits, 7 values)
---HP < comparisons (3 bits, 7 values)
 stAAMThresholdLookupTable =
 {
     [1] = 1.00,
@@ -54,42 +87,14 @@ stAAMThresholdLookupTable =
     [7] = 0.10,
     [8] = 0.0000001,
 }
---HP >= comparisons (3 bits, 7 values)
---MP < comparisons (3 bits, 7 values)
---MP >= comparisons (3 bits, 7 values)
---SP < comparisons (3 bits, 7 values)
---SP >= comparisons (3 bits, 7 values)
---Unit class (3 bits, 7 values)
---Unit Type (2 bits, 3 values)
---Unit Subtype (3 bits, 5 values)
 
---Unit is dead (1 bit)
-AAM_DESCRIPTOR_UNIT_STATUS_DEAD = 1
---Unit is casting/channeling (1 bit)
-AAM_DESCRIPTOR_UNIT_STATUS_CASTING = 1
---Unit is not already affected (1 bit)
-AAM_DESCRIPTOR_UNIT_STATUS_NOT_ALREADY_AFFECTED = 1
---Unit is not self (1 bit)
-AAM_DESCRIPTOR_UNIT_NOT_SELF = 1
---Unit armor type (2 bits, 3 values)
 AAM_DESCRIPTOR_ARMOR_LIGHT = 1        --0-10 Armor
 AAM_DESCRIPTOR_ARMOR_MEDIUM = 2        --11-30 Armor
 AAM_DESCRIPTOR_ARMOR_HEAVY = 3        --31+ Armor
---Unit speed (2 bits, 3 values)
+
 AAM_DESCRIPTOR_BASE_MSPEED_SLOW = 1        --100-300 Movespeed
 AAM_DESCRIPTOR_BASE_MSPEED_MEDIUM = 2    --301-420 Movespeed
 AAM_DESCRIPTOR_BASE_MSPEED_FAST = 3        --421-522 Movespeed
---Unit status effects (5 bits, 21 values)
---Unit being attacked by (3 bits, 7 values)
-AAM_DESCRIPTOR_ATTACKED_BY_MELEE = 1
-AAM_DESCRIPTOR_ATTACKED_BY_RANGED = 2
-AAM_DESCRIPTOR_ATTACKED_BY_MAGIC = 4
---Number of units near the unit (8 bits)
-    --Relationship flag (2 bits)
-    --Range flag (3 bits)
-    --Number of units (3 bits)
---Number of wounded party members (3 bits, 6 values)
---Number of other dead party members (3 bits, 5 values)
 
 function DoNothing(nValue, tTargetList)
     return tTargetList
@@ -230,6 +235,7 @@ function TargetUnitSubtype(nValue, tTargetList)
     return tNewTargetList
 end
 
+
 function TargetIsDead(nValue, tTargetList)
     local tNewTargetList = {}
     for k,v in pairs(tTargetList) do
@@ -240,20 +246,10 @@ function TargetIsDead(nValue, tTargetList)
     return tNewTargetList
 end
 
-function TargetIsAttacking(nValue, tTargetList)
-	local tNewTargetList = {}
-	for k,v in pairs(tTargetList) do
-		local tAttackingList = v:GetAttackingList() or {}
-		if v:GetAttackTarget() ~= nil or next(tAttackingList) ~= nil then
-			table.insert(tNewTargetList, v)
-		end
-	end
-end
-
-function TargetIsCasting(nValue, tTargetList)
+function TargetIsHero(nValue, tTargetList)
     local tNewTargetList = {}
     for k,v in pairs(tTargetList) do
-        if v:GetCurrentActiveAbility() ~= nil then
+        if not v:IsHero() then
             table.insert(tNewTargetList, v)
         end
     end
@@ -336,6 +332,28 @@ function TargetHasStatusEffect(nValue, tTargetList)
 	return tNewTargetList
 end
 
+function TargetNearUnits(nValue, tTargetList, hAutomator)
+	local hEntity = hAutomator:GetEntity()
+    local nRelationship = bit32.extract(nValue, 0, 2)
+    local fRange = stAAMDistanceLookupTable[bit32.extract(nValue, 2, 3)]
+    local nAmount = bit32.extract(nValue, 5, 3)
+
+    local tNewTargetList = {}
+    for k,v in pairs(tTargetList) do
+        local tUnitsList = FindUnitsInRadius(hEntity:GetTeamNumber(), v:GetAbsOrigin(), nil, fRange, nRelationship, DOTA_UNIT_TARGET_ALL, 0, 0, false)
+        local nCount = 0
+        for k2,v2 in pairs(tUnitsList) do
+            if v2 ~= v then                --Ignore self when counting
+                nCount = nCount + 1
+            end
+        end
+        if nCount >= nAmount then 
+            table.insert(tNewTargetList, v)
+        end
+    end
+    return tNewTargetList
+end
+
 function SaveTargets(nValue, tTargetList, hAutomator)
 	local tNewTargetList = {}
 	for k,v in pairs(tTargetList) do
@@ -388,46 +406,44 @@ function TargetAttackedBy(nValue, tTargetList, hAutomator)
 	return tNewTargetList
 end
 
-function TargetNearUnits(nValue, tTargetList, hAutomator)
-	local hEntity = hAutomator:GetEntity()
-    local nRelationship = bit32.extract(nValue, 0, 2)
-    local fRange = stAAMDistanceLookupTable[bit32.extract(nValue, 2, 3)]
-    local nAmount = bit32.extract(nValue, 5, 3)
+--NYI
+function TargetCasting(nValue, tTargetList, hAutomator)
+	return tNewTargetList
+end
 
-    local tNewTargetList = {}
-    for k,v in pairs(tTargetList) do
-        local tUnitsList = FindUnitsInRadius(hEntity:GetTeamNumber(), v:GetAbsOrigin(), nil, fRange, nRelationship, DOTA_UNIT_TARGET_ALL, 0, 0, false)
-        local nCount = 0
-        for k2,v2 in pairs(tUnitsList) do
-            if v2 ~= v then                --Ignore self when counting
-                nCount = nCount + 1
-            end
-        end
-        if nCount >= nAmount then 
-            table.insert(tNewTargetList, v)
-        end
-    end
-    return tNewTargetList
+--NYI
+function TargetCastedOn(nValue, tTargetList, hAutomator)
+	return tNewTargetList
 end
 
 function NumberDeadParty(nValue, tTargetList)
-    if nValue ~= 0 then
-        for k,v in pairs(tTargetList) do
-        
-        end
-        return tTargetList
-    else
-        return tTargetList
-    end
+	local nCount = 0
+    local hActiveMemeberList = CIcewrackParty:GetActiveMembers()
+	for k,v in pairs(hActiveMemberList) do
+		if k:IsAlive() then
+			nCount = nCount + 1
+		end
+	end
+	if nCount >= (nValue - 1) then
+		return tTargetList
+	else
+		return {}
+	end
 end
 
 function NumberWoundedParty(nValue, tTargetList)
-    if nValue ~= 0 then
-        --Not yet implemented
-        return tTargetList
-    else
-        return tTargetList
-    end
+	local nCount = 0
+    local hActiveMemeberList = CIcewrackParty:GetActiveMembers()
+	for k,v in pairs(hActiveMemberList) do
+		if k:GetHealth() <= (0.5 * k:GetMaxHealth()) then
+			nCount = nCount + 1
+		end
+	end
+	if nCount >= (nValue - 1) then
+		return tTargetList
+	else
+		return {}
+	end
 end
 
 stConditionTable = 
@@ -444,20 +460,20 @@ stConditionTable =
     {TargetUnitSubtype,            3},
     
     {TargetIsDead,                 1},
-	{TargetIsAttacking,            1},
-    {TargetIsCasting,              1},
+	{TargetIsHero,                 1},
     {TargetNotAlreadyAffected,     1},
 	{TargetNotSelf,                1},
     {TargetArmorType,              2},
     {TargetMoveSpeed,              2},
     {TargetHasStatusEffect,        5},
     {TargetNearUnits,              8},
-    {NumberDeadParty,              3},        --NYI
-    {NumberWoundedParty,           3},        --NYI
 	{SaveTargets,                  1},
 	{TargetAttacking,              1},
     {TargetAttackedBy,             1},
-	{TargetCastingOn,              1},        --NYI
+	{TargetCasting,                1},        --NYI
+	{TargetCastedOn,               1},        --NYI
+    {NumberDeadParty,              3},
+    {NumberWoundedParty,           3},
 }
 
 function SelectByDistance(hEntity, tTargetList, bComparison)
@@ -475,7 +491,7 @@ function SelectByDistance(hEntity, tTargetList, bComparison)
     return hSelectedEntity
 end
 
-function SelectByValue(hEntity, tTargetList, nValueType, bComparison, bPercent)
+function SelectByValue(tTargetList, nValueType, bComparison, bPercent)
     local hSelectedEntity = nil
     local fBestValue = nil
     for k,v in pairs(tTargetList) do
@@ -501,22 +517,28 @@ function SelectByValue(hEntity, tTargetList, nValueType, bComparison, bPercent)
     return hSelectedEntity
 end
 
+--TODO: Test this function
+function SelectByRandom(tTargetList)
+	local nRandomIndex = RandomInt(1, #tTableList)
+	return tTargetList[nRandomIndex]
+end
 
 stAAMSelectorTable =
 {
     [AAM_TARGET_SELECTOR_NEAREST]          = function(hEntity, tTargetList) return SelectByDistance(hEntity, tTargetList, false) end,
     [AAM_TARGET_SELECTOR_FARTHEST]         = function(hEntity, tTargetList) return SelectByDistance(hEntity, tTargetList, true) end,
-    [AAM_TARGET_SELECTOR_HIGHEST_ABS_HP]   = function(hEntity, tTargetList) return SelectByValue(hEntity, tTargetList, 0, true,  false) end,
-    [AAM_TARGET_SELECTOR_LOWEST_ABS_HP]    = function(hEntity, tTargetList) return SelectByValue(hEntity, tTargetList, 0, false, false) end,
-    [AAM_TARGET_SELECTOR_HIGHEST_PCT_HP]   = function(hEntity, tTargetList) return SelectByValue(hEntity, tTargetList, 0, true,  true)  end,
-    [AAM_TARGET_SELECTOR_LOWEST_PCT_HP]    = function(hEntity, tTargetList) return SelectByValue(hEntity, tTargetList, 0, false, true)  end,
-    [AAM_TARGET_SELECTOR_HIGHEST_ABS_MP]   = function(hEntity, tTargetList) return SelectByValue(hEntity, tTargetList, 1, true,  false) end,
-    [AAM_TARGET_SELECTOR_LOWEST_ABS_MP]    = function(hEntity, tTargetList) return SelectByValue(hEntity, tTargetList, 1, false, false) end,
-    [AAM_TARGET_SELECTOR_HIGHEST_PCT_MP]   = function(hEntity, tTargetList) return SelectByValue(hEntity, tTargetList, 1, true,  true)  end,
-    [AAM_TARGET_SELECTOR_LOWEST_PCT_MP]    = function(hEntity, tTargetList) return SelectByValue(hEntity, tTargetList, 1, false, true)  end,
-    [AAM_TARGET_SELECTOR_HIGHEST_ABS_SP]   = function(hEntity, tTargetList) return SelectByValue(hEntity, tTargetList, 2, true,  false) end,
-    [AAM_TARGET_SELECTOR_LOWEST_ABS_SP]    = function(hEntity, tTargetList) return SelectByValue(hEntity, tTargetList, 2, false, false) end,
-    [AAM_TARGET_SELECTOR_HIGHEST_PCT_SP]   = function(hEntity, tTargetList) return SelectByValue(hEntity, tTargetList, 2, true,  true)  end,
-    [AAM_TARGET_SELECTOR_LOWEST_PCT_SP]    = function(hEntity, tTargetList) return SelectByValue(hEntity, tTargetList, 2, false, true)  end,
+    [AAM_TARGET_SELECTOR_HIGHEST_ABS_HP]   = function(hEntity, tTargetList) return SelectByValue(tTargetList, 0, true,  false) end,
+    [AAM_TARGET_SELECTOR_LOWEST_ABS_HP]    = function(hEntity, tTargetList) return SelectByValue(tTargetList, 0, false, false) end,
+    [AAM_TARGET_SELECTOR_HIGHEST_PCT_HP]   = function(hEntity, tTargetList) return SelectByValue(tTargetList, 0, true,  true)  end,
+    [AAM_TARGET_SELECTOR_LOWEST_PCT_HP]    = function(hEntity, tTargetList) return SelectByValue(tTargetList, 0, false, true)  end,
+    [AAM_TARGET_SELECTOR_HIGHEST_ABS_MP]   = function(hEntity, tTargetList) return SelectByValue(tTargetList, 1, true,  false) end,
+    [AAM_TARGET_SELECTOR_LOWEST_ABS_MP]    = function(hEntity, tTargetList) return SelectByValue(tTargetList, 1, false, false) end,
+    [AAM_TARGET_SELECTOR_HIGHEST_PCT_MP]   = function(hEntity, tTargetList) return SelectByValue(tTargetList, 1, true,  true)  end,
+    [AAM_TARGET_SELECTOR_LOWEST_PCT_MP]    = function(hEntity, tTargetList) return SelectByValue(tTargetList, 1, false, true)  end,
+    [AAM_TARGET_SELECTOR_HIGHEST_ABS_SP]   = function(hEntity, tTargetList) return SelectByValue(tTargetList, 2, true,  false) end,
+    [AAM_TARGET_SELECTOR_LOWEST_ABS_SP]    = function(hEntity, tTargetList) return SelectByValue(tTargetList, 2, false, false) end,
+    [AAM_TARGET_SELECTOR_HIGHEST_PCT_SP]   = function(hEntity, tTargetList) return SelectByValue(tTargetList, 2, true,  true)  end,
+    [AAM_TARGET_SELECTOR_LOWEST_PCT_SP]    = function(hEntity, tTargetList) return SelectByValue(tTargetList, 2, false, true)  end,
+	[AAM_TARGET_SELECTOR_RANDOM]           = function(hEntity, tTargetList) return SelectByRandom(tTargetList) end,
 }
 

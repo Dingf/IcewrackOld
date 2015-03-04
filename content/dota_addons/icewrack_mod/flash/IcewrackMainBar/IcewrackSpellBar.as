@@ -24,8 +24,8 @@
 			gameAPI.SubscribeToGameEvent("iw_ui_spellbar_return_abilities", OnUnitAbilityReturn);
 			gameAPI.SubscribeToGameEvent("iw_ui_spellbar_send_known_list", OnSendKnownAbilityList);
 			
-			var args : Object = { ability1:"iw_empty", ability2:"iw_empty", ability3:"iw_empty", 
-								  ability4:"iw_empty", ability5:"iw_empty", ability6:"iw_empty" };
+			var args : Object = { ability1:"empty", ability2:"empty", ability3:"empty", 
+								  ability4:"empty", ability5:"empty", ability6:"empty" };
 			
 			OnUnitAbilityReturn(args);
 		}
@@ -60,7 +60,8 @@
 		
 		private function OnUnitAbilityReturn(args:Object) : void
 		{
-			var abilityNames:Array = new Array(args.ability1, args.ability2, args.ability3, args.ability4, args.ability5, args.ability6);
+			var abilityNames = new Array(args.ability1, args.ability2, args.ability3, args.ability4, args.ability5, args.ability6);
+			//var manaCosts = new Array(args.manaCost1, args.manaCost2, args.manaCost3, args.manaCost4, args.manaCost5, args.manaCost6);
 			for (var i:int = 5; i >= 0; i--)
 			{
 				if (abilityIcons[i] != null)
@@ -70,7 +71,7 @@
 				}
 				
 				var spellIcon = new SpellIcon;
-				spellIcon.Create(gameAPI, globals, abilityNames[i], i, 64);
+				spellIcon.Create(gameAPI, globals, abilityNames[i],/* manaCosts[i],*/ i, 64);
 				this.addChild(spellIcon);
 				spellIcon.x = 578 + (i * 72);
 				spellIcon.y = 1006;
