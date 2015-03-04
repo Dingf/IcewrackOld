@@ -2,12 +2,11 @@
     Timers
 ]]
 
-TIMER_THINK_INTERVAL = 0.0333
-TIMER_CLEANUP_INTERVAL = 10.0
+TIMER_THINK_INTERVAL = 0.03
 TIMER_STOP = -1
 
 if CTimer == nil then
-    CTimer = class({constructor = function(self, hCallback, fDuration, fFrequency, fDelay, bIgnorePause)
+    CTimer = class({constructor = function(self, hCallback, fDuration, fFrequency, fDelay, bUseRealTime)
         if not hCallback then
             error("Error creating timer: hCallback is missing or nil")
         end
@@ -23,9 +22,10 @@ if CTimer == nil then
         self._hCallback = hCallback
         self._fDuration = fDuration
         self._fFrequency = fFrequency
-		self._bIgnorePause = bIgnorePause
-		self._fStartTime = bIgnorePause and Time() or GameRules:GetGameTime()
-		
+		self._bUseRealTime = bUseRealTime
+		if self._bUseRealTime == nil then
+			self._bUseRealTime = false
+		self._fStartTime = self._bUseRealTime and Time() or GameRules:GetGameTime()
 		if fDelay then
 			self._fStartTime = self._fStartTime + fDelay
 		end
@@ -44,14 +44,14 @@ end
 function CTimer:PauseTimer()
 	if not self._bPauseFlag then
 		self._bPauseFlag = true
-		self._fPauseTime = bIgnorePause and Time() or GameRules:GetGameTime()
+		self._fPauseTime = self._bUseRealTime and Time() or GameRules:GetGameTime()
 	end
 end
 
 function CTimer:UnpauseTimer()
 	if self._bPauseFlag then
 		self._bPauseFlag = false
-		local fCurrentTime = bIgnorePause and Time() or GameRules:GetGameTime()
+		local fCurrentTime = self._bUseRealTime and Time() or GameRules:GetGameTime()
 		self._fStartTime = self._fStartTime + (fCurrentTime - fPauseTime)
 	end
 end
@@ -76,7 +76,7 @@ function ProcessTimers()
 			if v._bStopFlag then
 				CTimer._stTimerList[k] = nil
 			elseif not v._bPauseFlag then
-				local fThinkTime = v._bIgnorePause and fRealTime() or fGameTime
+				local fThinkTime = v._bUseRealTime and fRealTime or fGameTime
 				if fThinkTime >= v._fStartTime then
 					--A zero duration timer will run indefinitely
 					if v._fDuration and v._fDuration ~= 0.0 and fThinkTime >= v._fStartTime + v._fDuration then
