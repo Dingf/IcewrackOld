@@ -393,7 +393,7 @@
 	}
 
 
-	"internal_conversation_starter"
+	"internal_npc_interact"
 	{
 		 General
 		-------------------------------------------------------------------------------------------------------------
@@ -402,7 +402,7 @@
 
 		"Modifiers"
 		{
-			"modifier_internal_conversation_starter"
+			"modifier_internal_npc_interact"
 			{
 				"Passive"						"1"
 				"IsHidden"						"1"
@@ -412,8 +412,8 @@
 					"RunScript"
 					
 					{
-						"ScriptFile"				"scripts/vscripts/addon_game_mode.lua"
-						"Function"				"Test"
+						"ScriptFile"				"scripts/vscripts/npc.lua"
+						"Function"				"NPCInteract"
 					}
 				}
 			}

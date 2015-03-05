@@ -36,39 +36,6 @@ function Precache(context)
 	]]
 end
 
-function Test(args)
-	print("tewoijqwore")
-	for k,v in pairs(args) do
-		print(k,v)
-	end
-	if args.target then
-		print(args.target:GetUnitName())
-		if (args.target:GetTeamNumber() == args.unit:GetTeamNumber()) then
-			print(CalcDistanceBetweenEntityOBB(args.target, args.unit))
-			if CalcDistanceBetweenEntityOBB(args.target, args.unit) < 150 then
-				local asdf = LookupExtendedEntity(args.target)
-				if asdf then
-					--asdf._hLookTarget = args.unit
-				end
-				--[[args.target._vOriginalLook = args.target:GetForwardVector()
-				
-				local vNewLook = (args.unit:GetAbsOrigin() - args.target:GetAbsOrigin()):Normalized()
-				local vOldLook = args.target._vOriginalLook:Normalized()
-				local vDeltaLook = (vNewLook - vOldLook) * 0.2
-				CTimer(function()
-						args.target:SetForwardVector(args.target:GetForwardVector() + vDeltaLook)
-					end, 0.15, 0.03)]]
-					
-				--CTimer(function()
-					--args.target:SetForwardVector(args.target:GetForwardVector() + vDeltaLook)
-					--end, 0.15, 0.03)
-				--args.target:SetForwardVector(vDirection)
-				
-			end
-		end
-	end
-end
-
 -- Create the game mode when we activate
 function Activate()
     GameRules.AddonTemplate = CIcewrackGameMode()

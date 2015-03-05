@@ -93,7 +93,7 @@ function DealDamage(args)
                           { attacker = args.caster:entindex(),
                             victim = args.target:entindex(),
                             damage = fDamage,
-                            damage_type = eDamageType })
+                            damage_type = nDamageType })
             return
         end
     end
@@ -137,7 +137,7 @@ function DealDamage(args)
 		attacker = args.caster:entindex(),
 		victim = args.target:entindex(),
 		damage = fDamage,
-		damage_type = eDamageType,
+		damage_type = nDamageType,
 		threat = args.ThreatMultiplier or 1.0,
 		crit = bCritFlag
 	}

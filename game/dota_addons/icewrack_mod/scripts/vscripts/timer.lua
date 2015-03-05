@@ -25,6 +25,7 @@ if CTimer == nil then
 		self._bUseRealTime = bUseRealTime
 		if self._bUseRealTime == nil then
 			self._bUseRealTime = false
+		end
 		self._fStartTime = self._bUseRealTime and Time() or GameRules:GetGameTime()
 		if fDelay then
 			self._fStartTime = self._fStartTime + fDelay

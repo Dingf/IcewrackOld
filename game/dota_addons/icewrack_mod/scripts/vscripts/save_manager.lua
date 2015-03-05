@@ -7,6 +7,7 @@ require("ext_item")
 require("ext_ability")
 require("inventory")
 require("spellbook")
+require("npc")
 require("party")
 require("game_states")
 
@@ -228,7 +229,7 @@ function CIcewrackSaveManager:SelectSave(szSaveName)
 	end
 end
 
---Check if loaded map == current map. If not tempsave and not equals, then return false
+--TODO: Check if loaded map == current map. If not tempsave and not equals, then return false
 function CIcewrackSaveManager:LoadSelectedSave()
 	if self._szSelectedSave then
 		return LoadKeyValues(self._szSaveDirectory .. self._szSelectedSave)
@@ -261,8 +262,9 @@ function CIcewrackSaveManager:LoadSpawnsFromFile(szFilename)
 				local hExtEntity = CIcewrackExtendedEntity(hEntity)
 				hExtEntity:SetRefID(tonumber(k))
 				
-				hSpellbook = CIcewrackSpellbook(hExtEntity)
-				hInventory = CIcewrackInventory(hExtEntity)
+				CIcewrackNPC(hExtEntity)
+				CIcewrackSpellbook(hExtEntity)
+				CIcewrackInventory(hExtEntity)
 				
 				tSpawnedUnits[tonumber(k)] = hEntity
 			end

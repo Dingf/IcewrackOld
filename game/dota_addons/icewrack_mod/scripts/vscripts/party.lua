@@ -60,7 +60,14 @@ function CIcewrackParty:AddMember(hEntity)
     if not hEntity or not hEntity:IsHero() then
         error("hEntity must be a valid hero entity")
     end
-    
+	
+	--This allows party members to interact with NPCs
+	if not hEntity:HasModifier("internal_npc_interact") then
+		hEntity:AddAbility("internal_npc_interact")
+		hEntity:FindAbilityByName("internal_npc_interact"):ApplyDataDrivenModifier(hEntity, hEntity, "modifier_internal_npc_interact", {})
+		hEntity:RemoveAbility("internal_npc_interact")
+	end
+	
 	if self._tPartyRoster[hEntity] == nil then
 		self._tPartyRoster[hEntity] = true
 		self._nPartyRosterSize = self._nPartyRosterSize + 1

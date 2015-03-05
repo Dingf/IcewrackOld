@@ -118,8 +118,7 @@ end
 function CIcewrackMap0:DelayedInit(keys)
 	local nGameState = GameRules:State_Get()
 	if nGameState == DOTA_GAMERULES_STATE_PRE_GAME then
-		--TODO: Make a HideIcewrackUI function that makes these not visible (instead of unloading them)
-		--          Also make sure to make a RevealIcewrackUI to make them visible when you're done
+		--Can't use iw_ui_mainbar_set_visible here for some reason; oh well...
 		SendToConsole("custom_ui_unload icewrackmainbar")
 		SendToConsole("custom_ui_unload icewrackspellbar")
 		SendToConsole("custom_ui_unload snowoverlay")
