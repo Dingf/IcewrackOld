@@ -161,7 +161,7 @@
 				else 
 				{
 					nameTextField.scaleX = nameTextField.scaleY = re.ScreenWidth/1728.0;
-					nameTextField.width = 1440;
+					nameTextField.width = 1728;
 					loreTextField.scaleX = loreTextField.scaleY = re.ScreenWidth/1728.0;
 					loreTextField.x = re.ScreenWidth * (257/864);
 				}

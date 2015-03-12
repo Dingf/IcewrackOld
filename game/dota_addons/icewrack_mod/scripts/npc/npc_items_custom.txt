@@ -7,7 +7,7 @@
 		// General
 		//-------------------------------------------------------------------------------------------------------------
 		"BaseClass"				"item_datadriven"
-		"AbilityTextureName"			"item_skadi"
+		"AbilityTextureName"			"item_test3"
 		"ItemKillable"				"0"
 
 		// Item Info
@@ -40,7 +40,32 @@
 					}
 				}
 			}
-		}	
+		}
+
+
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"asdf"			""
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"total_mana"			"150"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"buff_duration"			"15"  // %total_mana / %buff_duration
+			}
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_damage"			"15-20"  // %total_mana / %buff_duration
+			}
+		}
 	}
 
 	"internal_mana_drain_visual"

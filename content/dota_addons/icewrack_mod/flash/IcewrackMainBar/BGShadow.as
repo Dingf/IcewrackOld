@@ -23,6 +23,8 @@
 			
 			globals.resizeManager.AddListener(this);
 			
+			gameAPI.SubscribeToGameEvent("iw_ui_mainbar_set_visible", OnSetVisible);
+			
 			var mc = new MovieClip;
 			
 			mc["originalWidth"] = 1200;
@@ -43,6 +45,14 @@
 			texture.y = 811;
 			
 			this.addChild(texture);
+		}
+		
+		private function OnSetVisible(args:Object) : void
+		{
+			if (args != null)
+			{
+				this.visible = args.is_visible; 
+			}
 		}
 		
 		//this handles the resizes - credits to SinZ

@@ -38,6 +38,19 @@
 		"damage_type"	"byte"
 	}
 
+	"iw_ui_make_save_list"
+	{
+		"filename"	"string"
+		"save_data"	"string"
+	}
+
+	"iw_ui_save_game"
+	{
+		"is_last"	"bool"
+		"filename"	"string"
+		"save_data"	"string"
+	}
+
 	"iw_ui_mainbar_set_visible"
 	{
 		"is_visible"	"bool"

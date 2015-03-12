@@ -34,6 +34,12 @@
 		"Depth"		"5"
 	}
 
+	"50"
+	{
+		"File"		"DialogueOverlay"
+		"Depth"		"50"
+	}
+
 	"100"
 	{
 		"File"		"CharacterSelectListener"
@@ -43,6 +49,11 @@
 	{
 		"File"		"CharacterSelectMenu"
 		"Depth"		"101"
+	}
+	"200"
+	{
+		"File"		"ScaleformFileSave"
+		"Depth"		"200"
 	}
 	//"6"
 	//{

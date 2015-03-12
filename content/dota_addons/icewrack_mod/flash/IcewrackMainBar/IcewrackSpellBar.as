@@ -23,11 +23,22 @@
 			globals.resizeManager.AddListener(this);
 			gameAPI.SubscribeToGameEvent("iw_ui_spellbar_return_abilities", OnUnitAbilityReturn);
 			gameAPI.SubscribeToGameEvent("iw_ui_spellbar_send_known_list", OnSendKnownAbilityList);
+			gameAPI.SubscribeToGameEvent("iw_ui_mainbar_set_visible", OnSetVisible);
 			
 			var args : Object = { ability1:"empty", ability2:"empty", ability3:"empty", 
 								  ability4:"empty", ability5:"empty", ability6:"empty" };
 			
 			OnUnitAbilityReturn(args);
+		}
+		
+		private function OnSetVisible(args:Object) : void
+		{
+			if (args != null)
+			{
+				trace("Setting IcewrackSpellBar to")
+				trace(args.is_visible)
+				this.visible = args.is_visible; 
+			}
 		}
 		
 		private function OnSendKnownAbilityList(args:Object) : void

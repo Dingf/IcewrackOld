@@ -57,8 +57,6 @@ function CIcewrackMap0:AcceptCharacterSelect(szHeroName)
 	
 	CIcewrackSaveManager:TempsaveGame()
 	CIcewrackSaveManager:SelectSave(CIcewrackSaveManager._szTempsaveFilename)
-
-	SendToConsole("dota_launch_custom_game icewrack_mod map01")
 end
 
 function CIcewrackMap0:InitMap()
@@ -66,21 +64,31 @@ function CIcewrackMap0:InitMap()
 	
 	CIcewrackSaveManager:InitSaveManager()
 	local tSpawnList = CIcewrackSaveManager:LoadSpawnsFromFile("/scripts/npc/spawns_map00.txt")
-	for k,v in pairs(tSpawnList) do
-		self._hSnowAttachDummy = v	--We just need an entity to attach the snow effect to, doesn't matter which one
-		local hExtEntity = LookupExtendedEntity(v)
-		hExtEntity._vOriginalPosition = v:GetAbsOrigin()
-		hExtEntity._vReturnPosition = v:GetAbsOrigin() - (v:GetForwardVector() * 32.0)
+	if tSpawnList then
+		for k,v in pairs(tSpawnList) do
+			if not self._hSnowAttachDummy then
+				self._hSnowAttachDummy = v	--We just need an entity to attach the snow effect to, doesn't matter which one
+			end
+			local hExtEntity = LookupExtendedEntity(v)
+			hExtEntity._vOriginalPosition = v:GetAbsOrigin()
+			hExtEntity._vReturnPosition = v:GetAbsOrigin() - (v:GetForwardVector() * 32.0)
+		end
+		
 	end
 	
 	Convars:RegisterCommand("iw_ui_character_select_accept",
 		function(szCmdName, szArgs)
 			self:AcceptCharacterSelect(szArgs)
 		end, "", 0)
+		
+	Convars:RegisterCommand("iw_ui_save_complete",
+		function(szCmdName, szArgs)
+				SendToConsole("dota_launch_custom_game icewrack_mod map01")
+			end, "", 0)
 	
 	Convars:RegisterCommand("iw_ui_character_select_update",
 		function(szCmdName, szArgs)
-			if szArgs == "clear" then
+			if szArgs == "clear" and self._hSelectedCharacter then
 				self._hSelectedCharacter:Stop()
 				self._hSelectedCharacter:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, self._hSelectedCharacter._vReturnPosition, false)
 				self._hSelectedCharacter:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, self._hSelectedCharacter._vOriginalPosition, true)

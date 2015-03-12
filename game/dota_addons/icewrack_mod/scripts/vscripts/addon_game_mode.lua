@@ -44,7 +44,19 @@ end
 
 function CIcewrackGameMode:InitGameMode()
 	print( "Loading Icewrack mod..." )
-	
+	saveDir = nil
+	for k in string.gmatch(package.path, "[%w/\\.: _?()]+") do
+		if string.find(k, "game\\bin\\win64\\lua\\%?.lua") ~= nil then
+			saveDir = string.gsub(k, "game\\bin\\win64\\lua\\%?.lua", "save\\icewrack\\")
+			break
+		end
+	end
+	print(saveDir)
+	InitLogFile(saveDir .. "test.txt", "test")
+	AppendToLogFile(saveDir .. "test.txt", "\b\b\b\b\b\bWhat the hell?")
+	InitLogFile(saveDir .. "test.txt", "test")
+	print(os)
+	print(io)
 	Convars:SetInt("scaleform_spew", 1)
 	
     --Hide all of the default UI elements

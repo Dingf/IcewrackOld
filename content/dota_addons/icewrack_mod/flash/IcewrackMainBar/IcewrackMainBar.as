@@ -17,7 +17,7 @@
 		private var selectedEntindex : Number = 0;
 		private var selectionTimer : Timer;
 		
-		public function IcewrackMainBar() : void 
+		public function IcewrackMainBar()
 		{
 		}
 		
@@ -29,7 +29,7 @@
 			
 			gameAPI.OnUnload = this.OnUnload;
 			gameAPI.SubscribeToGameEvent("iw_ui_mainbar_return_values", OnUnitValuesReturn);
-			//gameAPI.SubscribeToGameEvent("iw_ui_mainbar_return_abilities", OnUnitAbilityReturn);
+			gameAPI.SubscribeToGameEvent("iw_ui_mainbar_set_visible", OnSetVisible);
 						
 			selectionTimer = new Timer(100.0);
 			selectionTimer.addEventListener(TimerEvent.TIMER, QueryUnit);
@@ -68,6 +68,14 @@
 					mp_indicator.visible = false;
 					sp_indicator.visible = false;
 				}
+			}
+		}
+		
+		private function OnSetVisible(args:Object) : void
+		{
+			if (args != null)
+			{
+				this.visible = args.is_visible; 
 			}
 		}
 		

@@ -31,13 +31,19 @@
 
 		public function CharacterSelectMenu() {}
 		
-		public function test(e:MouseEvent)
+		public function OnAcceptClicked(e:MouseEvent)
 		{
 			if (queriedEnthandle != -1)
 			{
 				var classname:String = globals.Entities.GetClassname(queriedEnthandle);
 				gameAPI.SendServerCommand("iw_ui_character_select_accept " + classname);
+				gameAPI.SubscribeToGameEvent("iw_ui_save_game", OnSaveGame);
 			}
+		}
+		
+		public function OnSaveGame(args:Object) : void
+		{
+			trace("test");
 		}
 		
 		public function onLoaded() : void 
@@ -54,7 +60,7 @@
 			acceptButton.x = acceptButtonX;
 			acceptButton.y = acceptButtonY;
 			acceptButton.scaleX = acceptButton.scaleY = acceptButtonScale;
-			acceptButton.addEventListener(MouseEvent.CLICK, test);
+			acceptButton.addEventListener(MouseEvent.CLICK, OnAcceptClicked);
 			
 			returnButton = new ValveBigButton();
 			returnButton.label = "Back";

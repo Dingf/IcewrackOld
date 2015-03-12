@@ -26,6 +26,7 @@ if CIcewrackNPC == nil then
 			
 			self._bIsNPC = true
 			self._hEntity = hExtEntity
+			self._hBaseEntity = hExtEntity._hBaseEntity
 			hExtEntity._hNPCEntity = self
 			
 			setmetatable(self, {__index = function(self, k)
@@ -53,10 +54,10 @@ if CIcewrackNPC == nil then
 							end
 						end
 						
-						local fCosTheta = vNewLook:Dot(vOldLook)
+						local fCosTheta = math.min(1, math.max(-1, vNewLook:Dot(vOldLook)))
 						--Note: cos(theta) should never be outside the range [-1, 1]. However, due to floating-point imprecision,
 						--it happens sometimes (which produces a NaN result when we try to math.acos it)
-						if math.abs(fCosTheta) > 1 or math.acos(fCosTheta) < self._fTurnRate then
+						if math.acos(fCosTheta) < self._fTurnRate then
 							self:SetForwardVector(vNewLook)
 							if self._hLookTarget == nil then
 								self._vOriginalLook = nil
@@ -79,6 +80,7 @@ if CIcewrackNPC == nil then
 					end
 				end, 0, TIMER_THINK_INTERVAL)
 			
+			self._nPatrolIndex = 0
 			self._tPatrolList = {}
 			
 		
@@ -145,27 +147,24 @@ function CIcewrackNPC:AddThreat(hEntity, fAmount)
     end
 end
 
-function CIcewrackNPC:ClearPatrolList()
-	for k,v in pairs(self._tPatrolList) do
-		v:StopTimer()
+function CIcewrackNPC:AddPatrolPoint(vPatrolPoint, fDuration)
+	table.insert(self._tPatrolList, Vector(vPatrolPoint.x, vPatrolPoint.y, fDuration))
+end
+--[[
+function CIcewrackNPC:SetPatrolState(bState)
+	if bState == true then
+		if #(self._tPatrolList) > 0 then
+			self._nPatrolIndex = 1
+			CTimer(function()
+					local tNextPoint = self._tPatrolList[self._nPatrolIndex]
+					
+				end, 0, TIMER_THINK_INTERVAL)
+		end
+	elseif bState == false
+		self._nPatrolIndex = 0
+	
 	end
-	self._tPatrolList = {}
-end
-
-function CIcewrackNPC:AddPatrolPoint(vPatrolPoint, fDuration, fDelay)
-	local hPatrolTimer = CTimer(function()
-			if self:IsAlive() and not self:GetAttackTarget() then
-				self:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, vPatrolPoint, false)
-			elseif not self:IsAlive() then
-				return TIMER_STOP
-			end
-		end, 0, fDuration, fDelay)
-	table.insert(self._tPatrolList, hPatrolTimer)
-end
-
-function CIcewrackNPC:SetOriginalLook(vPoint)
-
-end
+end]]
 
 function CIcewrackNPC:ClearLookTarget()
 	self._hLookTarget = nil
