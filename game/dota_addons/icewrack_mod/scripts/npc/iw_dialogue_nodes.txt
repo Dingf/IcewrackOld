@@ -1,0 +1,33 @@
+//*A node of 0 means to exit the dialogue window; do not use this as an ID!
+//*Conditions can use any of the following operators (==, !=, <, >, >=, <=)
+"IcewrackConversationNodes"
+{
+	"1"
+	{
+		"SpeakerRefID"	"20"
+		"Text"		"This is a test string"
+		"Conditions"
+		{
+			"IWGS_M01_TALKED_TO_LEGION"		"== 0"
+			"IWGS_M01_RECRUITED_SVEN"		"== 1"
+		}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"Uh... okay?"
+				"NextNode"	"0"
+				"Conditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
+					"IWGS_M01_RECRUITED_SVEN"	"== 1"
+				}
+				"RunScript"
+				{
+					"ScriptFile"	"test.lua"
+					"Function"	"Test"
+				}
+			}
+		}
+	}
+}
