@@ -1,12 +1,19 @@
-//*A node of 0 means to exit the dialogue window; do not use this as an ID!
-//*Conditions can use any of the following operators (==, !=, <, >, >=, <=)
+//*A node ID of 0 means to exit the dialogue window; do not use this as an ID!
+
+//*Preconditions are conditions that must be met in order for the node/option to
+// be visible. They may use the following operators (==, !=, <, >, >=, <=)
+
+//*Postconditions are conditions that will be set after the option has been
+// selected. They may use the following operators (=, +=, -=, *=, /=)
+
 "IcewrackConversationNodes"
 {
 	"1"
 	{
 		"SpeakerRefID"	"20"
+		"Priority"	"1"
 		"Text"		"This is a test string"
-		"Conditions"
+		"Preconditions"
 		{
 			"IWGS_M01_TALKED_TO_LEGION"		"== 0"
 			"IWGS_M01_RECRUITED_SVEN"		"== 1"
@@ -16,11 +23,125 @@
 			"1"
 			{
 				"Text"		"Uh... okay?"
-				"NextNode"	"0"
-				"Conditions"
+				"NextNode"	"2"
+				"Preconditions"
 				{
 					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
 					"IWGS_M01_RECRUITED_SVEN"	"== 1"
+				}
+				"Postconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"= 0"
+				}
+				"RunScript"
+				{
+					"ScriptFile"	"test.lua"
+					"Function"	"Test"
+				}
+			}
+			"2"
+			{
+				"Text"		"What's going on?"
+				"NextNode"	"0"
+				"Preconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
+					"IWGS_M01_RECRUITED_SVEN"	"== 1"
+				}
+				"Postconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"= 0"
+				}
+				"RunScript"
+				{
+					"ScriptFile"	"test.lua"
+					"Function"	"Test"
+				}
+			}
+			"3"
+			{
+				"Text"		"I have no idea."
+				"NextNode"	"0"
+				"Preconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
+					"IWGS_M01_RECRUITED_SVEN"	"== 1"
+				}
+				"Postconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"= 0"
+				}
+				"RunScript"
+				{
+					"ScriptFile"	"test.lua"
+					"Function"	"Test"
+				}
+			}
+			"4"
+			{
+				"Text"		"How about you?"
+				"NextNode"	"0"
+				"Preconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
+					"IWGS_M01_RECRUITED_SVEN"	"== 1"
+				}
+				"Postconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"= 0"
+				}
+				"RunScript"
+				{
+					"ScriptFile"	"test.lua"
+					"Function"	"Test"
+				}
+			}
+			"5"
+			{
+				"Text"		"Nope. None."
+				"NextNode"	"0"
+				"Preconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
+					"IWGS_M01_RECRUITED_SVEN"	"== 1"
+				}
+				"Postconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"= 0"
+				}
+				"RunScript"
+				{
+					"ScriptFile"	"test.lua"
+					"Function"	"Test"
+				}
+			}
+		}
+	}
+
+	"2"
+	{
+		"SpeakerRefID"	"20"
+		"Priority"	"1"
+		"Text"		"Lorem ipsum dolor sit amet."
+		"Preconditions"
+		{
+			"IWGS_M01_TALKED_TO_LEGION"		"== 0"
+			"IWGS_M01_RECRUITED_SVEN"		"== 1"
+		}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"zzz. Get me out of here. (Exit)"
+				"NextNode"	"0"
+				"Preconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
+					"IWGS_M01_RECRUITED_SVEN"	"== 1"
+				}
+				"Postconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"= 0"
 				}
 				"RunScript"
 				{

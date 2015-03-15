@@ -188,14 +188,12 @@ function CIcewrackSaveManager:SaveGame(szSaveName)
 		local szSaveChunk = string.sub(szSaveString, nOffset, nOffset + 799)
 		nOffset = nOffset + 800
 		if string.len(szSaveChunk) ~= 800 then
-			FireGameEvent("iw_ui_save_game", { is_last = true, filename = self._szSaveDirectory .. szSaveName, save_data = szSaveChunk })
+			FireGameEvent("iw_ui_sfs_save_game", { is_last = true, filename = self._szSaveDirectory .. szSaveName, save_data = szSaveChunk })
 			break
 		else
-			FireGameEvent("iw_ui_save_game", { is_last = false, filename = self._szSaveDirectory .. szSaveName, save_data = szSaveChunk })
+			FireGameEvent("iw_ui_sfs_save_game", { is_last = false, filename = self._szSaveDirectory .. szSaveName, save_data = szSaveChunk })
 		end
 	end
-	
-	self:WriteSaveList()
 end
 
 function CIcewrackSaveManager:AddSaveToSaveList(szSaveName)
@@ -220,7 +218,7 @@ function CIcewrackSaveManager:WriteSaveList()
 	tSaveTable[#tSaveTable+1] = "\t}"
 	
 	local szSaveString = table.concat(tSaveTable)
-	FireGameEvent("iw_ui_make_save_list", { filename = self._szSaveDirectory .. "savelist.txt", save_data = szSaveString })
+	FireGameEvent("iw_ui_sfs_make_save_list", { filename = self._szSaveDirectory .. "savelist.txt", save_data = szSaveString })
 end
 
 function CIcewrackSaveManager:SelectSave(szSaveName)
@@ -241,6 +239,7 @@ function CIcewrackSaveManager:SelectSave(szSaveName)
 end
 
 --TODO: Check if loaded map == current map. If not tempsave and not equals, then return false
+--TODO: Actually load the fucking save, instead of doing it on a per-map basis
 function CIcewrackSaveManager:LoadSelectedSave()
 	if self._szSelectedSave then
 		return LoadKeyValues(self._szSaveDirectory .. self._szSelectedSave)

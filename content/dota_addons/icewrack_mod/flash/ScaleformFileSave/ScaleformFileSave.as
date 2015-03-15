@@ -19,8 +19,8 @@
 		public function onLoaded() : void
 		{
 			visible = true;
-			gameAPI.SubscribeToGameEvent("iw_ui_save_game", OnSaveGame);
-			gameAPI.SubscribeToGameEvent("iw_ui_make_save_list", OnMakeSaveList);
+			gameAPI.SubscribeToGameEvent("iw_ui_sfs_save_game", OnSaveGame);
+			gameAPI.SubscribeToGameEvent("iw_ui_sfs_make_save_list", OnMakeSaveList);
 		}
 		
 		private function ParseKVString(kvString:String) : Object

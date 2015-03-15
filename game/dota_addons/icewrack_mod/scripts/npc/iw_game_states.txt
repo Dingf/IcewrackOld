@@ -2,6 +2,7 @@
 //      may change in-game and when the game loads a save
 "IcewrackGameStates"
 {
+	"IWGS_M00_PARTY_GOLD"			"250"
 	"IWGS_M00_PICKED_HERO"			"0"
 	//1 = Sven, 2 = DK, 3 = Drow, 4 = BH, 5 = Lina, 6 = Warlock
 

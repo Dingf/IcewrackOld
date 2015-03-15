@@ -20,6 +20,7 @@
 		public var elementName:String;
 		
 		private var dialogueKV:Object;
+		private var dialogueNodeID:String;
 		
 		private var screenWidth:Number = 0;
 		private var screenHeight:Number = 0;
@@ -86,7 +87,44 @@
 			visible = true;
 			
 			globals.resizeManager.AddListener(this);
-			dialogueKV = globals.GameInterface.LoadKVFile("scripts/npc/iw_dialogue_states.txt");
+			globals.GameInterface.AddMouseInputConsumer();
+			
+			dialogueKV = globals.GameInterface.LoadKVFile("scripts/npc/iw_dialogue_nodes.txt");
+			
+			gameAPI.SubscribeToGameEvent("iw_ui_dialogue_set_node", OnSetDialogueNode);
+
+			LoadDialogueNode("1");
+		}
+		
+		private function LoadDialogueNode(node:String)
+		{
+			if ((node != null) && (dialogueKV[node] != null))
+			{
+				dialogueNodeID = node;
+				
+				var dialogueNode:Object = dialogueKV[node]
+				dialogueTextField.text = dialogueNode["Text"];
+				
+				ClearOptionList();
+				for (var i:int = 1;; i++)
+				{
+					var option:Object = dialogueNode["Options"][i.toString()];
+					if (option == null)
+						break;
+					AddOption(option["Text"]);
+				}
+				ResizeOptionList();
+			}
+		}
+		
+		public function OnSetDialogueNode(args:Object)
+		{
+			if (args != null)
+			{
+				nameTextField.text = args.display_name;
+				LoadDialogueNode(args.node);
+				visible = true;
+			}
 		}
 		
 		private function OnOptionMouseOver(e:MouseEvent)
@@ -96,7 +134,7 @@
 			{
 				optionsScrollTween.stop();
 			}
-			optionsScrollTween = new Tween(this.overlay.choices, "y", Regular.easeOut, this.overlay.choices.y, -128.0 - (e.target.y + (e.target.height)/2), 0.5, true);
+			optionsScrollTween = new Tween(this.overlay.choices, "y", Regular.easeOut, this.overlay.choices.y, -128.0 - (e.target.y + (e.target.height)/2), 0.75, true);
 			optionsScrollTween.start();
 		}
 		
@@ -105,9 +143,34 @@
 			e.target.alpha = 0.5;
 		}
 		
+		private function OnOptionMouseClick(e:MouseEvent)
+		{
+			//This is not at all efficient, but there probably won't be too many options... right?
+			for (var i:int = 1; i <= optionsList.length; i++)
+			{
+				if (optionsList[i-1] == e.target)
+				{
+					var dialogueNode:Object = dialogueKV[dialogueNodeID];
+					if ((dialogueNode != null) && (dialogueNode["Options"] != null))
+					{
+						var optionNode:Object = dialogueNode["Options"][i.toString()];
+						if (optionNode != null)
+						{
+							var nextNodeIndex = optionNode["NextNode"]
+							if (nextNodeIndex == "0")
+								visible = false;
+							else
+								LoadDialogueNode(nextNodeIndex);
+						}
+					}
+				}
+			}
+		}
+		
 		private function AddOption(optionText:String) : void
 		{
 			var optionTextField = new TextField();
+			optionTextField.visible = true;
 			optionTextField.defaultTextFormat = normalTextFormat;
 			optionTextField.embedFonts = true;
 			optionTextField.text = optionText;
@@ -121,25 +184,39 @@
 			
 			optionTextField.addEventListener(MouseEvent.ROLL_OVER, OnOptionMouseOver);
 			optionTextField.addEventListener(MouseEvent.ROLL_OUT, OnOptionMouseOut);
+			optionTextField.addEventListener(MouseEvent.CLICK, OnOptionMouseClick);
 			
 			this.overlay.choices.addChild(optionTextField);
 			optionsList.push(optionTextField);
+		}
+		
+		private function ClearOptionList() : void
+		{
+			for (var i:int = 0; i < optionsList.length; i++)
+			{
+				var optionTextField = optionsList[i];
+				this.overlay.choices.removeChild(optionTextField);
+			}
+			optionsList.length = 0;
 		}
 		
 		private function ResizeOptionList() : void
 		{
 			var currentY:Number = 0;
 			for (var i:int = 0; i < optionsList.length; i++)
-			{
+			{					
 				var optionTextField = optionsList[i];
-				if ((screenHeight * 16)/9 == screenWidth)
-					optionTextField.width = 600;
-				else if ((screenHeight * 16)/10 == screenWidth)
-					optionTextField.width = 536;
-				else
-					optionTextField.width = 440;
-				optionTextField.y = currentY;
-				currentY += optionTextField.height;
+				if (optionTextField.visible == true)
+				{
+					if ((screenHeight * 16)/9 == screenWidth)
+						optionTextField.width = 600;
+					else if ((screenHeight * 16)/10 == screenWidth)
+						optionTextField.width = 536;
+					else
+						optionTextField.width = 440;
+					optionTextField.y = currentY;
+					currentY += optionTextField.height;
+				}
 			}
 			
 			var middleOption = optionsList[int(optionsList.length/2)]

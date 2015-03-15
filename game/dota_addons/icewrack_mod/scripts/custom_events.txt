@@ -38,24 +38,41 @@
 		"damage_type"	"byte"
 	}
 
-	"iw_ui_make_save_list"
+	//ScaleformSave
+	"iw_ui_sfs_make_save_list"
 	{
 		"filename"	"string"
 		"save_data"	"string"
 	}
 
-	"iw_ui_save_game"
+	"iw_ui_sfs_save_game"
 	{
 		"is_last"	"bool"
 		"filename"	"string"
 		"save_data"	"string"
 	}
 
+	//GameStateInfo
+	"iw_ui_gamestate_update"
+	{
+		"state_name"	"string"
+		"state_value"	"long"
+	}
+
+	//DialogueOverlay
+	"iw_ui_dialogue_set_node"
+	{
+		"node"		"long"
+		"display_name"	"string"
+	}
+
+	//All mainbar entities
 	"iw_ui_mainbar_set_visible"
 	{
 		"is_visible"	"bool"
 	}
 
+	//IcewrackMainbar
 	"iw_ui_mainbar_return_values"
 	{
 		"current_hp"	"float"
@@ -68,6 +85,7 @@
 		"maximum_xp"	"float"
 	}
 
+	//IcewrackSpellbar
 	"iw_ui_spellbar_return_abilities"
 	{
 		"ability1"	"string"

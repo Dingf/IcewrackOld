@@ -115,6 +115,7 @@ function CIcewrackSpellbook:UnlearnAbility(szAbilityName)
 	if self._tKnownAbilities[szAbilityName] then
 		self._tKnownAbilities[szAbilityName] = nil
 	end
+	--TODO: Also unbind the ability, if it's currently bound
 end
 
 function CIcewrackSpellbook:LearnAbility(szAbilityName, nLevel)

@@ -55,6 +55,11 @@
 		"File"		"ScaleformFileSave"
 		"Depth"		"200"
 	}
+	"201"
+	{
+		"File"		"GameStateInfo"
+		"Depth"		"201"
+	}
 	//"6"
 	//{
 	//	"File"		"IcewrackHPBar"
