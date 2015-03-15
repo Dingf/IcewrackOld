@@ -24,48 +24,50 @@ local function StringToVector(szString)
 end
 
 if CIcewrackSaveManager == nil then
-    CIcewrackSaveManager = { _szSaveDirectory }
+    CIcewrackSaveManager = { _szSaveDirectory = nil }
 end
 
 function CIcewrackSaveManager:InitSaveManager()
-	for k in string.gmatch(package.path, "[%w/\\.: _?()]+") do
-		if string.find(k, "game\\bin\\win64\\lua\\%?.lua") ~= nil then
-			self._szSaveDirectory = string.gsub(k, "game\\bin\\win64\\lua\\%?.lua", "save\\icewrack\\")
-			break
-		end
-	end
-	
-	if self._szSaveDirectory then
-		local tSaveListInfo = LoadKeyValues(self._szSaveDirectory .. "savelist.txt")
-		if tSaveListInfo then
-			self._szSelectedSave = tSaveListInfo.SelectedSave
-			self._szTempsaveFilename = tSaveListInfo.Tempsave
-			self._szQuicksaveFilename = tSaveListInfo.Quicksave
-			self._tSaveList = {}
-			if tSaveListInfo.Saves then
-				for k,v in pairs(tSaveListInfo.Saves) do
-					self._tSaveList[k] = v
-				end
+	if not self._szSaveDirectory then
+		for k in string.gmatch(package.path, "[%w/\\.: _?()]+") do
+			if string.find(k, "game\\bin\\win64\\lua\\%?.lua") ~= nil then
+				self._szSaveDirectory = string.gsub(k, "game\\bin\\win64\\lua\\%?.lua", "save\\icewrack\\")
+				break
 			end
 		end
-	else
-		error("Could not locate default save directory.")
+		
+		if self._szSaveDirectory then
+			local tSaveListInfo = LoadKeyValues(self._szSaveDirectory .. "savelist.txt")
+			if tSaveListInfo then
+				self._szSelectedSave = tSaveListInfo.SelectedSave
+				self._szTempsaveFilename = tSaveListInfo.Tempsave
+				self._szQuicksaveFilename = tSaveListInfo.Quicksave
+				self._tSaveList = {}
+				if tSaveListInfo.Saves then
+					for k,v in pairs(tSaveListInfo.Saves) do
+						self._tSaveList[k] = v
+					end
+				end
+			end
+		else
+			error("Could not locate default save directory.")
+		end
+		
+		self._szSaveVersion = "0.1.0"
+		self._tEquipPrintTable = 
+		{
+			"IEI_INVENTORY_SLOT_MAIN_HAND",
+			"IEI_INVENTORY_SLOT_OFF_HAND",
+			"IEI_INVENTORY_SLOT_HEAD",
+			"IEI_INVENTORY_SLOT_BODY",
+			"IEI_INVENTORY_SLOT_HANDS",
+			"IEI_INVENTORY_SLOT_FEET",
+			"IEI_INVENTORY_SLOT_WAIST",
+			"IEI_INVENTORY_SLOT_LRING",
+			"IEI_INVENTORY_SLOT_RRING",
+			"IEI_INVENTORY_SLOT_NECK"
+		}
 	end
-	
-	self._szSaveVersion = "0.1.0"
-	self._tEquipPrintTable = 
-	{
-		"IEI_INVENTORY_SLOT_MAIN_HAND",
-		"IEI_INVENTORY_SLOT_OFF_HAND",
-		"IEI_INVENTORY_SLOT_HEAD",
-		"IEI_INVENTORY_SLOT_BODY",
-		"IEI_INVENTORY_SLOT_HANDS",
-		"IEI_INVENTORY_SLOT_FEET",
-		"IEI_INVENTORY_SLOT_WAIST",
-		"IEI_INVENTORY_SLOT_LRING",
-		"IEI_INVENTORY_SLOT_RRING",
-		"IEI_INVENTORY_SLOT_NECK"
-	}
 end
 
 function CIcewrackSaveManager:TempsaveGame()
@@ -82,7 +84,7 @@ end
 
 
 --TODO:
---  *Use GUIDs instead of entindexes
+--  *Use RefIDs instead of entindexes
 --  *Save AAM sequences
 --  *Save entities on a per-map basis (and their orientation, position, modifiers, etc.)
 function CIcewrackSaveManager:SaveGame(szSaveName)
