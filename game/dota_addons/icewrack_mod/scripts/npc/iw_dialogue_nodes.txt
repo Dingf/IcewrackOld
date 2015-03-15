@@ -1,113 +1,30 @@
-//*A node ID of 0 means to exit the dialogue window; do not use this as an ID!
-
-//*Preconditions are conditions that must be met in order for the node/option to
-// be visible. They may use the following operators (==, !=, <, >, >=, <=)
-
-//*Postconditions are conditions that will be set after the option has been
-// selected. They may use the following operators (=, +=, -=, *=, /=)
-
 "IcewrackConversationNodes"
 {
+	//*A node ID of 0 means to exit the dialogue window; do not use this as an ID!
+	//*A node ID of -1 means to do nothing (usually for transitioning between speakers). Do not use this one either.
 	"1"
 	{
-		"SpeakerRefID"	"20"
-		"Priority"	"1"
-		"Text"		"This is a test string"
+		"RefID"		"1"		//Speaker refID
+		"Priority"	"1"		//Node priority (used to decide which root node to show; higher = more priority; priority 0 = not a root node)
+		"Text"		"The text for your node should go here."
 		"Preconditions"
 		{
-			"IWGS_M01_TALKED_TO_LEGION"		"== 0"
-			"IWGS_M01_RECRUITED_SVEN"		"== 1"
+			//*Preconditions are conditions that must be met in order for the node/option to
+			// be visible. They may use the following operators (==, !=, <, >, >=, <=)
 		}
 		"Options"
 		{
 			"1"
 			{
-				"Text"		"Uh... okay?"
-				"NextNode"	"2"
+				"Text"		"The text for your option should go here."
+				"NextNode"	"2"		//The next node to move to
 				"Preconditions"
 				{
-					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
-					"IWGS_M01_RECRUITED_SVEN"	"== 1"
 				}
 				"Postconditions"
 				{
-					"IWGS_M01_TALKED_TO_LEGION"	"= 0"
-				}
-				"RunScript"
-				{
-					"ScriptFile"	"test.lua"
-					"Function"	"Test"
-				}
-			}
-			"2"
-			{
-				"Text"		"What's going on?"
-				"NextNode"	"0"
-				"Preconditions"
-				{
-					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
-					"IWGS_M01_RECRUITED_SVEN"	"== 1"
-				}
-				"Postconditions"
-				{
-					"IWGS_M01_TALKED_TO_LEGION"	"= 0"
-				}
-				"RunScript"
-				{
-					"ScriptFile"	"test.lua"
-					"Function"	"Test"
-				}
-			}
-			"3"
-			{
-				"Text"		"I have no idea."
-				"NextNode"	"0"
-				"Preconditions"
-				{
-					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
-					"IWGS_M01_RECRUITED_SVEN"	"== 1"
-				}
-				"Postconditions"
-				{
-					"IWGS_M01_TALKED_TO_LEGION"	"= 0"
-				}
-				"RunScript"
-				{
-					"ScriptFile"	"test.lua"
-					"Function"	"Test"
-				}
-			}
-			"4"
-			{
-				"Text"		"How about you?"
-				"NextNode"	"0"
-				"Preconditions"
-				{
-					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
-					"IWGS_M01_RECRUITED_SVEN"	"== 1"
-				}
-				"Postconditions"
-				{
-					"IWGS_M01_TALKED_TO_LEGION"	"= 0"
-				}
-				"RunScript"
-				{
-					"ScriptFile"	"test.lua"
-					"Function"	"Test"
-				}
-			}
-			"5"
-			{
-				"Text"		"Nope. None."
-				"NextNode"	"0"
-				"Preconditions"
-				{
-					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
-					"IWGS_M01_RECRUITED_SVEN"	"== 1"
-				}
-				"Postconditions"
-				{
-					"IWGS_M01_TALKED_TO_LEGION"	"= 0"
+					//*Postconditions are conditions that will be set after the option has been
+					// selected. They may use the following operators (=, +=, -=, *=, /=)
 				}
 				"RunScript"
 				{
@@ -118,36 +35,201 @@
 		}
 	}
 
-	"2"
+	"101"
 	{
-		"SpeakerRefID"	"20"
+		"RefID"		"20"
 		"Priority"	"1"
-		"Text"		"Lorem ipsum dolor sit amet."
+		"Text"		"Nice sword. Judging by the looks of it, I'd say you're not from the usual lot, are you?"
 		"Preconditions"
 		{
-			"IWGS_M01_TALKED_TO_LEGION"		"== 0"
-			"IWGS_M01_RECRUITED_SVEN"		"== 1"
+			"IWGS_GLOBAL_PICKED_HERO"	"== 1"
+			"IWGS_QUEST_LEGION_01"		"== 0"
+			"IWGS_M01_TALKED_TO_LEGION"	"== 0"
 		}
 		"Options"
 		{
 			"1"
 			{
-				"Text"		"zzz. Get me out of here. (Exit)"
+				"Text"		"Ja."
+				"NextNode"	"102"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+
+			"2"
+			{
+				"Text"		"(Remain silent)"
+				"NextNode"	"108"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+		}
+	}
+
+	"102"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Good. I could use someone else who actually knows what they're doing. Name's Tresdin, by the way. I'm the leader of this expedition."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"Mhm."
+				"NextNode"	"103"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+
+			"2"
+			{
+				"Text"		"(Remain silent)"
+				"NextNode"	"103"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+		}
+	}
+	
+
+	"103"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Since you seem capable enough, I have a task for you. We're heading up the Blueheart soon, so I want you to go out there and find me a nice, clear path that will get us there in one piece. Understood?"
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"Okay."
+				"NextNode"	"104"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+
+			"2"
+			{
+				"Text"		"(Remain silent)"
+				"NextNode"	"104"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+		}
+	}
+
+	"104"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Most of the others are busy setting up, but I bet some of them might be willing to help if you ask. Now get going."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"(Exit conversation)"
 				"NextNode"	"0"
-				"Preconditions"
-				{
-					"IWGS_M01_TALKED_TO_LEGION"	"== 0"
-					"IWGS_M01_RECRUITED_SVEN"	"== 1"
-				}
+				"Preconditions" {}
 				"Postconditions"
 				{
-					"IWGS_M01_TALKED_TO_LEGION"	"= 0"
+					"IWGS_M01_TALKED_TO_LEGION"	"= 1"
+					"IWGS_QUEST_LEGION_01"		"= 10"
 				}
-				"RunScript"
+			}
+		}
+	}
+
+	"105"
+	{
+		"RefID"		"20"
+		"Priority"	"1"
+		"Text"		"What are you waiting for? A kiss goodbye? Get out there and find me a path to the Blueheart Glacier!"
+		"Preconditions"
+		{
+			"IWGS_M01_TALKED_TO_LEGION"	"== 1"
+			"IWGS_QUEST_LEGION_01"		"== 10"
+		}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"(Exit conversation)"
+				"NextNode"	"0"
+				"Preconditions" {}
+				"Postconditions"
 				{
-					"ScriptFile"	"test.lua"
-					"Function"	"Test"
+					"IWGS_M01_TALKED_TO_LEGION"	"= 2"
 				}
+			}
+		}
+	}
+
+	"106"
+	{
+		"RefID"		"20"
+		"Priority"	"1"
+		"Text"		"This is the last time I will repeat myself, soldier. Get out there and do your duty!"
+		"Preconditions"
+		{
+			"IWGS_M01_TALKED_TO_LEGION"	"== 2"
+			"IWGS_QUEST_LEGION_01"		"== 10"
+		}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"(Exit conversation)"
+				"NextNode"	"0"
+				"Preconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"= 3"
+				}
+			}
+		}
+	}
+
+	"107"
+	{
+		"RefID"		"20"
+		"Priority"	"1"
+		"Text"		"Oh for crying out loud . . ."
+		"Preconditions"
+		{
+			"IWGS_M01_TALKED_TO_LEGION"	"== 3"
+			"IWGS_QUEST_LEGION_01"		"== 10"
+		}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"(Exit conversation)"
+				"NextNode"	"0"
+				"Preconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"= 4"
+				}
+			}
+		}
+	}
+
+	"108"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Not much of a talker, huh? That's fine by me. I'm Tresdin, the leader of this expedition."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"(Remain silent)"
+				"NextNode"	"103"
+				"Preconditions" {}
+				"Postconditions" {}
 			}
 		}
 	}

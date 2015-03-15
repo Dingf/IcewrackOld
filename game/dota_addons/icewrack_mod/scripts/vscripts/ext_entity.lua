@@ -167,8 +167,6 @@ if CIcewrackExtendedEntity == nil then
 
 			self._bDeletedFlag = false
 			self._szDisplayName = tAddonLocaleTemplate.Tokens[hEntity:GetUnitName()] or hEntity:GetUnitName()
-			
-			self._nRefID = 0	--This should be set when the unit is spawned
 
 			self._nUnitClass = _G[tExtEntityData.UnitClass] or IEE_UNIT_CLASS_NONE
 			self._nUnitType = _G[tExtEntityData.UnitType] or IEE_UNIT_TYPE_NONE
@@ -264,7 +262,6 @@ if CIcewrackExtendedEntity == nil then
 			return self
 		end},
 		{_stLookupTable = {},
-		 _stRefIDLookupTable = {},
 		 _shHealthModifier = CreateItem("mod_health", nil, nil),
 		 _shManaModifier = CreateItem("mod_mana", nil, nil),
 		 _shIASModifier = CreateItem("mod_ias", nil, nil),
@@ -447,11 +444,6 @@ end
 
 function CIcewrackExtendedEntity:GetAttackedByList()
 	return self._tAttackedBy
-end
-
-function CIcewrackExtendedEntity:SetRefID(nRefID)
-	self._nRefID = nRefID
-	CIcewrackExtendedEntity._stRefIDLookupTable[nRefID] = self
 end
 
 --This is to prevent things like illusions which are instantly destroyed from throwing errors when we check to see if they're alive
@@ -639,8 +631,4 @@ function LookupExtendedEntity(hEntity)
     else
         return nil
     end
-end
-
-function LookupExtendedEntityByRefID(nRefID)
-	return CIcewrackExtendedEntity._stRefIDLookupTable[nRefID]
 end

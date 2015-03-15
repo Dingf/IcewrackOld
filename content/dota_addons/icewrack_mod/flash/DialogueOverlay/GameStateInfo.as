@@ -3,7 +3,6 @@
 	import flash.display.MovieClip;
 	import flash.utils.Dictionary;
 	
-	
 	public class GameStateInfo extends MovieClip
 	{
 		public var gameAPI:Object;

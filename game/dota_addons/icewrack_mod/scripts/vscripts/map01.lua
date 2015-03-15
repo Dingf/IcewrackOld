@@ -66,28 +66,7 @@ end
 
 function CIcewrackMap1:OnPlayerConnectFull(keys)
 	local tSaveData = CIcewrackSaveManager:LoadSelectedSave()
-	
-	GameRules:SetTimeOfDay(tSaveData.TimeOfDay)
-	
 	SendToConsole("jointeam good");
-	
-	local hHeroEntities = {}
-	local hPlayerInstance = PlayerInstanceFromIndex(keys.index + 1)
-	CTimer(function()
-			for k,v in pairs(tSaveData.Party) do
-				local hHeroEntity = CreateHeroForPlayer(k, hPlayerInstance)
-				table.insert(hHeroEntities, hHeroEntity)
-			end
-		end, 0.1)
-	--hHeroEntity = CreateHeroForPlayer("npc_dota_hero_sven", hPlayerInstance) end, 0.1)
-	CTimer(function()
-			for k,v in pairs(hHeroEntities) do
-				CIcewrackParty:AddMember(v)
-				v:SetControllableByPlayer(keys.index, true)
-				v:SetPlayerID(keys.index)
-			end
-		end, 1.0)
-
 end
 
 function CIcewrackMap1:DelayedInit(keys)

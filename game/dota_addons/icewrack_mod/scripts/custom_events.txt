@@ -63,7 +63,7 @@
 	"iw_ui_dialogue_set_node"
 	{
 		"node"		"long"
-		"display_name"	"string"
+		"unit_name"	"string"
 	}
 
 	//All mainbar entities

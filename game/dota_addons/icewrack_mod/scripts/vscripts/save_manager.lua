@@ -2,6 +2,7 @@
 	Icewrack Save Manager
 ]]
 
+require("timer")
 require("ext_entity")
 require("ext_item")
 require("ext_ability")
@@ -95,7 +96,7 @@ function CIcewrackSaveManager:SaveGame(szSaveName)
 	tSaveTable[#tSaveTable+1] = GetMapName()
 	tSaveTable[#tSaveTable+1] = string.format("\tTimeOfDay\t%f", GameRules:GetTimeOfDay())
 	tSaveTable[#tSaveTable+1] = "\tGameStates\t{"
-	for k,v in pairs(tIcewrackGameStates) do
+	for k,v in pairs(CIcewrackGameState._tValues) do
 		tSaveTable[#tSaveTable+1] = string.format("\t%s\t%d", k, v)
 	end
 	tSaveTable[#tSaveTable+1] = "\t}"
@@ -240,11 +241,43 @@ function CIcewrackSaveManager:SelectSave(szSaveName)
 	end
 end
 
---TODO: Check if loaded map == current map. If not tempsave and not equals, then return false
---TODO: Actually load the fucking save, instead of doing it on a per-map basis
+--TODO:
+--  *Inventory
+--  *Spellbook
+--  *Modifiers
+--  *Position and Orientation (if current map == loaded map)
 function CIcewrackSaveManager:LoadSelectedSave()
 	if self._szSelectedSave then
-		return LoadKeyValues(self._szSaveDirectory .. self._szSelectedSave)
+		local tSaveData = LoadKeyValues(self._szSaveDirectory .. self._szSelectedSave)
+		
+		if tSaveData.TimeOfDay then
+			GameRules:SetTimeOfDay(tSaveData.TimeOfDay)
+		end
+		
+		if tSaveData.GameStates then
+			for k,v in pairs(tSaveData.GameStates) do
+				SetGameStateValue(k, v)
+			end
+		end
+		
+		if tSaveData.Party then
+			local hHeroEntities = {}
+			local hPlayerInstance = PlayerInstanceFromIndex(1)
+			CTimer(function()
+					for k,v in pairs(tSaveData.Party) do
+						local hHeroEntity = CreateHeroForPlayer(k, hPlayerInstance)
+						table.insert(hHeroEntities, hHeroEntity)
+					end
+				end, 0.1)
+			CTimer(function()
+					for k,v in pairs(hHeroEntities) do
+						CIcewrackParty:AddMember(v)
+						v:SetControllableByPlayer(0, true)
+						v:SetPlayerID(0)
+					end
+				end, 1.0)
+		end
+		
 	else
 		return nil
 	end
@@ -272,9 +305,8 @@ function CIcewrackSaveManager:LoadSpawnsFromFile(szFilename)
 			
 			if hEntity then 
 				local hExtEntity = CIcewrackExtendedEntity(hEntity)
-				hExtEntity:SetRefID(tonumber(k))
 				
-				CIcewrackNPC(hExtEntity)
+				CIcewrackNPC(hExtEntity, tonumber(k))
 				CIcewrackSpellbook(hExtEntity)
 				CIcewrackInventory(hExtEntity)
 				
@@ -284,9 +316,9 @@ function CIcewrackSaveManager:LoadSpawnsFromFile(szFilename)
 		
 		for k,v in pairs(tSpawnList) do
 			if v.Modifiers then
-				local hTarget = LookupExtendedEntityByRefID(tonumber(k))
+				local hTarget = LookupNPC(tonumber(k))
 				for k2,v2 in pairs(v.Modifiers) do
-					local hSource = LookupExtendedEntityByRefID(v2)
+					local hSource = LookupNPC(v2)
 					hSource:AddAbility(k2)
 					local hAbility = hSource:FindAbilityByName(k2)
 					if hAbility then

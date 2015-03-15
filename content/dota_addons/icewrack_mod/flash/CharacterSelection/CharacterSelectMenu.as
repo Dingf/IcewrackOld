@@ -37,13 +37,7 @@
 			{
 				var classname:String = globals.Entities.GetClassname(queriedEnthandle);
 				gameAPI.SendServerCommand("iw_ui_character_select_accept " + classname);
-				gameAPI.SubscribeToGameEvent("iw_ui_save_game", OnSaveGame);
 			}
-		}
-		
-		public function OnSaveGame(args:Object) : void
-		{
-			trace("test");
 		}
 		
 		public function onLoaded() : void 
@@ -166,23 +160,3 @@
 	}
 	
 }
-		
-		
-			
-			//public function replaceWithValveComponent(mc:MovieClip, type:String, keepDimensions:Boolean = false) : MovieClip {
-   /* var parent = mc.parent;
-    var oldx = mc.x;
-    var oldy = mc.y;
-    var oldwidth = mc.width;
-    var oldheight = mc.height;
-    
-    var newObjectClass = getDefinitionByName("button_big");
-    var newObject = new newObjectClass();
-    newObject.x = 500;
-    newObject.y = 500;
-    if (keepDimensions) {
-        newObject.width = oldwidth;
-        newObject.height = oldheight;
-    }*/
-    
-    //addChild(newObject);

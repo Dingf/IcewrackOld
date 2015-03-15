@@ -30,27 +30,27 @@ function CIcewrackMap0:AcceptCharacterSelect(szHeroName)
 	CIcewrackParty:AddMember(hEntity)
 	
 	if szHeroName == "npc_dota_hero_sven" then
-		SetGameStateValue("IWGS_M00_PICKED_HERO", 1)
+		SetGameStateValue("IWGS_GLOBAL_PICKED_HERO", 1)
 		SetGameStateValue("IWGS_M01_TALKED_TO_SVEN", 1)
 		SetGameStateValue("IWGS_M01_RECRUITED_SVEN", 1)
 	elseif szHeroName == "npc_dota_hero_dragon_knight" then
-		SetGameStateValue("IWGS_M00_PICKED_HERO", 2)
+		SetGameStateValue("IWGS_GLOBAL_PICKED_HERO", 2)
 		SetGameStateValue("IWGS_M01_TALKED_TO_DK", 1)
 		SetGameStateValue("IWGS_M01_RECRUITED_DK", 1)
 	elseif szHeroName == "npc_dota_hero_drow_ranger" then
-		SetGameStateValue("IWGS_M00_PICKED_HERO", 3)
+		SetGameStateValue("IWGS_GLOBAL_PICKED_HERO", 3)
 		SetGameStateValue("IWGS_M01_TALKED_TO_DROW", 1)
 		SetGameStateValue("IWGS_M01_RECRUITED_DROW", 1)
 	elseif szHeroName == "npc_dota_hero_bounty_hunter" then
-		SetGameStateValue("IWGS_M00_PICKED_HERO", 4)
+		SetGameStateValue("IWGS_GLOBAL_PICKED_HERO", 4)
 		SetGameStateValue("IWGS_M01_TALKED_TO_BH", 1)
 		SetGameStateValue("IWGS_M01_RECRUITED_BH", 1)
 	elseif szHeroName == "npc_dota_hero_lina" then
-		SetGameStateValue("IWGS_M00_PICKED_HERO", 5)
+		SetGameStateValue("IWGS_GLOBAL_PICKED_HERO", 5)
 		SetGameStateValue("IWGS_M01_TALKED_TO_LINA", 1)
 		SetGameStateValue("IWGS_M01_RECRUITED_LINA", 1)
 	elseif szHeroName == "npc_dota_hero_warlock" then
-		SetGameStateValue("IWGS_M00_PICKED_HERO", 6)
+		SetGameStateValue("IWGS_GLOBAL_PICKED_HERO", 6)
 		SetGameStateValue("IWGS_M01_TALKED_TO_WL", 1)
 		SetGameStateValue("IWGS_M01_RECRUITED_WL", 1)
 	end

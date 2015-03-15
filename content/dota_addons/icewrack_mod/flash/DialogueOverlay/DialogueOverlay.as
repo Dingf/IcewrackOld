@@ -12,6 +12,8 @@
 	import flash.utils.Dictionary;
 	import flash.utils.describeType;
 	import flash.events.MouseEvent;
+	import flash.utils.Timer;
+	import flash.events.TimerEvent;
 	
 	public class DialogueOverlay extends MovieClip
 	{
@@ -32,7 +34,9 @@
 		private var dialogueTextField:TextField = new TextField();
 		private var optionsList:Vector.<TextField> = new Vector.<TextField>();
 		
-		private var optionsScrollTween:Tween;
+		private var optionsScrollTween:Tween = null;
+		private var overlayFadeTween:Tween = null;
+		private var overlayFadeTimer:Timer;
 		
 		public function DialogueOverlay()
 		{
@@ -79,12 +83,15 @@
 			AddOption("The quick brown fox jumped over the lazy dog. (Bribe)");
 			AddOption("And the moon too, because why the fuck not. (Intimidate)");
 			
-			ResizeOptionList();
+			ResizeOptionsList();
 		}
 		
 		public function onLoaded()
 		{
-			visible = true;
+			this.overlay.alpha = 0;
+			this.overlay.faderTop.visible = false;
+			this.overlay.faderBottom.visible = false;
+			this.overlay.choices.visible = false;
 			
 			globals.resizeManager.AddListener(this);
 			globals.GameInterface.AddMouseInputConsumer();
@@ -92,8 +99,6 @@
 			dialogueKV = globals.GameInterface.LoadKVFile("scripts/npc/iw_dialogue_nodes.txt");
 			
 			gameAPI.SubscribeToGameEvent("iw_ui_dialogue_set_node", OnSetDialogueNode);
-
-			LoadDialogueNode("1");
 		}
 		
 		private function LoadDialogueNode(node:String)
@@ -105,15 +110,31 @@
 				var dialogueNode:Object = dialogueKV[node]
 				dialogueTextField.text = dialogueNode["Text"];
 				
-				ClearOptionList();
+				ClearOptionsList();
 				for (var i:int = 1;; i++)
 				{
 					var option:Object = dialogueNode["Options"][i.toString()];
 					if (option == null)
 						break;
 					AddOption(option["Text"]);
+					var preconditions:Object = option["Preconditions"];
+					if (preconditions != null)
+					{
+						var skipFlag:Boolean = false;
+						for (var k:String in preconditions)
+						{
+							var v = preconditions[k];
+							if (GameStateInfo.EvaluatePrecondition(k, v) == false)
+							{
+								skipFlag = true;
+								break;
+							}
+						}
+						if (skipFlag)
+							optionsList[optionsList.length-1].visible = false;
+					}
 				}
-				ResizeOptionList();
+				ResizeOptionsList();
 			}
 		}
 		
@@ -121,19 +142,38 @@
 		{
 			if (args != null)
 			{
-				nameTextField.text = args.display_name;
+				nameTextField.text = args.unit_name;
 				LoadDialogueNode(args.node);
+				
+				overlayFadeTimer = new Timer(250, 1);
+				overlayFadeTimer.addEventListener(TimerEvent.TIMER, OnOverlayFadeIn);
+				if (overlayFadeTween != null)
+					overlayFadeTween.stop()
+				overlayFadeTween = new Tween(this.overlay, "alpha", None.easeNone, this.overlay.alpha, 1.0, 0.25, true);
+				
+				overlayFadeTimer.start();
+				overlayFadeTween.start();
 				visible = true;
 			}
+		}
+		
+		private function OnOverlayFadeIn(e:TimerEvent)
+		{
+			this.overlay.faderTop.visible = true;
+			this.overlay.faderBottom.visible = true;
+			this.overlay.choices.visible = true;
+		}
+		
+		private function OnOverlayFadeOut(e:TimerEvent)
+		{
+			visible = false;
 		}
 		
 		private function OnOptionMouseOver(e:MouseEvent)
 		{
 			e.target.alpha = 1.0;
 			if (optionsScrollTween != null)
-			{
 				optionsScrollTween.stop();
-			}
 			optionsScrollTween = new Tween(this.overlay.choices, "y", Regular.easeOut, this.overlay.choices.y, -128.0 - (e.target.y + (e.target.height)/2), 0.75, true);
 			optionsScrollTween.start();
 		}
@@ -156,13 +196,39 @@
 						var optionNode:Object = dialogueNode["Options"][i.toString()];
 						if (optionNode != null)
 						{
+							var postconditions:Object = optionNode["Postconditions"];
+							if (postconditions != null)
+							{
+								for (var k:String in postconditions)
+								{
+									var v = postconditions[k];
+									GameStateInfo.EvaluatePostcondition(k, v);
+									gameAPI.SendServerCommand("iw_ui_dialogue_postcondition \"" + k + " " + GameStateInfo.GetGameStateValue(k) + "\"");
+								}
+							}
+							
 							var nextNodeIndex = optionNode["NextNode"]
 							if (nextNodeIndex == "0")
-								visible = false;
+							{
+								overlayFadeTimer = new Timer(250, 1);
+								overlayFadeTimer.addEventListener(TimerEvent.TIMER, OnOverlayFadeOut);
+								if (overlayFadeTween != null)
+									overlayFadeTween.stop();
+								this.overlay.faderTop.visible = false;
+								this.overlay.faderBottom.visible = false;
+								this.overlay.choices.visible = false;
+								overlayFadeTween = new Tween(this.overlay, "alpha", None.easeNone, this.overlay.alpha, 0.0, 0.25, true);
+								
+								overlayFadeTimer.start();
+								overlayFadeTween.start();
+							}
+							else if (nextNodeIndex == "-1")
+								break;
 							else
 								LoadDialogueNode(nextNodeIndex);
 						}
 					}
+					break;
 				}
 			}
 		}
@@ -190,7 +256,7 @@
 			optionsList.push(optionTextField);
 		}
 		
-		private function ClearOptionList() : void
+		private function ClearOptionsList() : void
 		{
 			for (var i:int = 0; i < optionsList.length; i++)
 			{
@@ -200,7 +266,7 @@
 			optionsList.length = 0;
 		}
 		
-		private function ResizeOptionList() : void
+		private function ResizeOptionsList() : void
 		{
 			var currentY:Number = 0;
 			for (var i:int = 0; i < optionsList.length; i++)
@@ -256,7 +322,7 @@
 				nameTextField.width = dialogueTextField.width = 700;
 			}
 
-			ResizeOptionList();
+			ResizeOptionsList();
 			this.overlay.x = 0;
 			this.scaleX = this.scaleY = re.ScreenHeight / 1080.0
 			trace(re.ScreenHeight + " " + re.ScreenWidth)

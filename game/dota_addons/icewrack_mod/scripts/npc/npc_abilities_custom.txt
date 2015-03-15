@@ -413,7 +413,7 @@
 					
 					{
 						"ScriptFile"				"scripts/vscripts/npc.lua"
-						"Function"				"NPCInteract"
+						"Function"				"OnNPCClicked"
 					}
 				}
 			}
