@@ -85,7 +85,6 @@ function CIcewrackSpellbook:BindAbility(szNewAbilityName, nSlot)
 			
 			local hOldAbility = hEntity:FindAbilityByName(szOldAbilityName)
 			local hNewAbility = hEntity:FindAbilityByName(szNewAbilityName)
-			print(hNewAbility)
 			if not hNewAbility then
 				hEntity:AddAbility(szNewAbilityName)
 				hNewAbility = hEntity:FindAbilityByName(szNewAbilityName)
@@ -156,7 +155,7 @@ function CIcewrackSpellbook:RefreshBinds()
 		SendToConsole("unbind \"" .. CIcewrackSpellbook._stKeybindTable[i])
 		local szAbilityName = self._tBoundAbilities[i]
 		if szAbilityName then
-			local hAbility = self._hEntity:FindAbilityByName(szAbilityNamef)
+			local hAbility = self._hEntity:FindAbilityByName(szAbilityName)
 			if hAbility then
 				SendToConsole("bind \"" .. CIcewrackSpellbook._stKeybindTable[i] .. "\" \"dota_ability_execute " .. hAbility:GetAbilityIndex() .. "\"")
 			else
