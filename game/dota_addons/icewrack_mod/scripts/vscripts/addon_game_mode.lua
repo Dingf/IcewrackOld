@@ -14,11 +14,9 @@ require("ui_mainbar")
 
 --TODO:
 --	*Make a NPC class, extends from extended entity
---		*Can talk, give quests, and trade
---	*Add cooldowns to spellbook class
+--		*Can talk(DONE), give quests(DONE... sort of), and trade
 --  *IEE units Stamina drain on attack
 --      *50% IAS slow as well if no stamina
---  *Carry capacity based on IEE values/strength
 
 if CIcewrackGameMode == nil then
 	CIcewrackGameMode = class({})
@@ -44,20 +42,9 @@ end
 
 function CIcewrackGameMode:InitGameMode()
 	print( "Loading Icewrack mod..." )
-	saveDir = nil
-	for k in string.gmatch(package.path, "[%w/\\.: _?()]+") do
-		if string.find(k, "game\\bin\\win64\\lua\\%?.lua") ~= nil then
-			saveDir = string.gsub(k, "game\\bin\\win64\\lua\\%?.lua", "save\\icewrack\\")
-			break
-		end
-	end
-	print(saveDir)
-	InitLogFile(saveDir .. "test.txt", "test")
-	AppendToLogFile(saveDir .. "test.txt", "\b\b\b\b\b\bWhat the hell?")
-	InitLogFile(saveDir .. "test.txt", "test")
-	print(os)
-	print(io)
+	
 	Convars:SetInt("scaleform_spew", 1)
+	Convars:SetInt("dota_allow_orders_while_paused", 1)
 	
     --Hide all of the default UI elements
 	Convars:SetInt("dota_sf_hud_actionpanel", 0)
@@ -68,7 +55,6 @@ function CIcewrackGameMode:InitGameMode()
     Convars:SetInt("dota_no_minimap", 1)
     Convars:SetInt("dota_render_crop_height", 0)
     Convars:SetInt("dota_render_y_inset", 0)
-	
 	
 	--Set day cycle to 1 hour instead of 8 mins
 	--Convars:SetFloat("dota_time_of_day_rate", 0.000278)
@@ -91,33 +77,9 @@ function CIcewrackGameMode:InitGameMode()
 	ListenToGameEvent("entity_killed", Dynamic_Wrap(CIcewrackGameMode, "OnEntityKilled"), self)
     ListenToGameEvent("dota_item_picked_up", Dynamic_Wrap(CIcewrackGameMode, "OnItemPickedUp"), self)
     ListenToGameEvent("dota_player_gained_level", Dynamic_Wrap(CIcewrackGameMode, "OnLevelUp"), self)
-    --ListenToGameEvent("player_connect_full", Dynamic_Wrap(CIcewrackGameMode, "OnPlayerConnectFull"), self)
     
     GameRules:GetGameModeEntity():SetThink(ProcessTimers, "TimerThink", TIMER_THINK_INTERVAL)
 	print( "Icewrack mod loaded." )
-end
-
-function CIcewrackGameMode:OnPlayerConnectFull(keys)
-    --Load the previous save state if possible, otherwise go to hero selection or something
-	local hPlayerInstance = PlayerInstanceFromIndex(keys.index + 1)
-    local hHeroEntity = CreateHeroForPlayer("npc_dota_hero_sven", hPlayerInstance)
-	--hHeroEntity:AddAbility("internal_conversation_starter")
-	--hHeroEntity:FindAbilityByName("internal_conversation_starter"):ApplyDataDrivenModifier(hHeroEntity, hHeroEntity, "modifier_internal_conversation_starter", {})
-	--hHeroEntity:RemoveAbility("internal_conversation_starter")
-	CTimer(function()
-			CIcewrackParty:AddMember(hHeroEntity)
-			hHeroEntity:SetControllableByPlayer(keys.index, true)
-			hHeroEntity:SetPlayerID(keys.index)
-		end, 1.0)
-	
-	--[[hDummyHero:AddAbility("internal_dummy_buff")
-	hDummyHero:FindAbilityByName("internal_dummy_buff"):SetLevel(1)
-	--hDummyHero:ForceKill(false)
-	CTimer(function()
-			--hDummyHero:SetControllableByPlayer(0, true)
-            hDummyHero:SetPlayerID(keys.index)
-		end, 1.0)
-	hDummyHero:ModifyHealth(0, hDummyHero, true, 0)]]
 end
 
 function CIcewrackGameMode:OnSpawned(keys)
@@ -137,7 +99,6 @@ function CIcewrackGameMode:OnSpawned(keys)
 			hSpellbook = CIcewrackSpellbook(hExtEntity)
 		end
 		
-		--TODO: Change the carry capacity to not be a fixed number
 		if not hExtEntity._hInventory then
 			hInventory = CIcewrackInventory(hExtEntity)
 		else

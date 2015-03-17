@@ -140,6 +140,17 @@ function CIcewrackUIMainBar:RegisterHandlers()
 				end
 			end
 		end, "Returns the requested unit's known abilities to the mainbar UI.", 0)
+			
+	Convars:RegisterCommand("iw_unpause",
+		function(szCmdName, szArgs)
+				SendToConsole("host_timescale 1")
+			end, "Pauses the game, but still allows orders to be executed.", 0)
+		
+	Convars:RegisterCommand("iw_pause",
+		function(szCmdName, szArgs)
+				SendToConsole("host_timescale 0")
+			end, "Pauses the game, but still allows orders to be executed.", 0)
+			
 		
 	CTimer(function()
 			if self._shSelectedEntity then

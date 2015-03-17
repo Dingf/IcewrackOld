@@ -2,6 +2,7 @@
     Icewrack Spellbook
 ]]
 
+require("timer")
 require("ext_entity")
 
 if CIcewrackSpellbook == nil then
@@ -15,6 +16,7 @@ if CIcewrackSpellbook == nil then
 			self._hEntity = hEntity
 			hEntity._hSpellbook = self
 			
+			self._tCooldowns = {}
 			self._tKnownAbilities = {}
 			self._tBoundAbilities = {}
 			for i=0,(hEntity:GetAbilityCount() - 1) do
@@ -26,6 +28,8 @@ if CIcewrackSpellbook == nil then
 					self._tBoundAbilities[i] = hAbility:GetAbilityName()
 				end
 			end
+			
+			ListenToGameEvent("dota_player_used_ability", Dynamic_Wrap(CIcewrackSpellbook, "OnAbilityUsed"), self)
 		end},
 		--TODO: Change these to user-set binds instead
 		{ _shActiveSpellbook = nil,
@@ -152,7 +156,7 @@ function CIcewrackSpellbook:RefreshBinds()
 		SendToConsole("unbind \"" .. CIcewrackSpellbook._stKeybindTable[i])
 		local szAbilityName = self._tBoundAbilities[i]
 		if szAbilityName then
-			local hAbility = self._hEntity:FindAbilityByName(szAbilityName)
+			local hAbility = self._hEntity:FindAbilityByName(szAbilityNamef)
 			if hAbility then
 				SendToConsole("bind \"" .. CIcewrackSpellbook._stKeybindTable[i] .. "\" \"dota_ability_execute " .. hAbility:GetAbilityIndex() .. "\"")
 			else
@@ -160,6 +164,40 @@ function CIcewrackSpellbook:RefreshBinds()
 			end
 		end
 	end
+end
+
+function CIcewrackSpellbook:GetCooldown(szAbilityName)
+	if self._tCooldowns[szAbilityName] then
+		return self._tCooldowns[szAbilityName] - GameRules:GetGameTime()
+	else
+		return 0
+	end
+end
+
+function CIcewrackSpellbook:SetCooldown(szAbilityName, fDuration)
+	if self._tKnownAbilities[szAbilityName] and not self._tCooldowns[sAbilityName] then
+		self._tCooldowns[szAbilityName] = GameRules:GetGameTime() + fDuration
+		CTimer(function()
+				self._tCooldowns[szAbilityName] = nil
+			end, fDuration)
+	end
+end
+
+function CIcewrackSpellbook:OnAbilityUsed(args)
+	local hEntity = self._hEntity
+	local hOwner = hEntity:GetOwner()
+	if hOwner then
+		local nPlayerID = hOwner:GetPlayerID()
+		if args.PlayerID == (nPlayerID + 1) then
+			if self._tKnownAbilities[args.abilityname] then
+				local hAbility = hEntity:FindAbilityByName(args.abilityname)
+				if hAbility then
+					self:SetCooldown(args.abilityname, hAbility:GetCooldownTimeRemaining())
+				end
+			end
+		end
+	end
+	
 end
 
 function SetActiveSpellbookEntity(hEntity)

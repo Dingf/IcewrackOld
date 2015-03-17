@@ -108,7 +108,7 @@ function CIcewrackSaveManager:SaveGame(szSaveName)
 		local hExtEntity = LookupExtendedEntity(k)
 		local vPosition = hExtEntity:GetAbsOrigin()
 		local vOrientation = hExtEntity:GetForwardVector()
-		tSaveTable[#tSaveTable+1] = string.format("\tEntindex\t%d", k:entindex())
+		--tSaveTable[#tSaveTable+1] = string.format("\tEntindex\t%d", k:entindex())
 		tSaveTable[#tSaveTable+1] = string.format("\tPosition\t%f %f %f", vPosition.x, vPosition.y, vPosition.z)
 		tSaveTable[#tSaveTable+1] = string.format("\tOrientation\t%f %f %f", vOrientation.x, vOrientation.y, vOrientation.z)
 		tSaveTable[#tSaveTable+1] = string.format("\tCurrentHP\t%f", k:GetHealth())
@@ -128,7 +128,7 @@ function CIcewrackSaveManager:SaveGame(szSaveName)
 				tSaveTable[#tSaveTable+1] = k2
 				tSaveTable[#tSaveTable+1] = "\t{"
 				tSaveTable[#tSaveTable+1] = string.format("\tLevel\t%s", v2)
-				tSaveTable[#tSaveTable+1] = string.format("\tCooldown\t%s", 0)		--TODO: Add cooldown tracking to the spellbook
+				tSaveTable[#tSaveTable+1] = string.format("\tCooldown\t%s", hSpellbook:GetCooldown(k2))
 				tSaveTable[#tSaveTable+1] = "\t}"
 			end
 		end

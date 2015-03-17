@@ -43,7 +43,7 @@
 			this.overlay.faderTop.mouseEnabled = false;
 			this.overlay.faderBottom.mouseEnabled = false;
 			
-			normalTextFormat.font = "$TitleFont";
+			normalTextFormat.font = "$TextFontBold";
 		    normalTextFormat.size = 20;
 		    normalTextFormat.color = 0xffffff;
 		    normalTextFormat.align = TextFormatAlign.LEFT;

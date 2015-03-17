@@ -42,8 +42,8 @@
 			names["npc_dota_hero_warlock"] = "Demnok, Warlock";
 			
 			lores["npc_dota_hero_sven"] = "Rogue Knight follows his own path.";
-			lores["npc_dota_hero_drow_ranger"] = "I am Traxex, ranger of the Drow. Or so I've been called. But the truth is, I am not a Drow. . . nor Keen, nor Oglodi, nor any other race I've seen so far. Which leaves me wondering: What am I?\n\nThe Drow used to tell me of my parents, refugees from the far north who were mercilessly cut down by bandits. It is this reason alone that brings me here. In this frozen wasteland, I wonder, which will I find first - the answers that I seek, or my fate?";
-			lores["npc_dota_hero_lina"] = "God, I really hate my sissster sometimes. It's b-bad enough that she alwaysss played the favorite, or that shhhe got me shipped off to some d-desert in the middle of nowhere. N-no no, that'sss not enough for poor Rylai. Shhhe just HAD to ssstart a veritable ice age to make me m-miserable forever, didn't she?\n\nSssoo c-cold. . . I swear, when I f-find her. . .";
+			lores["npc_dota_hero_drow_ranger"] = "I am Traxex, ranger of the Drow. Or so I've been called. But the truth is, I am not a Drow... nor Keen, nor Oglodi, nor any other race that I've seen so far. Which leaves me wondering: What am I?\n\nThe Drow used to tell me of my parents, refugees from the far north who were mercilessly cut down by bandits. It is this reason alone that brings me here. In this frozen wasteland, I wonder, which will I find first - the answers that I seek, or my fate?";
+			lores["npc_dota_hero_lina"] = "God, I really hate my sissster sometimes. It's b-bad enough that she alwaysss played the favorite, or that shhhe got me shipped off to some d-desert in the middle of nowhere. N-no no, that'sss not enough for poor Rylai. She just HAD to ssstart a veritable ice age to make me m-miserable forever, didn't she?\n\nSssoo c-cold... I swear, when I f-find her...";
 			lores["npc_dota_hero_warlock"] = "Like moths to a flame, these fools come, searching for fame and fortune. Ha! The real treasure lies far, far deeper. Can you not hear it? The trembling whispers of shadows, their dark promises of power emanating from beneath the icy earth. All for one who knows where to look. . .\n\nAlas, this land is dangerous and untamed. If I am to succeed in this endeavor, I shall require allies to command - human, or otherwise. . .";
 			
 			
@@ -67,9 +67,9 @@
 			nameTextField.visible = false;
 			
 			var loreTextFormat:TextFormat = new TextFormat();
-			loreTextFormat.font = "$TitleFont";
-		    loreTextFormat.size = 16;
-		    loreTextFormat.color = 0xffffff;
+			loreTextFormat.font = "$TextFontBold";
+		    loreTextFormat.size = 20;
+		    loreTextFormat.color = 0xc0c0c0;
 		    loreTextFormat.align = TextFormatAlign.CENTER;
 			
 			var dsFilter:DropShadowFilter = new DropShadowFilter(0, 90, 0x000000, 0.75, 4, 4, 1.0);

@@ -92,7 +92,6 @@
 		}
 	}
 	
-
 	"103"
 	{
 		"RefID"		"20"
@@ -220,7 +219,7 @@
 	{
 		"RefID"		"20"
 		"Priority"	"0"
-		"Text"		"Not much of a talker, huh? That's fine by me. I'm Tresdin, the leader of this expedition."
+		"Text"		"Not much of a talker, huh? That's fine by me. I'm Tresdin, the commander of this expedition."
 		"Preconditions" {}
 		"Options"
 		{
@@ -228,6 +227,193 @@
 			{
 				"Text"		"(Remain silent)"
 				"NextNode"	"103"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+		}
+	}
+
+	"109"
+	{
+		"RefID"		"20"
+		"Priority"	"1"
+		"Text"		"You came to an expedition... wearing that?! Aren't you cold at all?"
+		"Preconditions"
+		{
+			"IWGS_GLOBAL_PICKED_HERO"	"== 5"
+			"IWGS_QUEST_LEGION_01"		"== 0"
+			"IWGS_M01_TALKED_TO_LEGION"	"== 0"
+		}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"I'm f-fine..."
+				"NextNode"	"110"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+
+			"2"
+			{
+				"Text"		"M-maybe a b-bit..."
+				"NextNode"	""
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+		}
+	}
+
+	"110"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Whatever you say. So tell me, what brings someone like you to a frozen wasteland like this?"
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"I have s-some unfinished bbusiness to attend to..."
+				"NextNode"	"111"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+
+			"2"
+			{
+				"Text"		"I'm here to p-put an end to th-this w-winter..."
+				"NextNode"	""
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+
+			"3"
+			{
+				"Text"		"F-for the p-pleasant wweather, clearly."
+				"NextNode"	""
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+		}
+	}
+
+	"111"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Well, I wish you the best of luck. I know that situation all too well..."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"Uh huh..."
+				"NextNode"	"116"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+			"2"
+			{
+				"Text"		"D-do t-tell..."
+				"NextNode"	"112"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+		}
+	}
+
+	"112"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Many years ago, I found myself at the head of an entire army, the mighty Bronze Legion. We had but one job... to protect the city of Stonehall, at any cost..."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"(continue)"
+				"NextNode"	"113"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+		}
+	}
+
+	"113"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Then they came, without warning. Hordes upon hordes of filthy demons, raining down from the abyss like a swarm of unholy bees. At great cost, we drove them back and eventually killed them all..."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"(continue)"
+				"NextNode"	"114"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+		}
+	}
+
+	"114"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"All that is, except for one. Their leader, an underlord named Azgalor, managed to escape through a portal, though not before destroying what was left of Stonehall in a rain of fire. On that day, I swore I would not rest until I personally stuck his ugly head on a pike."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"And d-did you...?"
+				"NextNode"	"115"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+		}
+	}
+
+	"115"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Sadly, no. That was a long time ago, and Azgalor hasn't shown his face since..."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"(continue)"
+				"NextNode"	"116"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+		}
+	}
+
+	"116"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Anyways, I'm Tresdin, commander of this expeditionary force."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"The n-name's L-Lina."
+				"NextNode"	"104"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+			"2"
+			{
+				"Text"		"Let's s-skip the introductions, shhall we?"
+				"NextNode"	"104"
 				"Preconditions" {}
 				"Postconditions" {}
 			}

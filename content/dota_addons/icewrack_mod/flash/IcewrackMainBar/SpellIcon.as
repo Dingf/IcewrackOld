@@ -44,7 +44,12 @@
 				var point : Point = this.localToGlobal(new Point(0, 0));
 				var adjScale : Number = scale * (this.secondary ? this.parent.parent.parent.scaleY : this.parent.scaleY);
 				
+				globals.Loader_overlay.movieClip.hud_overlay.ability_tooltip.content.abilityLevel.text = "Level 100";
+				globals.Loader_overlay.movieClip.hud_overlay.ability_tooltip.content.abilityName.text = "Testing123";
+				
 				//TODO: Figure out how to use the actionpanel version instead (which presumably shows the current spell level, things like that)
+				//globals.Loader_overlay.movieClip.showGenericTextTooltip(point.x + adjScale * 128.0, point.y + adjScale * 32 - 200, spellName);
+				
 				globals.Loader_rad_mode_panel.gameAPI.OnShowAbilityTooltip(point.x + adjScale * 128.0, point.y + adjScale * 32, spellName);
 			}
 			else
