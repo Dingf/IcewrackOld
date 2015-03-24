@@ -11,12 +11,12 @@ end
 
 --TODO: Make the launch loot more accurate
 function WoodcutterAxeTrigger(tTriggerInfo)
-	local newItem = CreateItem( "item_quelling_blade", nil, nil )
-	newItem:SetPurchaseTime( 0 )
-	newItem:SetCurrentCharges( 1 )
-	local spawnPoint = tTriggerInfo.activator:GetAbsOrigin();
-	local drop = CreateItemOnPositionSync( Vector(1040, 990, 128), newItem )
-	newItem:LaunchLoot( false, 300, 0.75, spawnPoint)
+	local hItem = CreateItem( "item_quelling_blade", nil, nil )
+	hItem:SetPurchaseTime(0)
+	hItem:SetCurrentCharges(1)
+	local vSpawnPoint = tTriggerInfo.activator:GetAbsOrigin();
+	local hItemDrop = CreateItemOnPositionSync(Vector(1040, 990, 128), hItem)
+	hItem:LaunchLoot(false, 300, 0.75, vSpawnPoint)
 end
 
 function Precache(context)

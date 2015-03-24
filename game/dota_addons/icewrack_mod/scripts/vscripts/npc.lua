@@ -24,7 +24,7 @@ if CIcewrackNPC == nil then
 
     CIcewrackNPC = class({
 		constructor = function(self, hExtEntity, nRefID)
-			if not hExtEntity or not hExtEntity._bIsExtendedEntity then
+			if not IsValidExtendedEntity(hExtEntity) then
 				error("hEntity must be a valid hero entity")
 			end
 			
@@ -73,7 +73,7 @@ function CIcewrackNPC:OnDamageTaken(keys)
     local hVictim = EntIndexToHScript(keys.victim)
     local hAttacker = EntIndexToHScript(keys.attacker)
     
-    if hVictim and hAttacker then
+    if IsValidEntity(hVictim) and IsValidEntity(hAttacker) then
         if self._bIsThreatAI then
             local fThreatMultiplier = keys.threat
             if keys.crit then
@@ -85,7 +85,7 @@ function CIcewrackNPC:OnDamageTaken(keys)
 end
 
 function CIcewrackNPC:GetThreat(hEntity)
-    if hEntity and self._tThreatTable ~= nil then
+    if IsValidEntity(hEntity) and self._tThreatTable ~= nil then
         if self._tThreatTable[hEntity] ~= nil then
             return self._tThreatTable[hEntity]
         else
@@ -100,13 +100,11 @@ function CIcewrackNPC:GetHighestThreatTarget()
         local hHighestTarget = nil
         local fHighestThreat = -1
         for k,v in pairs(self._tThreatTable) do
-            if v then
-                if not k:IsAlive() or k:GetTeamNumber() == self:GetTeamNumber() then
-                    self._tThreatTable[k] = nil
-                elseif v > fHighestThreat and self:CanEntityBeSeenByMyTeam(k) and not k:IsInvulnerable() then
-                    hHighestTarget = k
-                    fHighestThreat = v
-                end
+            if not IsValidEntity(v) or not k:IsAlive() or k:GetTeamNumber() == self:GetTeamNumber() then
+                self._tThreatTable[k] = nil
+            elseif v > fHighestThreat and self:CanEntityBeSeenByMyTeam(k) and not k:IsInvulnerable() then
+                hHighestTarget = k
+                fHighestThreat = v
             end
         end
         return hHighestTarget
@@ -115,7 +113,7 @@ function CIcewrackNPC:GetHighestThreatTarget()
 end
 
 function CIcewrackNPC:AddThreat(hEntity, fAmount)
-    if self._tThreatTable ~= nil then
+    if IsValidEntity(hEntity) and self._tThreatTable ~= nil and fAmount > 0 then
         local fDistance = math.min((self:GetAbsOrigin() - hEntity:GetOrigin()):Length2D(), self._fThreatRadius)
         local fDistanceMultiplier = (0.5 * (1.0 - (fDistance/self._fThreatRadius))) + 0.5
         
@@ -152,12 +150,14 @@ function CIcewrackNPC:TurnToLookTarget()
 	elseif self._vOriginalLook then
 		local vNewLook = self._vOriginalLook
 		local vOldLook = self:GetForwardVector():Normalized()
-		if self._hLookTarget then
+		if IsValidEntity(self._hLookTarget) then
 			if CalcDistanceBetweenEntityOBB(self, self._hLookTarget) > 250 then
 				self._hLookTarget = nil
 			else
 				vNewLook = (self._hLookTarget:GetAbsOrigin() - self:GetAbsOrigin()):Normalized()
 			end
+		else
+	        self._hLookTarget = nil
 		end
 		
 		local fCosTheta = math.min(1, math.max(-1, vNewLook:Dot(vOldLook)))
@@ -176,9 +176,9 @@ function CIcewrackNPC:TurnToLookTarget()
 			local fY = vOldLook.y
 			local fZ = vOldLook.z
 							
-			local vLook1 = Vector(fX * hCos(fTheta) + fY * hSin(fTheta), fY * hCos(fTheta) - fX * hSin(fTheta), fZ)
-			if vLook1:Dot(vNewLook) > vOldLook:Dot(vNewLook) then
-				self:SetForwardVector(vLook1)
+			local v1 = Vector(fX * hCos(fTheta) + fY * hSin(fTheta), fY * hCos(fTheta) - fX * hSin(fTheta), fZ)
+			if v1:Dot(vNewLook) > vOldLook:Dot(vNewLook) then
+				self:SetForwardVector(v1)
 			else
 				self:SetForwardVector(Vector(fX * hCos(fTheta) - fY * hSin(fTheta), fY * hCos(fTheta) + fX * hSin(fTheta), fZ))
 			end
@@ -231,12 +231,12 @@ function CIcewrackNPC:Talk()
 end
 
 function OnNPCClicked(args)
-	if args.target and args.unit and args.target:GetTeamNumber() == args.unit:GetTeamNumber() then
+	if IsValidEntity(args.target) and IsValidEntity(args.unit) and args.target:GetTeamNumber() == args.unit:GetTeamNumber() then
 		local hExtTarget = LookupExtendedEntity(args.target)
 		local hNPCEntity = hExtTarget._hNPCEntity
-		if hExtTarget and hExtTarget._bIsExtendedEntity then
+		if IsValidExtendedEntity(hExtTarget) then
 			local hExtEntity = LookupExtendedEntity(args.unit)
-			if hExtEntity and hExtEntity._bIsExtendedEntity then
+			if IsValidExtendedEntity(hExtEntity) then
 				local fDistance = CalcDistanceBetweenEntityOBB(args.target, args.unit)
 				if fDistance <= 150 then
 					if hExtEntity._hLastLookTarget then
@@ -272,6 +272,14 @@ function OnNPCClicked(args)
 					end
 				end
 			end
+		end
+	else
+		local hExtEntity = LookupExtendedEntity(args.unit)
+		if hExtEntity._hMoveToNPCTimer then
+			hExtEntity._hMoveToNPCTimer:StopTimer()
+		end
+		if hExtEntity._hLastLookTarget then
+			hExtEntity._hLastLookTarget:ClearLookTarget()
 		end
 	end
 end

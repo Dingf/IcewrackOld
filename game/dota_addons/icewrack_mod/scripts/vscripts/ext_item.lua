@@ -85,7 +85,7 @@ if CIcewrackExtendedItem == nil then
     
     CIcewrackExtendedItem = class({
 		constructor = function(self, hItem)
-			if not hItem or not hItem:IsItem() then
+			if not IsValidEntity(hItem) or not hItem:IsItem() then
 				error("hItem must be a valid item")
 			end
 			
@@ -182,8 +182,12 @@ function CIcewrackExtendedItem:ModifyStackCount(nStackCount)
     end
 end
 
+function IsValidExtendedItem(hExtItem)
+    return (hExtItem and IsValidEntity(hExtItem._hBaseItem) and hExtItem._bIsExtendedItem)
+end
+
 function LookupExtendedItem(hItem)
-    if hItem then
+    if IsValidEntity(hItem) and hItem:IsItem() then
         return CIcewrackExtendedItem._stLookupTable[hItem]
     else
         return nil

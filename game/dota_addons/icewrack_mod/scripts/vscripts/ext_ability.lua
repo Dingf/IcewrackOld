@@ -5,9 +5,19 @@
 --It's technically more like an extended modifier than an extended ability, although that may change in the future
 --		*Stamina cost for spells?
 
+if _VERSION < "Lua 5.2" then
+    bit = require("numberlua")
+    bit32 = bit.bit32
+end
+
 require("timer")
 require("status_effects")
 require("ext_entity")
+
+-- Flags
+--    Is debuff (1 bit)
+--    Apply on invulnerable units (1 bit)
+--    Modifier can be reapplied (1 bit)
 
 if CIcewrackExtendedAbility == nil then
     tIcewrackExtendedAbilityTemplate = LoadKeyValues("scripts/npc/npc_abilities_extended.txt")
@@ -60,17 +70,11 @@ if CIcewrackExtendedAbility == nil then
 				self._fMinDuration = self._fMaxDuration
 				self._fMaxDuration = fTemp
 			end
-			if tAbilityData.IsDebuff and tAbilityData.IsDebuff ~= "FALSE" then
-				self._bIsDebuff = true
-			else
-				self._bIsDebuff = false
-			end
 			
-			if tAbilityData.ApplyOnInvulerable and tAbilityData.ApplyOnInvulerable ~= "FALSE" then
-				self._bApplyOnInvulnerable = true
-			else
-				self._bApplyOnInvulnerable = false
-			end
+		    local nFlags = tAbilityData.Flags or 0
+			self._bIsDebuff = (bit32.extract(nFlags, 0) ~= 0)
+			self._bApplyOnInvulnerable = (bit32.extract(nFlags, 1) ~= 0)
+			self._bCanBeReapplied = (bit32.extract(nFlags, 2) ~= 0)
 			
 			self._fMaxStacks = tAbilityData.MaxStacks
 			self._fMaxStacksPerCaster = tAbilityData.MaxStacksPerCaster
@@ -128,13 +132,12 @@ function CIcewrackExtendedAbility:RemoveExtendedModifier()
 	if self._bIsModifierActive then
 		local hTarget = self._hTarget
 		local hExtTarget = LookupExtendedEntity(hTarget)
-		if hExtTarget and hExtTarget._bIsExtendedEntity then
+		if IsValidExtendedEntity(hExtTarget) then
 			hExtTarget:ApplyModifierProperties(self._tProperties, true)
 			CIcewrackExtendedAbility._stLookupTable[hTarget][self] = nil
 			if hTarget:IsAlive() then
 				hTarget:RemoveModifierByNameAndCaster("modifier_" .. self:GetAbilityName(), self._hEntity)
 			end
-			self._hEntity:RemoveSelf()
 			self._bIsModifierActive = false
 		end
 	end
@@ -186,15 +189,24 @@ function CIcewrackExtendedAbility:CullMaxStacks()
 end
 
 function CIcewrackExtendedAbility:ApplyExtendedAbility(hSource, hTarget)
-	if not self._bIsModifierActive then
+	if IsValidEntity(hSource) and IsValidEntity(hTarget) then
 		local hExtTarget = LookupExtendedEntity(hTarget)
-		if hExtTarget and hExtTarget._bIsExtendedEntity then
+		if IsValidExtendedEntity(hExtTarget) then
 			self._hSource = hSource
 			self._hTarget = hTarget
 			
 			--Prevent missed attacks/abilities from clearing or refreshing previous buffs
 			if hTarget:IsInvulnerable() and not self._bApplyOnInvulnerable then
 				return
+			end
+			
+			--Prevent the modifier from being reapplied if it's already active
+			if self._bIsModifierActive then
+			    if not self._bCanBeReapplied then
+			        return
+			    else
+			        self:RemoveExtendedModifier()
+				end
 			end
 			
 			self:CullMaxStacks()
@@ -231,7 +243,7 @@ function CIcewrackExtendedAbility:ApplyExtendedAbility(hSource, hTarget)
 end
 
 function LookupExtendedModifierList(hEntity)
-    if hEntity then
+    if IsValidEntity(hEntity) then
         return CIcewrackExtendedAbility._stLookupTable[hEntity]
     else
         return nil
@@ -245,7 +257,7 @@ function DataDrivenApplyExtendedModifier(args)
 	
 	if not szAbilityName then
 		error("Missing parameter \"ModifierName\" in key values")
-	elseif hSource and hTarget then
+	elseif IsValidEntity(hSource) and IsValidEntity(hTarget) then
 		local hExtAbility = CIcewrackExtendedAbility(szAbilityName)
 		hExtAbility:ApplyExtendedAbility(hSource, hTarget)
 	end

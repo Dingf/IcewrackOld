@@ -3,7 +3,8 @@
 	"iw_test_debuff"
 	{
 		"Duration"			"30"
-		"IsDebuff"			"TRUE"
+
+		"Flags"				"1"
 
 		//"MaxStacks"			"7"
 		//"MaxStacksPerCaster"		"2"

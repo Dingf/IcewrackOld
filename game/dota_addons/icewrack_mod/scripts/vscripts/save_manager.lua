@@ -303,7 +303,7 @@ function CIcewrackSaveManager:LoadSpawnsFromFile(szFilename)
 				hEntity:SetAbsOrigin(StringToVector(v.Position))
 			end
 			
-			if hEntity then 
+			if IsValidEntity(hEntity) then 
 				local hExtEntity = CIcewrackExtendedEntity(hEntity)
 				
 				CIcewrackNPC(hExtEntity, tonumber(k))

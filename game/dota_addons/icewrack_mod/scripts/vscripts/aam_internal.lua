@@ -11,7 +11,7 @@ function DoNothing(hEntity, hAutomator, hTarget)
 end
 
 function MoveAwayFromTarget(hEntity, hAutomator, hTarget)
-    if hEntity and hAutomator and hTarget then
+    if IsValidEntity(hEntity) and hAutomator and hTarget then
         local vDirection = hEntity:GetAbsOrigin() - hTarget:GetAbsOrigin()
         local vPosition = hEntity:GetAbsOrigin() + (vDirection:Normalized() * 100.0)
         
@@ -26,7 +26,7 @@ function MoveAwayFromTarget(hEntity, hAutomator, hTarget)
 end
 
 function MoveTowardsTarget(hEntity, hAutomator, hTarget)
-    if hEntity and hAutomator and hTarget then
+    if IsValidEntity(hEntity) and hAutomator and hTarget then
         local vDirection = hTarget:GetAbsOrigin() - hEntity:GetAbsOrigin()
         local vPosition = hEntity:GetAbsOrigin() + (vDirection:Normalized() * 100.0)
         
@@ -41,7 +41,7 @@ function MoveTowardsTarget(hEntity, hAutomator, hTarget)
 end
 
 function MoveAwayFromEnemies(hEntity, hAutomator)
-    if hEntity and hAutomator then
+    if IsValidEntity(hEntity) and hAutomator then
         local tEnemiesList = GetAllUnits(hEntity, DOTA_UNIT_TARGET_TEAM_ENEMY, 0.0, hEntity:GetCurrentVisionRange())
         
         local nCount = 0
@@ -66,7 +66,7 @@ function MoveAwayFromEnemies(hEntity, hAutomator)
 end
 
 function MoveTowardsEnemies(hEntity, hAutomator)
-    if hEntity and hAutomator then
+    if IsValidEntity(hEntity) and hAutomator then
         local tEnemiesList = GetAllUnits(hEntity, DOTA_UNIT_TARGET_TEAM_ENEMY, 0.0, hEntity:GetCurrentVisionRange())
         
         local nCount = 0
@@ -96,7 +96,7 @@ function MoveTowardsEnemies(hEntity, hAutomator)
 end
 
 function AttackNearestEnemy(hEntity, hAutomator)
-    if hEntity and hTarget and hAutomator then
+    if IsValidEntity(hEntity) and hAutomator then
         local hTarget = GetNearestUnit(hEntity, DOTA_UNIT_TARGET_TEAM_ENEMY, 0.0, hEntity:GetCurrentVisionRange())
         if hTarget and not hEntity:IsAttackingEntity(hTarget) then
             if hTarget:IsInvulnerable() or hTarget:IsAttackImmune() then 
@@ -112,7 +112,7 @@ function AttackNearestEnemy(hEntity, hAutomator)
 end
 
 function AttackTarget(hEntity, hAutomator, hTarget)
-    if hEntity and hAutomator and hTarget then
+    if IsValidEntity(hEntity) and hAutomator and hTarget then
         if hTarget and not hEntity:IsAttackingEntity(hTarget) then
             if hTarget:IsInvulnerable() or hTarget:IsAttackImmune() then 
                 return false

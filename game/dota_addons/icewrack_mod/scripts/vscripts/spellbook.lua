@@ -7,20 +7,20 @@ require("ext_entity")
 
 if CIcewrackSpellbook == nil then
 	CIcewrackSpellbook = class({
-		constructor = function(self, hEntity)
-			if not hEntity or not hEntity._bIsExtendedEntity then
-				error("hEntity must be a valid extended entity")
+		constructor = function(self, hExtEntity)
+			if not IsValidExtendedEntity(hExtEntity) then
+				error("hExtEntity must be a valid extended entity")
 			end
 			
 			self._bIsSpellbook = true
-			self._hEntity = hEntity
-			hEntity._hSpellbook = self
+			self._hExtEntity = hExtEntity
+			hExtEntity._hSpellbook = self
 			
 			self._tCooldowns = {}
 			self._tKnownAbilities = {}
 			self._tBoundAbilities = {}
-			for i=0,(hEntity:GetAbilityCount() - 1) do
-				local hAbility = hEntity:GetAbilityByIndex(i)
+			for i=0,(hExtEntity:GetAbilityCount() - 1) do
+				local hAbility = hExtEntity:GetAbilityByIndex(i)
 				if hAbility then
 					if string.find(hAbility:GetAbilityName(), "ui_spellbar_empty") == nil then
 						self._tKnownAbilities[hAbility:GetAbilityName()] = hAbility:GetLevel()
@@ -29,7 +29,7 @@ if CIcewrackSpellbook == nil then
 				end
 			end
 			
-			ListenToGameEvent("dota_player_used_ability", Dynamic_Wrap(CIcewrackSpellbook, "OnAbilityUsed"), self)
+			self._nCooldownListenerID = ListenToGameEvent("dota_player_used_ability", Dynamic_Wrap(CIcewrackSpellbook, "OnAbilityUsed"), self)
 		end},
 		--TODO: Change these to user-set binds instead
 		{ _shActiveSpellbook = nil,
@@ -38,16 +38,16 @@ end
 
 function CIcewrackSpellbook:UnbindAbility(nSlot)
 	if self._tBoundAbilities[nSlot] and string.find(self._tBoundAbilities[nSlot], "ui_spellbar_empty") == nil then
-		local hEntity = self._hEntity
-		local hAbility = hEntity:FindAbilityByName(self._tBoundAbilities[nSlot])
+		local hExtEntity = self._hExtEntity
+		local hAbility = hExtEntity:FindAbilityByName(self._tBoundAbilities[nSlot])
 		if hAbility then
 			local szAbilityName = hAbility:GetAbilityName()
 			local szEmptySlotName = "ui_spellbar_empty" .. (nSlot + 1)
-			hEntity:AddAbility(szEmptySlotName)
-			hEntity:SwapAbilities(szEmptySlotName, szAbilityName, true, true)
-			hEntity:RemoveAbility(szAbilityName)
+			hExtEntity:AddAbility(szEmptySlotName)
+			hExtEntity:SwapAbilities(szEmptySlotName, szAbilityName, true, true)
+			hExtEntity:RemoveAbility(szAbilityName)
 			self._tBoundAbilities[nSlot] = szEmptySlotName
-			self._bRefreshFlag = true
+			FireGameEvent("iw_spellbook_refresh", {})
 		end
 	end
 end
@@ -58,7 +58,7 @@ function CIcewrackSpellbook:BindAbility(szNewAbilityName, nSlot)
 		error("nSlot must be between an integer between [0, 5]")
 	end
 	
-	local hEntity = self._hEntity
+	local hEntity = self._hExtEntity._hBaseEntity
 	local nAbilityLevel = self._tKnownAbilities[szNewAbilityName]
 	if nAbilityLevel then
 		if not self._tBoundAbilities[nSlot] then
@@ -109,7 +109,7 @@ function CIcewrackSpellbook:BindAbility(szNewAbilityName, nSlot)
 			self._tBoundAbilities[nSlot] = szNewAbilityName
 			SendToConsole("bind \"" .. CIcewrackSpellbook._stKeybindTable[nSlot] .. "\" \"dota_ability_execute " .. hNewAbility:GetAbilityIndex() .. "\"")
 		end
-		self._bRefreshFlag = true
+		FireGameEvent("iw_spellbook_refresh", {})
 	end
 end
 
@@ -155,7 +155,7 @@ function CIcewrackSpellbook:RefreshBinds()
 		SendToConsole("unbind \"" .. CIcewrackSpellbook._stKeybindTable[i])
 		local szAbilityName = self._tBoundAbilities[i]
 		if szAbilityName then
-			local hAbility = self._hEntity:FindAbilityByName(szAbilityName)
+			local hAbility = self._hExtEntity:FindAbilityByName(szAbilityName)
 			if hAbility then
 				SendToConsole("bind \"" .. CIcewrackSpellbook._stKeybindTable[i] .. "\" \"dota_ability_execute " .. hAbility:GetAbilityIndex() .. "\"")
 			else
@@ -183,25 +183,28 @@ function CIcewrackSpellbook:SetCooldown(szAbilityName, fDuration)
 end
 
 function CIcewrackSpellbook:OnAbilityUsed(args)
-	local hEntity = self._hEntity
-	local hOwner = hEntity:GetOwner()
-	if hOwner then
-		local nPlayerID = hOwner:GetPlayerID()
-		if args.PlayerID == (nPlayerID + 1) then
-			if self._tKnownAbilities[args.abilityname] then
-				local hAbility = hEntity:FindAbilityByName(args.abilityname)
-				if hAbility then
-					self:SetCooldown(args.abilityname, hAbility:GetCooldownTimeRemaining())
+	local hEntity = self._hExtEntity._hBaseEntity
+	if IsValidEntity(hEntity) then
+		local hOwner = hEntity:GetOwner()
+		if IsValidEntity(hOwner) then
+			local nPlayerID = hOwner:GetPlayerID()
+			if args.PlayerID == (nPlayerID + 1) then
+				if self._tKnownAbilities[args.abilityname] then
+					local hAbility = hEntity:FindAbilityByName(args.abilityname)
+					if hAbility then
+						self:SetCooldown(args.abilityname, hAbility:GetCooldownTimeRemaining())
+					end
 				end
 			end
 		end
+	else
+		StopListeningToGameEvent(self._nCooldownListenerID)
 	end
-	
 end
 
-function SetActiveSpellbookEntity(hEntity)
-	if hEntity and hEntity._hSpellbook then
-		CIcewrackSpellbook._shActiveSpellbook = hEntity._hSpellbook
+function SetActiveSpellbookEntity(hExtEntity)
+	if IsValidExtendedEntity(hExtEntity) and hExtEntity._hSpellbook then
+		CIcewrackSpellbook._shActiveSpellbook = hExtEntity._hSpellbook
 		CIcewrackSpellbook._shActiveSpellbook:RefreshBinds()
 	end
 end

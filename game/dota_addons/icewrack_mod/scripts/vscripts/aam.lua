@@ -13,7 +13,7 @@ require("aam_internal")
 
 if CActionAutomatorModule == nil then
     CActionAutomatorModule = class({constructor = function(self, hEntity)
-        if not hEntity or not hEntity._bIsExtendedEntity then
+        if not IsValidExtendedEntity(hEntity) then
             error("hEntity must be a valid extended entity")
         end
         if hEntity._hActionAutomatorModule then
@@ -75,7 +75,6 @@ function CActionAutomatorModule:PerformAction(tActionDef)
             return false
         end
 		
-        
         local nFlagOffset = 0
         local nFlagNumber = 1
         for k,v in ipairs(stConditionTable) do
@@ -97,16 +96,13 @@ function CActionAutomatorModule:PerformAction(tActionDef)
         end
         
         for k,v in pairs(tTargetList) do
-            if not (v:IsAlive() or bDeadFlag) or v:IsInvulnerable() or not hEntity:CanEntityBeSeenByMyTeam(v) then
+            if not IsValidEntity(v) or not (v:IsAlive() or bDeadFlag) or v:IsInvulnerable() or not hEntity:CanEntityBeSeenByMyTeam(v) then
                 tTargetList[k] = nil
             end
         end
         
         local hSelectorFunction = stAAMSelectorTable[nTargetSelector]
         local hTarget = hSelectorFunction(self._hEntity, tTargetList)
-        if not hTarget then
-            return false
-        end
         
         local hInternalAction = stInternalAbilityLookupTable[hAction]
         if hInternalAction then

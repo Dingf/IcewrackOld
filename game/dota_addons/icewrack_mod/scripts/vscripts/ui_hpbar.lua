@@ -15,7 +15,7 @@ if CIcewrackUIHPBar == nil then
 end
 
 function CIcewrackUIHPBar:AttachEntityHook(hEntity)
-	if hEntity then
+	if IsValidEntity(hEntity) then
 		hEntity.HPBarHookFunction = 
 			function()
 				if CIcewrackUIHPBar._nLastActiveCount ~= (CIcewrackUIHPBar._nCurrentCount - 1) then
@@ -32,7 +32,7 @@ function CIcewrackUIHPBar:RegisterHandler()
 	CTimer(function()
 			if self._nCurrentCount == self._nLastActiveCount then
 				local hExtEntity = LookupExtendedEntity(self._hSelectedEntity)
-				if hExtEntity and hExtEntity._bIsExtendedEntity then
+				if IsValidExtendedEntity(hExtEntity) then
 					FireGameEvent("iw_ui_hpbar_return_values", 
 						{ name = hExtEntity:GetDisplayName(),
 						  current_hp = hExtEntity:GetHealth(),

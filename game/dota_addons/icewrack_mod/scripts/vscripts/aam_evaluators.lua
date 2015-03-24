@@ -206,7 +206,7 @@ function TargetUnitClass(nValue, tTargetList)
     local tNewTargetList = {}
     for k,v in pairs(tTargetList) do
 		local hExtEntity = LookupExtendedEntity(v)
-        if hExtEntity and hExtEntity._bIsExtendedEntity and hExtEntity:GetUnitClass() == nValue then
+        if IsValidExtendedEntity(hExtEntity) and hExtEntity:GetUnitClass() == nValue then
             table.insert(tNewTargetList, v)
         end
     end
@@ -217,7 +217,7 @@ function TargetUnitType(nValue, tTargetList)
     local tNewTargetList = {}
     for k,v in pairs(tTargetList) do
 		local hExtEntity = LookupExtendedEntity(v)
-        if hExtEntity and hExtEntity._bIsExtendedEntity and hExtEntity:GetUnitType() == nValue then
+        if IsValidExtendedEntity(hExtEntity) and hExtEntity:GetUnitType() == nValue then
             table.insert(tNewTargetList, v)
         end
     end
@@ -228,7 +228,7 @@ function TargetUnitSubtype(nValue, tTargetList)
     local tNewTargetList = {}
     for k,v in pairs(tTargetList) do
 		local hExtEntity = LookupExtendedEntity(v)
-        if hExtEntity and hExtEntity._bIsExtendedEntity and hExtEntity:GetUnitSubtype() == nValue then
+        if IsValidExtendedEntity(hExtEntity) and hExtEntity:GetUnitSubtype() == nValue then
             table.insert(tNewTargetList, v)
         end
     end
@@ -271,14 +271,16 @@ end
 
 function TargetNotSelf(nValue, tTargetList, hAutomator)
     local tNewTargetList = {}
-	local hEntity = hAutomator:GetEntity()
-    local hBaseEntity = hEntity._hBaseEntity
-    if hEntity._bIsExtendedEntity and hBaseEntity then
-        for k,v in pairs(tTargetList) do
-            if v ~= hBaseEntity then
-                table.insert(tNewTargetList, v)
+	local hExtEntity = hAutomator:GetEntity()
+	if IsValidExtendedEntity(hExtEntity) then
+        local hEntity = hExtEntity._hBaseEntity
+        if IsValidEntity(hEntity) then
+            for k,v in pairs(tTargetList) do
+                if v ~= hEntity then
+                    table.insert(tNewTargetList, v)
+                end
             end
-        end
+		end
     end
     return tNewTargetList
 end
@@ -318,7 +320,7 @@ function TargetHasStatusEffect(nValue, tTargetList)
 	local tNewTargetList = {}
 	for k,v in pairs(tTargetList) do
 		local hExtEntity = LookupExtendedEntity(v)
-		if hExtEntity and hExtEntity._bIsExtendedEntity then
+		if IsValidExtendedEntity(hExtEntity) then
 			local tModifierList = hExtEntity:GetExtendedModifierList()
 			for k2,v2 in pairs(tModifierList) do
 				local nStatusEffect = k2:GetStatusEffect()
@@ -368,7 +370,7 @@ function TargetAttacking(nValue, tTargetList, hAutomator)
 	local tNewTargetList = {}
 	for k,v in pairs(tTargetList) do
 		local hExtEntity = LookupExtendedEntity(v)
-		if hExtEntity and hExtEntity._bIsExtendedEntity then
+		if IsValidExtendedEntity(hExtEntity) then
 			local tAttackingList = hExtEntity:GetAttackingList()
 			local tSavedTargets = hAutomator._tSavedTargets
 			if tAttackingList and tSavedTargets and next(tSavedTargets) then
@@ -389,7 +391,7 @@ function TargetAttackedBy(nValue, tTargetList, hAutomator)
     local tNewTargetList = {}
 	for k,v in pairs(tTargetList) do
 		local hExtEntity = LookupExtendedEntity(v)
-		if hExtEntity and hExtEntity._bIsExtendedEntity then
+		if IsValidExtendedEntity(hExtEntity) then
 			local tAttackedByList = hExtEntity:GetAttackedByList()
 			local tSavedTargets = hAutomator._tSavedTargets
 			if tAttackedByList and tSavedTargets and next(tSavedTargets) then

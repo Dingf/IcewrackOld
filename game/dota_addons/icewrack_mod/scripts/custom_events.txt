@@ -38,6 +38,8 @@
 		"damage_type"	"byte"
 	}
 
+        "iw_spellbook_refresh" {}
+
 	//ScaleformSave
 	"iw_ui_sfs_make_save_list"
 	{

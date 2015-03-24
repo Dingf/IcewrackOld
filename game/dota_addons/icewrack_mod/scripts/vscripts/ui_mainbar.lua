@@ -5,6 +5,8 @@ require("spellbook")
 
 if CIcewrackUIMainBar == nil then
 	CIcewrackUIMainBar = { _shSelectedEntity = nil }
+	ListenToGameEvent("entity_killed", Dynamic_Wrap(CIcewrackUIMainBar, "OnEntityKilled"), CIcewrackUIMainBar)
+	ListenToGameEvent("iw_spellbook_refresh", Dynamic_Wrap(CIcewrackUIMainBar, "OnSpellbookRefresh"), CIcewrackUIMainBar)
 end
 
 function CIcewrackUIMainBar:ReturnValues()
@@ -69,12 +71,30 @@ function CIcewrackUIMainBar:ReturnKnownList()
 	end
 end
 
+function CIcewrackUIMainBar:OnEntityKilled(keys)
+    local hEntity = EntIndexToHScript(keys.entindex_killed)
+	if IsValidEntity(hEntity) and self._shSelectedEntity and self._shSelectedEntity._hBaseEntity == hEntity then
+	    self:ReturnValues()
+		self._shSelectedEntity = nil
+	end
+end
+
+function CIcewrackUIMainBar:OnSpellbookRefresh()
+    if self._shSelectedEntity then
+		local hSpellbook = self._shSelectedEntity._hSpellbook
+		if hSpellbook then
+			self:ReturnAbilities()
+			self:ReturnKnownList()
+		end
+	end
+end
+
 function CIcewrackUIMainBar:RegisterHandlers()
 	Convars:RegisterCommand("iw_ui_mainbar_request_values",
 		function(szCmdName, szArgs)
 			if szArgs then
 				local hEntity = EntIndexToHScript(tonumber(szArgs))
-				if hEntity then
+				if IsValidEntity(hEntity) then
 					local hExtEntity = LookupExtendedEntity(hEntity)
 					if hExtEntity then
 						local nTeam = PlayerResource:GetTeam(0)
@@ -91,7 +111,7 @@ function CIcewrackUIMainBar:RegisterHandlers()
 		function(szCmdName, szArgs)
 			if szArgs then
 				local hEntity = EntIndexToHScript(tonumber(szArgs))
-				if hEntity then
+				if IsValidEntity(hEntity) then
 					local hExtEntity = LookupExtendedEntity(hEntity)
 					if hExtEntity then
 						local nTeam = PlayerResource:GetTeam(0)
@@ -108,7 +128,7 @@ function CIcewrackUIMainBar:RegisterHandlers()
 		function(szCmdName, szArgs)
 			if szArgs then
 				local hEntity = EntIndexToHScript(tonumber(szArgs))
-				if hEntity then
+				if IsValidEntity(hEntity) then
 					local hExtEntity = LookupExtendedEntity(hEntity)
 					if hExtEntity then
 						local nTeam = PlayerResource:GetTeam(0)
@@ -140,30 +160,10 @@ function CIcewrackUIMainBar:RegisterHandlers()
 				end
 			end
 		end, "Returns the requested unit's known abilities to the mainbar UI.", 0)
-			
-	Convars:RegisterCommand("iw_unpause",
-		function(szCmdName, szArgs)
-				SendToConsole("host_timescale 1")
-			end, "Pauses the game, but still allows orders to be executed.", 0)
-		
-	Convars:RegisterCommand("iw_pause",
-		function(szCmdName, szArgs)
-				SendToConsole("host_timescale 0")
-			end, "Pauses the game, but still allows orders to be executed.", 0)
-			
-		
+	
 	CTimer(function()
-			if self._shSelectedEntity then
-				local hSpellbook = self._shSelectedEntity._hSpellbook
-				if hSpellbook and hSpellbook._bRefreshFlag then
-					hSpellbook._bRefreshFlag = nil
-					self:ReturnAbilities()
-					self:ReturnKnownList()
-				end
-				if not self._shSelectedEntity:IsAlive() then
-					self:ReturnValues()
-					self._shSelectedEntity = nil
-				end
-			end
-		end, 0, 0.1)
+			SendToConsole("alias iw_pause \"host_timescale 1; bind SPACE iw_unpause\"")
+			SendToConsole("alias iw_unpause \"host_timescale 0; bind SPACE iw_pause\"")
+			SendToConsole("bind SPACE iw_pause")
+		end, 0.1)
 end

@@ -139,7 +139,7 @@ if CIcewrackExtendedEntity == nil then
     
     CIcewrackExtendedEntity = class({
 		constructor = function(self, hEntity)
-			if not hEntity then
+			if not IsValidEntity(hEntity) then
 				error("Error creating extended entity: hEntity must be a valid entity")
 			end
 			
@@ -446,15 +446,6 @@ function CIcewrackExtendedEntity:GetAttackedByList()
 	return self._tAttackedBy
 end
 
---This is to prevent things like illusions which are instantly destroyed from throwing errors when we check to see if they're alive
-function CIcewrackExtendedEntity:IsAlive()
-	if pcall(self._hBaseEntity.IsAlive, self._hBaseEntity) then
-		return self._hBaseEntity:IsAlive(), false
-	else
-		return false, true
-	end
-end
-
 function CIcewrackExtendedEntity:RefreshHealthRegen()
 	local fMaxLifestealPerSec = self:GetMaxHealth() * self.LifestealRate
 	self:SetBaseHealthRegen(self.HealthRegen + self.HealthRegenBonus + self:GetAttributeValue(IW_ATTRIBUTE_VIGOR) * 0.05 + math.min(self.LifestealRegenBonus, fMaxLifestealPerSec))
@@ -609,9 +600,9 @@ end
 
 function DrainStamina(args)
 	local hEntity = args.caster
-	if hEntity then
+	if IsValidEntity(hEntity) then
 		local hExtEntity = LookupExtendedEntity(hEntity)
-		if hExtEntity and hExtEntity._bIsExtendedEntity then
+		if IsValidExtendedEntity(hExtEntity) then
 			hExtEntity._nStaminaRegenTime = GameRules:GetGameTime() + 3.0
 			--TODO: Make inventory factor into stamina drain?
 			if hExtEntity.Stamina > 0 then
@@ -625,8 +616,12 @@ function DrainStamina(args)
 	end
 end
 
+function IsValidExtendedEntity(hExtEntity)
+    return (hExtEntity and IsValidEntity(hExtEntity._hBaseEntity) and hExtEntity._bIsExtendedEntity)
+end
+
 function LookupExtendedEntity(hEntity)
-    if hEntity then
+    if IsValidEntity(hEntity) then
         return CIcewrackExtendedEntity._stLookupTable[hEntity]
     else
         return nil

@@ -8,14 +8,14 @@ require("ext_item")
 
 if CIcewrackInventory == nil then
     CIcewrackInventory = class({
-		constructor = function(self, hEntity)
-			if not hEntity or not hEntity._bIsExtendedEntity then
-				error("hEntity must be a valid extended entity")
+		constructor = function(self, hExtEntity)
+			if not IsValidExtendedEntity(hExtEntity) then
+				error("hExtEntity must be a valid extended entity")
 			end
 			
 			self._bIsInventory = true
-			self._hEntity = hEntity
-			hEntity._hInventory = self
+			self._hExtEntity = hExtEntity
+			hExtEntity._hInventory = self
 		
 			self._tItemList = {}
 			self._tInventoryUnits = {}
@@ -64,7 +64,7 @@ end
 function CIcewrackInventory:DeleteItem(hItem)
     local hInventoryUnit = self._tItemList[hItem]
     if hInventoryUnit then
-		local hEntity = self._hEntity
+		local hEntity = self._hExtEntity._hBaseEntity
 		local hOwner = hEntity:GetOwner()
 		CreateUnitByNameAsync("iw_npc_inventory_storage_dummy", hEntity:GetAbsOrigin(), false, hOwner, hOwner, hEntity:GetTeamNumber(),
 			function(hCleanupDummy)
@@ -96,10 +96,10 @@ function CIcewrackInventory:DropItem(szName, nCount)
             local nStackCount = hStoredItem:GetStackCount()
             if nCount < nStackCount then
                 hStoredItem:ModifyStackCount(-nCount)
-                local hOwner = self._hEntity:GetOwner()
+                local hOwner = self._hExtEntity:GetOwner()
                 local hNewItem = CreateItem(k:GetName(), hOwner, hOwner)
                 local hNewExtItem = CIcewrackExtendedItem(hNewItem)
-                local hItemDrop = CreateItemOnPositionSync(self._hEntity:GetAbsOrigin(), hNewItem)
+                local hItemDrop = CreateItemOnPositionSync(self._hExtEntity:GetAbsOrigin(), hNewItem)
                 hNewExtItem:SetStackCount(nCount)
                 return true
             else
@@ -117,21 +117,21 @@ function CIcewrackInventory:DropItem(szName, nCount)
     return false
 end
 
-function CIcewrackInventory:EquipItem(hItem, nSlot)
-	local hEntity = self._hEntity
-    if hEntity and hItem and hEntity._bIsExtendedEntity and hItem._bIsExtendedItem then
-		if self._tEquippedItems[nSlot] ~= nil and bit32.band(hItem._nItemSlots, bit32.lshift(1, nSlot - 1)) ~= 0 then 
+function CIcewrackInventory:EquipItem(hExtItem, nSlot)
+	local hExtEntity = self._hExtEntity
+    if IsValidExtendedEntity(hExtEntity) and IsValidExtendedItem(hExtItem) then
+		if self._tEquippedItems[nSlot] ~= nil and bit32.band(hExtItem._nItemSlots, bit32.lshift(1, nSlot - 1)) ~= 0 then 
 			if self._tEquippedItems[nSlot] ~= 0 then
 				if not self:UnequipItem(nSlot) then
 					return false
 				end
 			end
-			if hItem._tProperties then
-				hEntity:ApplyModifierProperties(hItem._tProperties)
+			if hExtItem._tProperties then
+				hExtEntity:ApplyModifierProperties(hExtItem._tProperties)
 			end
-			local szModifierName = "modifier_" .. hItem:GetName()
-			hItem:ApplyDataDrivenModifier(hEntity, hEntity, szModifierName, {})
-			self._tEquippedItems[nSlot] = hItem
+			local szModifierName = "modifier_" .. hExtItem:GetName()
+			hExtItem:ApplyDataDrivenModifier(hExtEntity._hBaseEntity, hExtEntity._hBaseEntity, szModifierName, {})
+			self._tEquippedItems[nSlot] = hExtItem
 			return true
 		end
 	end
@@ -139,17 +139,17 @@ function CIcewrackInventory:EquipItem(hItem, nSlot)
 end
 
 function CIcewrackInventory:UnequipItem(nSlot)
-	local hEntity = self._hEntity
-    local hItem = self._tEquippedItems[nSlot]
-	if hEntity and hItem and hEntity._bIsExtendedEntity and hItem._bIsExtendedItem then
-		if bit32.band(hItem._nItemFlags, IEI_ITEM_FLAG_CANNOT_BE_UNEQUIPPED) ~= 0 then
+	local hExtEntity = self._hExtEntity
+    local hExtItem = self._tEquippedItems[nSlot]
+	if IsValidExtendedEntity(hExtEntity) and IsValidExtendedEntity(hExtItem) then
+		if bit32.band(hExtItem._nItemFlags, IEI_ITEM_FLAG_CANNOT_BE_UNEQUIPPED) ~= 0 then
 			return false
 		end
-		if hItem._tProperties then
-			hEntity:ApplyModifierProperties(hItem._tProperties, true)
+		if hExtItem._tProperties then
+			hExtEntity:ApplyModifierProperties(hExtItem._tProperties, true)
 		end
-		local szModifierName = "modifier_" .. hItem:GetName()
-		hEntity:RemoveModifierByName(szModifierName)
+		local szModifierName = "modifier_" .. hExtItem:GetName()
+		hExtEntity:RemoveModifierByName(szModifierName)
 		self._tEquippedItems[nSlot] = 0
 		return true
 	end
@@ -158,20 +158,22 @@ end
 
 function CIcewrackInventory:RefreshInventory()
 	for k,v in pairs(self._tEquippedItems) do
-		local hItem = self._tEquippedItems[k]
-		if hItem ~= 0 then
+		local hExtItem = self._tEquippedItems[k]
+		if hExtItem ~= 0 then
 			self:UnequipItem(k)
-			self:EquipItem(hItem, k)
+			self:EquipItem(hExtItem, k)
 		end
 	end
 end
 
-function CIcewrackInventory:PickupItem(hInventoryUnit, hItem)
-	self._hEntity:MoveToNPCToGiveItem(hInventoryUnit, hItem)
-	for k,v in pairs(self._tEquippedItems) do
-		if v == 0 and bit32.band(hItem._nItemSlots, bit32.lshift(1, k - 1)) ~= 0 then
-			if self:EquipItem(hItem, k) then
-				break
+function CIcewrackInventory:PickupItem(hInventoryUnit, hExtItem)
+    if IsValidExtendedItem(hExtItem) then
+		self._hExtEntity:MoveToNPCToGiveItem(hInventoryUnit, hExtItem._hBaseItem)
+		for k,v in pairs(self._tEquippedItems) do
+			if v == 0 and bit32.band(hExtItem._nItemSlots, bit32.lshift(1, k - 1)) ~= 0 then
+				if self:EquipItem(hExtItem, k) then
+					break
+				end
 			end
 		end
 	end
@@ -179,9 +181,9 @@ end
 
 function CIcewrackInventory:AddItem(hItem)
     local hExtItem = LookupExtendedItem(hItem) or CIcewrackExtendedItem(hItem)
-    if hExtItem and hExtItem._bIsExtendedItem then
+    if IsValidExtendedItem(hExtItem) then
         local nStackCount = hExtItem:GetStackCount()
-        if self:GetCurrentWeight() + (hExtItem:GetWeight() * nStackCount) > self._hEntity:GetCarryCapacity() then
+        if self:GetCurrentWeight() + (hExtItem:GetWeight() * nStackCount) > self._hExtEntity:GetCarryCapacity() then
             --Trigger over carry capacity message in the UI (TODO)
             print("DEBUG: Unit is carrying too much!")
             return false
@@ -217,7 +219,7 @@ function CIcewrackInventory:AddItem(hItem)
         end
         
         --If not, make a new dummy unit and add it to the list of dummy units
-		local hEntity = self._hEntity
+		local hEntity = self._hExtEntity._hBaseEntity
 		local hOwner = hEntity:GetOwner()
 		CreateUnitByNameAsync("iw_npc_inventory_storage_dummy", hEntity:GetAbsOrigin(), false, hOwner, hOwner, hEntity:GetTeamNumber(),
 			function(hInventoryUnit)
@@ -246,7 +248,7 @@ end
 
 function CIcewrackInventory:DebugPrint()
     print("DEBUG: Printing items in inventory")
-    print("DEBUG: Carry capacity = " .. self:GetCurrentWeight() .. "/" .. self._hEntity:GetCarryCapacity())
+    print("DEBUG: Carry capacity = " .. self:GetCurrentWeight() .. "/" .. self._hExtEntity:GetCarryCapacity())
     --Note: If you call DebugPrint() immediately after picking up an item, it won't show up below (since there is a 0.1s delay between the item pickup)
     for k,v in pairs(self._tInventoryUnits) do
         for i=0,5 do

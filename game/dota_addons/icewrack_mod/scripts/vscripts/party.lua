@@ -26,14 +26,14 @@ function CIcewrackParty:GetRosterSize()
 end
 
 function CIcewrackParty:IsPartyMember(hEntity)
-    if hEntity and hEntity:IsHero() then
+    if IsValidEntity(hEntity) and hEntity:IsHero() then
         return self._tPartyRoster[hEntity]
     end
 	return false
 end
 
 function CIcewrackParty:IsActivePartyMember(hEntity)
-    if hEntity and hEntity:IsHero() then
+    if IsValidEntity(hEntity) and hEntity:IsHero() then
         return self._tActiveMembers[hEntity]
     end
 	return false
@@ -57,7 +57,7 @@ end
 
 --Note: This allows you to have more than 5 heroes active at any one time, but you can only have 5 heroes when you leave camp.
 function CIcewrackParty:AddMember(hEntity)
-    if not hEntity or not hEntity:IsHero() then
+    if not IsValidEntity(hEntity) or not hEntity:IsHero() then
         error("hEntity must be a valid hero entity")
     end
 	

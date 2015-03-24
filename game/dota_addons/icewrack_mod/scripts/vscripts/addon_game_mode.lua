@@ -84,7 +84,7 @@ end
 
 function CIcewrackGameMode:OnSpawned(keys)
     local hEntity = EntIndexToHScript(keys.entindex)
-	if string.find(hEntity:GetUnitName(), "dummy") == nil and string.find(hEntity:GetUnitName(), "thinker") == nil then
+	if IsValidEntity(hEntity) and string.find(hEntity:GetUnitName(), "dummy") == nil and string.find(hEntity:GetUnitName(), "thinker") == nil then
 		--if not hEntity.HPBarHookFunction then
 		--	CIcewrackUIHPBar:AttachEntityHook(hEntity)
 		--end
@@ -130,10 +130,10 @@ end
 
 function CIcewrackGameMode:OnEntityKilled(keys)
     local hEntity = EntIndexToHScript(keys.entindex_killed)
-	if hEntity and not hEntity:IsHero() then
+	if IsValidEntity(hEntity) and not hEntity:IsHero() then
 		if string.find(hEntity:GetUnitName(), "dummy") == nil then
 			local hExtEntity = LookupExtendedEntity(hEntity)
-			if hExtEntity and hExtEntity._bIsExtendedEntity then
+			if IsValidExtendedEntity(hExtEntity) then
 				CIcewrackExtendedEntity._stLookupTable[hEntity] = nil
 				local hCorpseDummy = CreateUnitByName("iw_npc_corpse_dummy", hEntity:GetAbsOrigin(), false, nil, nil, PlayerResource:GetTeam(0))
 				if hCorpseDummy then
@@ -150,9 +150,7 @@ function CIcewrackGameMode:OnEntityKilled(keys)
 					hCorpseDummy:FindAbilityByName("internal_corpse_vision_buff"):ApplyDataDrivenModifier(hCorpseDummy, hCorpseDummy, "modifier_internal_corpse_vision_buff", {})
 					
 					hEntity:SetModelScale(0.0)
-					CTimer(function()
-							hExtEntity:DeleteEntity()
-						end, 1.0)
+					CTimer(function() hExtEntity:DeleteEntity() end, 1.0)
 				end
 			end
 		end
@@ -160,11 +158,10 @@ function CIcewrackGameMode:OnEntityKilled(keys)
 end
 
 function CIcewrackGameMode:OnLevelUp(keys)
-    local hPlayer = PlayerResource:GetPlayer(keys.player - 1)
     local hEntity = PlayerResource:GetSelectedHeroEntity(keys.player - 1)
-    if hEntity then
+    if IsValidEntity(hEntity) then
         local hExtEntity = LookupExtendedEntity(hEntity)
-        if hExtEntity and hExtEntity._bIsExtendedEntity then
+        if IsValidExtendedEntity(hExtEntity) then
 			--Give 7 attribute points for the player to spend
             hExtEntity._tPropertiesBase["AttributePoints"] = hExtEntity.AttributePoints + 7
 			--Apply attribute growth to the hero
@@ -181,9 +178,9 @@ end
 function CIcewrackGameMode:OnItemPickedUp(keys)
     local hEntity = EntIndexToHScript(keys.HeroEntityIndex)
     local hItem = EntIndexToHScript(keys.ItemEntityIndex)
-    if hEntity and hItem then
+    if IsValidEntity(hEntity) and IsValidEntity(hItem) then
         local hExtEntity = LookupExtendedEntity(hEntity)
-        if hExtEntity and hExtEntity._bIsExtendedEntity then
+        if IsValidExtendedEntity(hExtEntity) then
             local hInventory = hExtEntity._hInventory
 			if hInventory then
 				hInventory:AddItem(hItem)
