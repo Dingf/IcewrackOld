@@ -287,10 +287,34 @@ function CIcewrackSaveManager:GetSaveList()
 	--TODO
 end
 
-function CIcewrackSaveManager:LoadSpawnsFromFile(szFilename)
-	local tSpawnList = LoadKeyValues(szFilename)
+function CIcewrackSaveManager:LoadMapSpawns()
+	local szMapName = GetMapName()
+	local tWaypointList = LoadKeyValues("/scripts/maps/waypoints_" .. szMapName .. ".txt")
+	if tWaypointList then
+		local tWaypointTable = {}
+		for k,v in pairs(tWaypointList) do
+			local nWaypointID = tonumber(k)
+			if nWaypointID then
+				tWaypointTable[nWaypointID] = {}
+				tWaypointTable[nWaypointID]["Type"] = (v.Type == "WP_TYPE_RELATIVE")
+				tWaypointTable[nWaypointID]["Position"] = StringToVector(v.Position)
+				local tNextWaypointTable = {}
+				for k2,v2 in pairs(v.NextWaypoints) do
+					local nNextWaypointID = tonumber(k2)
+					if nNextWaypointID then
+						tNextWaypointTable[nNextWaypointID] = {}
+						for k3,v3 in pairs(v2) do
+							tNextWaypointTable[nNextWaypointID][tonumber(k3)] = v3
+						end
+					end
+				end
+				tWaypointTable[nWaypointID]["Next"] = tNextWaypointTable
+			end
+		end
+		CIcewrackNPC._stWaypointTable = tWaypointTable
+	end
+	local tSpawnList = LoadKeyValues("/scripts/maps/spawns_" .. szMapName .. ".txt")
 	if tSpawnList then
-		local tSpawnedUnits = {}
 		for k,v in pairs(tSpawnList) do
 			local bFindClearSpace = (not v.FindClearSpace) or (v.FindClearSpace == "TRUE")
 			local hEntity = nil
@@ -305,12 +329,24 @@ function CIcewrackSaveManager:LoadSpawnsFromFile(szFilename)
 			
 			if IsValidEntity(hEntity) then 
 				local hExtEntity = CIcewrackExtendedEntity(hEntity)
-				
-				CIcewrackNPC(hExtEntity, tonumber(k))
-				CIcewrackSpellbook(hExtEntity)
-				CIcewrackInventory(hExtEntity)
-				
-				tSpawnedUnits[tonumber(k)] = hEntity
+				if IsValidExtendedEntity(hExtEntity) then
+					if not hExtEntity._hSpellbook then
+						CIcewrackSpellbook(hExtEntity)
+					end
+					if not hExtEntity._hInventory then
+						CIcewrackInventory(hExtEntity)
+					end
+					
+					CIcewrackNPC(hExtEntity, tonumber(k))
+					if v.WaypointStart and v.WaypointEnd then
+						local hNPCEntity = LookupNPC(tonumber(k))
+						hNPCEntity._bWaypointActive = true
+						hNPCEntity._nLastWaypointID = v.WaypointStart
+						hNPCEntity._nNextWaypointID = v.WaypointEnd
+					end
+				else
+					error("Could not create extended entity for spawn " .. k)
+				end
 			end
 		end
 		
@@ -328,7 +364,5 @@ function CIcewrackSaveManager:LoadSpawnsFromFile(szFilename)
 				end
 			end
 		end
-		return tSpawnedUnits
 	end
-	return nil
 end

@@ -33,14 +33,25 @@ function Precache(context)
 end
 
 function Activate()
+	CIcewrackSaveManager:InitSaveManager()
 	CIcewrackMap1:InitMap()
 end
 
 function CIcewrackMap1:InitMap()
+	CIcewrackSaveManager:LoadMapSpawns()
+
 	Convars:SetInt("dota_camera_pitch_max", 60)
 	
-	CIcewrackSaveManager:InitSaveManager()
-	local tSpawnList = CIcewrackSaveManager:LoadSpawnsFromFile("/scripts/npc/spawns_map01.txt")
+	
+	
+	--[[local tSpawnList = CIcewrackSaveManager:LoadSpawnsFromFile("/scripts/maps/spawns_map01.txt")
+	
+	for k,v in pairs(_G) do
+		local asdf = string.lower(k)
+		--if string.find(asdf, "select") ~= nil then
+			print(k, asdf, v)
+		--end
+	end]]
 	
 	--[[local tPatrolList1 = { tSpawnList[52], tSpawnList[53], tSpawnList[54], tSpawnList[55], tSpawnList[56], tSpawnList[57] }
 	for k,v in pairs(tPatrolList1) do

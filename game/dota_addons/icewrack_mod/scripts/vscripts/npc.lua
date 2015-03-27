@@ -9,10 +9,7 @@ require("ext_entity")
 require("game_states")
 
 --Things to add
---  Talk/dialogue (if friendly)
 --  Trade options (if friendly)
---  Threat System
-
 
 tDialogueNodeValues = nil
 
@@ -44,6 +41,7 @@ if CIcewrackNPC == nil then
 				return CIcewrackNPC[k] or self._hExtEntity[k]
 			end})
 			
+			self._hLastAttackTarget = nil
 			self._tThreatTable = {}
 			self._fThreatRadius = 1200.0
 			
@@ -51,7 +49,6 @@ if CIcewrackNPC == nil then
 			
 			self._vOriginalLook = nil
 			self._hLookTarget = nil
-			CTimer(function() self:TurnToLookTarget() end, 0, TIMER_THINK_INTERVAL)
 			
 			self._tDialogueNodes = {}
 			for k,v in pairs(tDialogueNodeValues) do
@@ -60,12 +57,18 @@ if CIcewrackNPC == nil then
 				end
 			end
 			
-			self._nPatrolIndex = 0
-			self._tPatrolList = {}
+			self._bWaypointActive = false
+			self._nLastWaypointID = -1
+			self._nNextWaypointID = -1
 			
-		
+			self._bStuckFlag = true
+			self._vLastPosition = nil
+			self._nStuckCounter = 0
+			
+			CTimer(function() return self:OnThink() end, 0, TIMER_THINK_INTERVAL)
 		end},
-		{ _stRefIDLookupTable = {} },
+		{ _stWaypointTable = {},
+		  _stRefIDLookupTable = {} },
 		nil)
 end
 
@@ -74,13 +77,11 @@ function CIcewrackNPC:OnDamageTaken(keys)
     local hAttacker = EntIndexToHScript(keys.attacker)
     
     if IsValidEntity(hVictim) and IsValidEntity(hAttacker) then
-        if self._bIsThreatAI then
-            local fThreatMultiplier = keys.threat
-            if keys.crit then
-                fThreatMultiplier = fThreatMultiplier * 1.5
-            end
-            self:AddThreat(hAttacker, keys.damage * fThreatMultiplier)
+        local fThreatMultiplier = keys.threat
+        if keys.crit then
+            fThreatMultiplier = fThreatMultiplier * 1.5
         end
+        self:AddThreat(hAttacker, keys.damage * fThreatMultiplier)
     end
 end
 
@@ -96,19 +97,19 @@ function CIcewrackNPC:GetThreat(hEntity)
 end
 
 function CIcewrackNPC:GetHighestThreatTarget()
-    if self._tThreatTable ~= nil then
-        local hHighestTarget = nil
-        local fHighestThreat = -1
-        for k,v in pairs(self._tThreatTable) do
-            if not IsValidEntity(v) or not k:IsAlive() or k:GetTeamNumber() == self:GetTeamNumber() then
-                self._tThreatTable[k] = nil
-            elseif v > fHighestThreat and self:CanEntityBeSeenByMyTeam(k) and not k:IsInvulnerable() then
-                hHighestTarget = k
-                fHighestThreat = v
-            end
-        end
-        return hHighestTarget
-    end
+	if self._tThreatTable ~= nil then
+		local hHighestTarget = nil
+		local fHighestThreat = -1
+		for k,v in pairs(self._tThreatTable) do
+			if not IsValidEntity(k) or not k:IsAlive() or k:GetTeamNumber() == self:GetTeamNumber() then
+				self._tThreatTable[k] = nil
+			elseif v > fHighestThreat and self:CanEntityBeSeenByMyTeam(k) and not k:IsInvulnerable() then
+				hHighestTarget = k
+				fHighestThreat = v
+			end
+		end
+		return hHighestTarget
+	end
     return nil
 end
 
@@ -125,28 +126,22 @@ function CIcewrackNPC:AddThreat(hEntity, fAmount)
     end
 end
 
---[[function CIcewrackNPC:AddPatrolPoint(vPatrolPoint, fDuration)
-	table.insert(self._tPatrolList, Vector(vPatrolPoint.x, vPatrolPoint.y, fDuration))
-end
-
-function CIcewrackNPC:SetPatrolState(bState)
-	if bState == true then
-		if #(self._tPatrolList) > 0 then
-			self._nPatrolIndex = 1
-			CTimer(function()
-					local tNextPoint = self._tPatrolList[self._nPatrolIndex]
-					
-				end, 0, TIMER_THINK_INTERVAL)
-		end
-	elseif bState == false
-		self._nPatrolIndex = 0
-	
-	end
-end]]
-
-function CIcewrackNPC:TurnToLookTarget()
-	if not self:IsAlive() then
+function CIcewrackNPC:OnThink()
+	--Stop thinking if we're already dead/deleted
+	if not IsValidExtendedEntity(self._hExtEntity) then
 		return TIMER_STOP
+	end
+		
+	local hExtEntity = self._hExtEntity
+    local hTarget = self:GetHighestThreatTarget()
+	
+	--Attack the highest threat target, if it exists
+	if hTarget then
+		if hTarget ~= self._hLastAttackTarget or not self:IsAttackingEntity(hTarget) then
+			self:IssueOrder(DOTA_UNIT_ORDER_ATTACK_TARGET, hTarget, nil, nil, nil)
+			self._hLastAttackTarget = hTarget
+		end
+	--Turn to face the player, if the player interacts with the NPC
 	elseif self._vOriginalLook then
 		local vNewLook = self._vOriginalLook
 		local vOldLook = self:GetForwardVector():Normalized()
@@ -183,7 +178,42 @@ function CIcewrackNPC:TurnToLookTarget()
 				self:SetForwardVector(Vector(fX * hCos(fTheta) - fY * hSin(fTheta), fY * hCos(fTheta) + fX * hSin(fTheta), fZ))
 			end
 		end
+	--Otherwise, move to the next waypoint, if it exists
+	elseif self._bWaypointActive then
+		--TODO: Handle relative waypoints as well
+		local tNextWaypoints = CIcewrackNPC._stWaypointTable[self._nNextWaypointID]
+		local vNextPosition = tNextWaypoints["Position"]
+		
+		if self:GetAbsOrigin() == self._vLastPosition and not self._bStuckFlag then
+			self._nStuckCounter = self._nStuckCounter + 1
+		else
+			self._nStuckCounter = 0
+			self._vLastPosition = self:GetAbsOrigin()
+		end
+		
+		if (self:GetAbsOrigin() - vNextPosition):Length2D() < 16.0 or self._nStuckCounter >= 30 then
+			self:Stop()
+			if self._nStuckCounter >= 30 then
+				self._bStuckFlag = true
+				self._nStuckCounter = 0
+			else
+				self._bStuckFlag = false
+			end
+			local fRand = RandomFloat(0.0, 1.0)
+			local tNewWaypoints = tNextWaypoints["Next"][self._nLastWaypointID]
+			for k,v in pairs(tNewWaypoints) do
+				if fRand <= v then
+					self._nLastWaypointID = self._nNextWaypointID
+					self._nNextWaypointID = k
+					break
+				else
+					fRand = fRand - v
+				end
+			end
+		end
+        self:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, vNextPosition, true)
 	end
+	return true
 end
 
 function CIcewrackNPC:ClearLookTarget()
@@ -214,7 +244,6 @@ function CIcewrackNPC:Talk()
 			end
 		end
 	end
-	
 	if tAvailableNodes and next(tAvailableNodes) then
 		local nBestPriority = 0
 		local nBestNodeID = nil

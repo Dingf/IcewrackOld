@@ -39,23 +39,39 @@ function CIcewrackParty:IsActivePartyMember(hEntity)
 	return false
 end
 
-function CIcewrackParty:SetMemberState(hEntity, bState)
-    if self._tPartyRoster[hEntity] ~= nil then
-		if bState == true and self._nActiveMembersSize >= 5 then
-			return
-		end
-        self._tPartyRoster[hEntity] = bState
-		if bState == false then
-			table.remove(self._tActiveMembers, hEntity)
+function CIcewrackParty:UnassignMember(hEntity)
+    for i=1,5 do
+	    if self._tActiveMembers[i] == hEntity then
+	        self._tActiveMembers[i] = nil
 			self._nActiveMembersSize = self._nActiveMembersSize - 1
-		else
-			table.insert(self._tActiveMembers, hEntity)
-			self._nActiveMembersSize = self._nActiveMembersSize + 1
+			return true
 		end
-    end
+	end
+	return false
 end
 
---Note: This allows you to have more than 5 heroes active at any one time, but you can only have 5 heroes when you leave camp.
+function CIcewrackParty:AssignMember(hEntity, nSlot)
+    if self._tPartyRoster[hEntity] then
+		if nSlot then
+			if nSlot > 0 and nSlot <= 5 and not self._tActiveMembers[nSlot] then
+				self._tActiveMembers[nSlot] = hEntity
+				self._nActiveMembersSize = self._nActiveMembersSize + 1
+				return true
+			end
+		else
+			for i=1,5 do
+				if not self._tActiveMembers[i] then
+					self._tActiveMembers[i] = hEntity
+					self._nActiveMembersSize = self._nActiveMembersSize + 1
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+--TODO: Handle having more than 5 party members (i.e. when a party member joins when you already have 5)
 function CIcewrackParty:AddMember(hEntity)
     if not IsValidEntity(hEntity) or not hEntity:IsHero() then
         error("hEntity must be a valid hero entity")
@@ -71,7 +87,6 @@ function CIcewrackParty:AddMember(hEntity)
 	if self._tPartyRoster[hEntity] == nil then
 		self._tPartyRoster[hEntity] = true
 		self._nPartyRosterSize = self._nPartyRosterSize + 1
-		table.insert(self._tActiveMembers, hEntity)
-		self._nActiveMembersSize = self._nActiveMembersSize + 1
+		self:AssignMember(hEntity)
 	end
 end

@@ -6,17 +6,17 @@ require("ext_entity")
 require("aam_search")
 
 --Skips the current action; useful for things like saving targets without performing actions
-function DoNothing(hEntity, hAutomator, hTarget)
+function DoNothing(hExtEntity, hAutomator, hTarget)
 	return false
 end
 
-function MoveAwayFromTarget(hEntity, hAutomator, hTarget)
-    if IsValidEntity(hEntity) and hAutomator and hTarget then
-        local vDirection = hEntity:GetAbsOrigin() - hTarget:GetAbsOrigin()
-        local vPosition = hEntity:GetAbsOrigin() + (vDirection:Normalized() * 100.0)
+function MoveAwayFromTarget(hExtEntity, hAutomator, hTarget)
+    if IsValidExtendedEntity(hExtEntity) and hAutomator and hTarget then
+        local vDirection = hExtEntity:GetAbsOrigin() - hTarget:GetAbsOrigin()
+        local vPosition = hExtEntity:GetAbsOrigin() + (vDirection:Normalized() * 100.0)
         
         if GridNav:IsTraversable(vPosition) and vDirection:Length2D() > 128.0 then
-            hEntity:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, GetGroundPosition(vPosition, hEntity), hEntity:IsAttacking())
+            hExtEntity:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, GetGroundPosition(vPosition, hExtEntity._hBaseEntity), hExtEntity:IsAttacking())
             return true
         else
             return false
@@ -25,14 +25,14 @@ function MoveAwayFromTarget(hEntity, hAutomator, hTarget)
     return false
 end
 
-function MoveTowardsTarget(hEntity, hAutomator, hTarget)
-    if IsValidEntity(hEntity) and hAutomator and hTarget then
-        local vDirection = hTarget:GetAbsOrigin() - hEntity:GetAbsOrigin()
-        local vPosition = hEntity:GetAbsOrigin() + (vDirection:Normalized() * 100.0)
+function MoveTowardsTarget(hExtEntity, hAutomator, hTarget)
+    if IsValidExtendedEntity(hExtEntity) and hAutomator and hTarget then
+        local vDirection = hTarget:GetAbsOrigin() - hExtEntity:GetAbsOrigin()
+        local vPosition = hExtEntity:GetAbsOrigin() + (vDirection:Normalized() * 100.0)
         
 		--TODO: Make this based on the hull size, rather than some arbitrary value
         if GridNav:IsTraversable(vPosition) and vDirection:Length2D() > 128.0 then
-            hEntity:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, GetGroundPosition(vPosition, hEntity), hEntity:IsAttacking())
+            hExtEntity:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, GetGroundPosition(vPosition, hExtEntity._hBaseEntity), hExtEntity:IsAttacking())
             return true
         else
             return false
@@ -40,22 +40,22 @@ function MoveTowardsTarget(hEntity, hAutomator, hTarget)
     end
 end
 
-function MoveAwayFromEnemies(hEntity, hAutomator)
-    if IsValidEntity(hEntity) and hAutomator then
-        local tEnemiesList = GetAllUnits(hEntity, DOTA_UNIT_TARGET_TEAM_ENEMY, 0.0, hEntity:GetCurrentVisionRange())
+function MoveAwayFromEnemies(hExtEntity, hAutomator)
+    if IsValidExtendedEntity(hExtEntity) and hAutomator then
+        local tEnemiesList = GetAllUnits(hExtEntity, DOTA_UNIT_TARGET_TEAM_ENEMY, 0.0, hExtEntity:GetCurrentVisionRange())
         
         local nCount = 0
         local vNetDirection = Vector(0, 0, 0)
         for k,v in pairs(tEnemiesList) do
-            local vDirection = (hEntity:GetAbsOrigin() - v:GetAbsOrigin())
+            local vDirection = (hExtEntity:GetAbsOrigin() - v:GetAbsOrigin())
             vNetDirection = vNetDirection + vDirection:Normalized()/vDirection:Length2D()
             nCount = nCount + 1
         end
         
         if nCount > 0 then
-            local vPosition = hEntity:GetAbsOrigin() + (vNetDirection:Normalized() * 100.0)
+            local vPosition = hExtEntity:GetAbsOrigin() + (vNetDirection:Normalized() * 100.0)
             if GridNav:IsTraversable(vPosition) then
-                hEntity:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, GetGroundPosition(vPosition, hEntity), hEntity:IsAttacking())
+                hExtEntity:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, GetGroundPosition(vPosition, hExtEntity._hBaseEntity), hExtEntity:IsAttacking())
                 return true
             else
                 return false
@@ -65,14 +65,14 @@ function MoveAwayFromEnemies(hEntity, hAutomator)
     return false
 end
 
-function MoveTowardsEnemies(hEntity, hAutomator)
-    if IsValidEntity(hEntity) and hAutomator then
-        local tEnemiesList = GetAllUnits(hEntity, DOTA_UNIT_TARGET_TEAM_ENEMY, 0.0, hEntity:GetCurrentVisionRange())
+function MoveTowardsEnemies(hExtEntity, hAutomator)
+    if IsValidExtendedEntity(hExtEntity) and hAutomator then
+        local tEnemiesList = GetAllUnits(hExtEntity, DOTA_UNIT_TARGET_TEAM_ENEMY, 0.0, hExtEntity:GetCurrentVisionRange())
         
         local nCount = 0
         local vNetDirection = Vector(0, 0, 0)
         for k,v in pairs(tEnemiesList) do
-            local vDirection = (v:GetAbsOrigin() - hEntity:GetAbsOrigin())
+            local vDirection = (v:GetAbsOrigin() - hExtEntity:GetAbsOrigin())
 			--TODO: Make this based on the hull size, rather than some arbitrary value
             if vDirection:Length2D() < 128.0 then
                 hAutomator:SkipAction()
@@ -83,9 +83,9 @@ function MoveTowardsEnemies(hEntity, hAutomator)
         end
         
         if nCount > 0 then
-            local vPosition = hEntity:GetAbsOrigin() + (vNetDirection:Normalized() * 100.0)
+            local vPosition = hExtEntity:GetAbsOrigin() + (vNetDirection:Normalized() * 100.0)
             if GridNav:IsTraversable(vPosition) then
-                hEntity:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, GetGroundPosition(vPosition, hEntity), hEntity:IsAttacking())
+                hExtEntity:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, GetGroundPosition(vPosition, hExtEntity._hBaseEntity), hExtEntity:IsAttacking())
                 return true
             else
                 return false
@@ -95,15 +95,15 @@ function MoveTowardsEnemies(hEntity, hAutomator)
     return false
 end
 
-function AttackNearestEnemy(hEntity, hAutomator)
-    if IsValidEntity(hEntity) and hAutomator then
-        local hTarget = GetNearestUnit(hEntity, DOTA_UNIT_TARGET_TEAM_ENEMY, 0.0, hEntity:GetCurrentVisionRange())
-        if hTarget and not hEntity:IsAttackingEntity(hTarget) then
+function AttackNearestEnemy(hExtEntity, hAutomator)
+    if IsValidExtendedEntity(hExtEntity) and hAutomator then
+        local hTarget = GetNearestUnit(hExtEntity, DOTA_UNIT_TARGET_TEAM_ENEMY, 0.0, hExtEntity:GetCurrentVisionRange())
+        if hTarget and not hExtEntity:IsAttackingEntity(hTarget) then
             if hTarget:IsInvulnerable() or hTarget:IsAttackImmune() then 
                 return false
             else
-                hEntity:IssueOrder(DOTA_UNIT_ORDER_ATTACK_TARGET, hTarget, nil, nil, true)
-				hEntity:SetAttacking(hTarget)
+                hExtEntity:IssueOrder(DOTA_UNIT_ORDER_ATTACK_TARGET, hTarget, nil, nil, true)
+				hExtEntity:SetAttacking(hTarget)
                 return true
             end
         end
@@ -111,14 +111,14 @@ function AttackNearestEnemy(hEntity, hAutomator)
     return false
 end
 
-function AttackTarget(hEntity, hAutomator, hTarget)
-    if IsValidEntity(hEntity) and hAutomator and hTarget then
-        if hTarget and not hEntity:IsAttackingEntity(hTarget) then
+function AttackTarget(hExtEntity, hAutomator, hTarget)
+    if IsValidExtendedEntity(hExtEntity) and hAutomator and hTarget then
+        if hTarget and not hExtEntity:IsAttackingEntity(hTarget) then
             if hTarget:IsInvulnerable() or hTarget:IsAttackImmune() then 
                 return false
             else
-				hEntity:IssueOrder(DOTA_UNIT_ORDER_ATTACK_TARGET, hTarget, nil, nil, true)
-				hEntity:SetAttacking(hTarget)
+				hExtEntity:IssueOrder(DOTA_UNIT_ORDER_ATTACK_TARGET, hTarget, nil, nil, true)
+				hExtEntity:SetAttacking(hTarget)
                 return true
             end
         end

@@ -384,6 +384,14 @@
 			{
 				"Passive"					"1"
            			"IsHidden"					"1"
+				"OnCreated"
+            			{
+					"RemoveModifier"
+					{
+						"ModifierName" 			"modifier_internal_stamina_drain_slow"
+						"Target" 			"CASTER"
+					}
+				}
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"      "-50"

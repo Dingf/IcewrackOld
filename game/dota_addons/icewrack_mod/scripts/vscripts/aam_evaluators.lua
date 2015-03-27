@@ -422,7 +422,7 @@ function NumberDeadParty(nValue, tTargetList)
 	local nCount = 0
     local hActiveMemeberList = CIcewrackParty:GetActiveMembers()
 	for k,v in pairs(hActiveMemberList) do
-		if k:IsAlive() then
+		if IsValidEntity(v) and v:IsAlive() then
 			nCount = nCount + 1
 		end
 	end
@@ -437,7 +437,7 @@ function NumberWoundedParty(nValue, tTargetList)
 	local nCount = 0
     local hActiveMemeberList = CIcewrackParty:GetActiveMembers()
 	for k,v in pairs(hActiveMemberList) do
-		if k:GetHealth() <= (0.5 * k:GetMaxHealth()) then
+		if IsValidEntity(v) and k:GetHealth() <= (0.5 * v:GetMaxHealth()) then
 			nCount = nCount + 1
 		end
 	end

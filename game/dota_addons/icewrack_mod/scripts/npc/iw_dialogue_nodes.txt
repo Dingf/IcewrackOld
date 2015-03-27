@@ -58,8 +58,16 @@
 
 			"2"
 			{
+				"Text"		"Das right."
+				"NextNode"	"102"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+
+			"3"
+			{
 				"Text"		"(Remain silent)"
-				"NextNode"	"108"
+				"NextNode"	"109"
 				"Preconditions" {}
 				"Postconditions" {}
 			}
@@ -70,7 +78,7 @@
 	{
 		"RefID"		"20"
 		"Priority"	"0"
-		"Text"		"Good. I could use someone else who actually knows what they're doing. Name's Tresdin, by the way. I'm the leader of this expedition."
+		"Text"		"Well, we'll see about that. Name's Tresdin, by the way. I'm the commander of this expedition."
 		"Preconditions" {}
 		"Options"
 		{
@@ -84,6 +92,14 @@
 
 			"2"
 			{
+				"Text"		"I am Sven."
+				"NextNode"	"104"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+
+			"3"
+			{
 				"Text"		"(Remain silent)"
 				"NextNode"	"103"
 				"Preconditions" {}
@@ -96,33 +112,81 @@
 	{
 		"RefID"		"20"
 		"Priority"	"0"
-		"Text"		"Since you seem capable enough, I have a task for you. We're heading up the Blueheart soon, so I want you to go out there and find me a nice, clear path that will get us there in one piece. Understood?"
+		"Text"		"My men and I are headed up the Blueheart soon. You want to prove yourself? Go find me a path that will get us there in one piece. Then we'll talk."
 		"Preconditions" {}
 		"Options"
 		{
 			"1"
 			{
 				"Text"		"Okay."
-				"NextNode"	"104"
+				"NextNode"	"105"
 				"Preconditions" {}
 				"Postconditions" {}
 			}
 
 			"2"
 			{
+				"Text"		"Sven takes no orders."
+				"NextNode"	"107"
+				"Preconditions" {}
+				"Postconditions"
+				{
+					"IWGS_RELATION_LEGION"		"-= 10"
+				}
+			}
+
+			"3"
+			{
 				"Text"		"(Remain silent)"
-				"NextNode"	"104"
+				"NextNode"	"106"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+		}
+	}
+	
+	"104"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Tell you what Sven. My men and I are headed up the Blueheart soon. You want to prove yourself? Go find me a path that will get us there in one piece. Then we'll talk."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"Okay."
+				"NextNode"	"105"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+
+			"2"
+			{
+				"Text"		"Sven takes no orders."
+				"NextNode"	"107"
+				"Preconditions" {}
+				"Postconditions"
+				{
+					"IWGS_RELATION_LEGION"		"-= 10"
+				}
+			}
+
+			"3"
+			{
+				"Text"		"(Remain silent)"
+				"NextNode"	"106"
 				"Preconditions" {}
 				"Postconditions" {}
 			}
 		}
 	}
 
-	"104"
+	"105"
 	{
 		"RefID"		"20"
 		"Priority"	"0"
-		"Text"		"Most of the others are busy setting up, but I bet some of them might be willing to help if you ask. Now get going."
+		"Text"		"Get going then."
 		"Preconditions" {}
 		"Options"
 		{
@@ -140,41 +204,12 @@
 		}
 	}
 
-	"105"
-	{
-		"RefID"		"20"
-		"Priority"	"1"
-		"Text"		"What are you waiting for? A kiss goodbye? Get out there and find me a path to the Blueheart Glacier!"
-		"Preconditions"
-		{
-			"IWGS_M01_TALKED_TO_LEGION"	"== 1"
-			"IWGS_QUEST_LEGION_01"		"== 10"
-		}
-		"Options"
-		{
-			"1"
-			{
-				"Text"		"(Exit conversation)"
-				"NextNode"	"0"
-				"Preconditions" {}
-				"Postconditions"
-				{
-					"IWGS_M01_TALKED_TO_LEGION"	"= 2"
-				}
-			}
-		}
-	}
-
 	"106"
 	{
 		"RefID"		"20"
-		"Priority"	"1"
-		"Text"		"This is the last time I will repeat myself, soldier. Get out there and do your duty!"
-		"Preconditions"
-		{
-			"IWGS_M01_TALKED_TO_LEGION"	"== 2"
-			"IWGS_QUEST_LEGION_01"		"== 10"
-		}
+		"Priority"	"0"
+		"Text"		"I'll take that silence as a yes. Now get going."
+		"Preconditions" {}
 		"Options"
 		{
 			"1"
@@ -184,7 +219,8 @@
 				"Preconditions" {}
 				"Postconditions"
 				{
-					"IWGS_M01_TALKED_TO_LEGION"	"= 3"
+					"IWGS_M01_TALKED_TO_LEGION"	"= 1"
+					"IWGS_QUEST_LEGION_01"		"= 10"
 				}
 			}
 		}
@@ -193,23 +229,29 @@
 	"107"
 	{
 		"RefID"		"20"
-		"Priority"	"1"
-		"Text"		"Oh for crying out loud . . ."
-		"Preconditions"
-		{
-			"IWGS_M01_TALKED_TO_LEGION"	"== 3"
-			"IWGS_QUEST_LEGION_01"		"== 10"
-		}
+		"Priority"	"0"
+		"Text"		"Oh really? You think you're tough? Go on then. Let's see how long you last out there without the help of my expedition."
+		"Preconditions" {}
 		"Options"
 		{
+
 			"1"
 			{
-				"Text"		"(Exit conversation)"
+				"Text"		"Nevermind..."
+				"NextNode"	"108"
+				"Preconditions" {}
+				"Postconditions" {}
+			}
+
+			"2"
+			{
+				"Text"		"Fine. (Exit conversation)"
 				"NextNode"	"0"
 				"Preconditions" {}
 				"Postconditions"
 				{
-					"IWGS_M01_TALKED_TO_LEGION"	"= 4"
+					"IWGS_M01_TALKED_TO_LEGION"	"= -1"
+					"IWGS_RELATION_LEGION"		"-= 10"
 				}
 			}
 		}
@@ -219,7 +261,29 @@
 	{
 		"RefID"		"20"
 		"Priority"	"0"
-		"Text"		"Not much of a talker, huh? That's fine by me. I'm Tresdin, the commander of this expedition."
+		"Text"		"That's what I thought. Now get going. I don't want to see your face around here until the job is done."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"(Exit conversation)"
+				"NextNode"	"0"
+				"Preconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"= 1"
+					"IWGS_QUEST_LEGION_01"		"= 10"
+				}
+			}
+		}
+	}
+
+	"109"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Not much of a talker, huh? Suit yourself. I'm Tresdin, commander of this expeditionary force."
 		"Preconditions" {}
 		"Options"
 		{
@@ -233,48 +297,22 @@
 		}
 	}
 
-	"109"
-	{
-		"RefID"		"20"
-		"Priority"	"1"
-		"Text"		"You came to an expedition... wearing that?! Aren't you cold at all?"
-		"Preconditions"
-		{
-			"IWGS_GLOBAL_PICKED_HERO"	"== 5"
-			"IWGS_QUEST_LEGION_01"		"== 0"
-			"IWGS_M01_TALKED_TO_LEGION"	"== 0"
-		}
-		"Options"
-		{
-			"1"
-			{
-				"Text"		"I'm f-fine..."
-				"NextNode"	"110"
-				"Preconditions" {}
-				"Postconditions" {}
-			}
-
-			"2"
-			{
-				"Text"		"M-maybe a b-bit..."
-				"NextNode"	""
-				"Preconditions" {}
-				"Postconditions" {}
-			}
-		}
-	}
-
 	"110"
 	{
 		"RefID"		"20"
-		"Priority"	"0"
-		"Text"		"Whatever you say. So tell me, what brings someone like you to a frozen wasteland like this?"
-		"Preconditions" {}
+		"Priority"	"2"
+		"Text"		"Well, well. Look who's back. Changed your mind?"
+		"Preconditions"
+		{
+			"IWGS_GLOBAL_PICKED_HERO"	"== 1"
+			"IWGS_M01_TALKED_TO_LEGION"	"== -1"
+			"IWGS_QUEST_LEGION_01"		"== 0"
+		}
 		"Options"
 		{
 			"1"
 			{
-				"Text"		"I have s-some unfinished bbusiness to attend to..."
+				"Text"		"Ja."
 				"NextNode"	"111"
 				"Preconditions" {}
 				"Postconditions" {}
@@ -282,16 +320,8 @@
 
 			"2"
 			{
-				"Text"		"I'm here to p-put an end to th-this w-winter..."
-				"NextNode"	""
-				"Preconditions" {}
-				"Postconditions" {}
-			}
-
-			"3"
-			{
-				"Text"		"F-for the p-pleasant wweather, clearly."
-				"NextNode"	""
+				"Text"		"No."
+				"NextNode"	"112"
 				"Preconditions" {}
 				"Postconditions" {}
 			}
@@ -302,23 +332,20 @@
 	{
 		"RefID"		"20"
 		"Priority"	"0"
-		"Text"		"Well, I wish you the best of luck. I know that situation all too well..."
+		"Text"		"Good. In case you forgot, I want you to find me a nice, clean path up the Blueheart Glacier. Until then, I don't want to see your ugly face around here. Now get going."
 		"Preconditions" {}
 		"Options"
 		{
 			"1"
 			{
-				"Text"		"Uh huh..."
-				"NextNode"	"116"
+				"Text"		"(Exit conversation)"
+				"NextNode"	"0"
 				"Preconditions" {}
-				"Postconditions" {}
-			}
-			"2"
-			{
-				"Text"		"D-do t-tell..."
-				"NextNode"	"112"
-				"Preconditions" {}
-				"Postconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"= 1"
+					"IWGS_QUEST_LEGION_01"		"= 10"
+				}
 			}
 		}
 	}
@@ -327,16 +354,20 @@
 	{
 		"RefID"		"20"
 		"Priority"	"0"
-		"Text"		"Many years ago, I found myself at the head of an entire army, the mighty Bronze Legion. We had but one job... to protect the city of Stonehall, at any cost..."
+		"Text"		"Then why did you come back? Get out of here."
 		"Preconditions" {}
 		"Options"
 		{
 			"1"
 			{
-				"Text"		"(continue)"
-				"NextNode"	"113"
+				"Text"		"(Exit conversation)"
+				"NextNode"	"0"
 				"Preconditions" {}
-				"Postconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_TALKED_TO_LEGION"	"= -2"
+					"IWGS_RELATION_LEGION"		"-= 5"
+				}
 			}
 		}
 	}
@@ -344,15 +375,19 @@
 	"113"
 	{
 		"RefID"		"20"
-		"Priority"	"0"
-		"Text"		"Then they came, without warning. Hordes upon hordes of filthy demons, raining down from the abyss like a swarm of unholy bees. At great cost, we drove them back and eventually killed them all..."
-		"Preconditions" {}
+		"Priority"	"2"
+		"Text"		"Get out of my face, maggot."
+		"Preconditions"
+		{
+			"IWGS_M01_TALKED_TO_LEGION"	"== -2"
+			"IWGS_QUEST_LEGION_01"		"== 0"
+		}
 		"Options"
 		{
 			"1"
 			{
-				"Text"		"(continue)"
-				"NextNode"	"114"
+				"Text"		"(Exit conversation)"
+				"NextNode"	"0"
 				"Preconditions" {}
 				"Postconditions" {}
 			}
@@ -362,15 +397,65 @@
 	"114"
 	{
 		"RefID"		"20"
-		"Priority"	"0"
-		"Text"		"All that is, except for one. Their leader, an underlord named Azgalor, managed to escape through a portal, though not before destroying what was left of Stonehall in a rain of fire. On that day, I swore I would not rest until I personally stuck his ugly head on a pike."
-		"Preconditions" {}
+		"Priority"	"2"
+		"Text"		"Don't you have a job to do? What are you still doing here?"
+		"Preconditions"
+		{
+			"IWGS_GLOBAL_PICKED_HERO"	"== 1"
+			"IWGS_M01_TALKED_TO_LEGION"	"== 1"
+			"IWGS_QUEST_LEGION_01"		"== 10"
+		}
 		"Options"
 		{
 			"1"
 			{
-				"Text"		"And d-did you...?"
+				"Text"		"I cannot do it alone."
 				"NextNode"	"115"
+				"Preconditions"
+				{
+					"IWGS_M01_LEGION_ASK_HELP"	"== 0"
+				}
+				"Postconditions" {}
+			}
+
+			"2"
+			{
+				"Text"		"I require supplies. (Persuade)"
+				"NextNode"	"117"
+				"Preconditions"
+				{
+					"IWGS_M01_LEGION_ASK_SUPPLIES"	"== 0"
+				}
+				"Postconditions" {}
+			}
+
+			"3"
+			{
+				"Text"		"Where is the Blueheart Glacier?"
+				"NextNode"	"116"
+				"Preconditions"
+				{
+					"IWGS_M01_LEGION_ASK_LOCATION"	"== 0"
+				}
+				"Postconditions" {}
+			}
+
+			"4"
+			{
+				"Text"		"Where can I buy potions?"
+				"NextNode"	"119"
+				"Preconditions"
+				{
+					"IWGS_M01_LEGION_ASK_SUPPLIES"	"== 1"
+					"IWGS_M01_LEGION_CALLED_RAZZIL_MIDGET"	"== 0"
+				}
+				"Postconditions" {}
+			}
+
+			"5"
+			{
+				"Text"		"Nevermind... (Exit conversation)"
+				"NextNode"	"0"
 				"Preconditions" {}
 				"Postconditions" {}
 			}
@@ -381,16 +466,30 @@
 	{
 		"RefID"		"20"
 		"Priority"	"0"
-		"Text"		"Sadly, no. That was a long time ago, and Azgalor hasn't shown his face since..."
+		"Text"		"Go talk to some of the others then. They might be willing to help you out."
 		"Preconditions" {}
 		"Options"
 		{
 			"1"
 			{
-				"Text"		"(continue)"
-				"NextNode"	"116"
+				"Text"		"Also..."
+				"NextNode"	"118"
 				"Preconditions" {}
-				"Postconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_LEGION_ASK_HELP"	"= 1"
+				}
+			}
+
+			"2"
+			{
+				"Text"		"(Exit conversation)"
+				"NextNode"	"0"
+				"Preconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_LEGION_ASK_HELP"	"= 1"
+				}
 			}
 		}
 	}
@@ -399,23 +498,168 @@
 	{
 		"RefID"		"20"
 		"Priority"	"0"
-		"Text"		"Anyways, I'm Tresdin, commander of this expeditionary force."
+		"Text"		"Can't see too well through that helm of yours, eh? Well take a good look behind me. That giant chunk of ice to the northeast is the Blueheart Glacier."
 		"Preconditions" {}
 		"Options"
 		{
 			"1"
 			{
-				"Text"		"The n-name's L-Lina."
-				"NextNode"	"104"
+				"Text"		"Also..."
+				"NextNode"	"118"
+				"Preconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_LEGION_ASK_LOCATION"	"= 1"
+				}
+			}
+
+			"2"
+			{
+				"Text"		"(Exit conversation)"
+				"NextNode"	"0"
+				"Preconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_LEGION_ASK_LOCATION"	"= 1"
+				}
+			}
+		}
+	}
+
+	"117"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"This is an expedition, not a charity. You want supplies? Go buy them from Ymir. He's actually pretty good at smithing, when he's not drunk that is."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"What about potions?"
+				"NextNode"	"119"
+				"Preconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_LEGION_ASK_SUPPLIES"	"= 1"
+				}
+			}
+
+			"2"
+			{
+				"Text"		"Also..."
+				"NextNode"	"118"
+				"Preconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_LEGION_ASK_SUPPLIES"	"= 1"
+				}
+			}
+
+			"3"
+			{
+				"Text"		"(Exit conversation)"
+				"NextNode"	"0"
+				"Preconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_LEGION_ASK_SUPPLIES"	"= 1"
+				}
+			}
+		}
+	}
+
+	"118"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"What is it now?"
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"I cannot do it alone."
+				"NextNode"	"115"
+				"Preconditions"
+				{
+					"IWGS_M01_LEGION_ASK_HELP"	"== 0"
+				}
+				"Postconditions" {}
+			}
+
+			"2"
+			{
+				"Text"		"I require supplies. (Persuade)"
+				"NextNode"	"117"
+				"Preconditions"
+				{
+					"IWGS_M01_LEGION_ASK_SUPPLIES"	"== 0"
+				}
+				"Postconditions" {}
+			}
+
+			"3"
+			{
+				"Text"		"Where is the Blueheart Glacier?"
+				"NextNode"	"116"
+				"Preconditions"
+				{
+					"IWGS_M01_LEGION_ASK_LOCATION"	"== 0"
+				}
+				"Postconditions" {}
+			}
+
+			"4"
+			{
+				"Text"		"Where can I buy potions?"
+				"NextNode"	"119"
+				"Preconditions"
+				{
+					"IWGS_M01_LEGION_ASK_SUPPLIES"	"== 1"
+					"IWGS_M01_LEGION_CALLED_RAZZIL_MIDGET"	"== 0"
+				}
+				"Postconditions" {}
+			}
+
+			"5"
+			{
+				"Text"		"Nevermind... (Exit conversation)"
+				"NextNode"	"0"
 				"Preconditions" {}
 				"Postconditions" {}
 			}
+		}
+	}
+
+	"119"
+	{
+		"RefID"		"20"
+		"Priority"	"0"
+		"Text"		"Talk to Razzil. He's that little midget over there, on top of the ogre. He might also have some old spellbooks lying around, although you don't really look like you'd be interested in that kind of stuff."
+		"Preconditions" {}
+		"Options"
+		{
+			"1"
+			{
+				"Text"		"Also..."
+				"NextNode"	"118"
+				"Preconditions" {}
+				"Postconditions"
+				{
+					"IWGS_M01_LEGION_CALLED_RAZZIL_MIDGET"	"= 1"
+				}
+			}
+
 			"2"
 			{
-				"Text"		"Let's s-skip the introductions, shhall we?"
-				"NextNode"	"104"
+				"Text"		"(Exit conversation)"
+				"NextNode"	"0"
 				"Preconditions" {}
-				"Postconditions" {}
+				"Postconditions" 
+				{
+					"IWGS_M01_LEGION_CALLED_RAZZIL_MIDGET"	"= 1"
+				}
 			}
 		}
 	}

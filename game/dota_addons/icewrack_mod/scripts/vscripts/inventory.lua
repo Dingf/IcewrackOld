@@ -68,7 +68,7 @@ function CIcewrackInventory:DeleteItem(hItem)
 		local hOwner = hEntity:GetOwner()
 		CreateUnitByNameAsync("iw_npc_inventory_storage_dummy", hEntity:GetAbsOrigin(), false, hOwner, hOwner, hEntity:GetTeamNumber(),
 			function(hCleanupDummy)
-				if hCleanupDummy then
+				if IsValidEntity(hCleanupDummy) then
 					hCleanupDummy:AddAbility("internal_dummy_buff")
 					hCleanupDummy:FindAbilityByName("internal_dummy_buff"):SetLevel(1)
 					

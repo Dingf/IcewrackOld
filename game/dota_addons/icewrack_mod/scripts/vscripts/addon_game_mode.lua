@@ -77,8 +77,6 @@ function CIcewrackGameMode:InitGameMode()
 	ListenToGameEvent("entity_killed", Dynamic_Wrap(CIcewrackGameMode, "OnEntityKilled"), self)
     ListenToGameEvent("dota_item_picked_up", Dynamic_Wrap(CIcewrackGameMode, "OnItemPickedUp"), self)
     ListenToGameEvent("dota_player_gained_level", Dynamic_Wrap(CIcewrackGameMode, "OnLevelUp"), self)
-    
-    GameRules:GetGameModeEntity():SetThink(ProcessTimers, "TimerThink", TIMER_THINK_INTERVAL)
 	print( "Icewrack mod loaded." )
 end
 
@@ -136,7 +134,8 @@ function CIcewrackGameMode:OnEntityKilled(keys)
 			if IsValidExtendedEntity(hExtEntity) then
 				CIcewrackExtendedEntity._stLookupTable[hEntity] = nil
 				local hCorpseDummy = CreateUnitByName("iw_npc_corpse_dummy", hEntity:GetAbsOrigin(), false, nil, nil, PlayerResource:GetTeam(0))
-				if hCorpseDummy then
+				if IsValidEntity(hCorpseDummy) then
+					hCorpseDummy:SetAbsOrigin(hEntity:GetAbsOrigin())
 					hCorpseDummy:SetForwardVector(hEntity:GetForwardVector())
 					hCorpseDummy:SetModel(hEntity:GetModelName())
 					hCorpseDummy:SetOriginalModel(hEntity:GetModelName())

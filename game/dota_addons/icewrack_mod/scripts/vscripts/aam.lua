@@ -12,18 +12,18 @@ require("aam_evaluators")
 require("aam_internal")
 
 if CActionAutomatorModule == nil then
-    CActionAutomatorModule = class({constructor = function(self, hEntity)
-        if not IsValidExtendedEntity(hEntity) then
-            error("hEntity must be a valid extended entity")
+    CActionAutomatorModule = class({constructor = function(self, hExtEntity)
+        if not IsValidExtendedEntity(hExtEntity) then
+            error("hExtEntity must be a valid extended entity")
         end
-        if hEntity._hActionAutomatorModule then
-            error("hEntity already has an AAM attached to it")
+        if hExtEntity._hActionAutomatorModule then
+            error("hExtEntity already has an AAM attached to it")
         end
         
-        hEntity._hActionAutomatorModule = self
+        hExtEntity._hActionAutomatorModule = self
         
         self._bEnabled = true
-        self._hEntity = hEntity
+        self._hExtEntity = hExtEntity
         self._tActionList = {}
 		self._tSavedTargets = {}
         
@@ -34,13 +34,13 @@ if CActionAutomatorModule == nil then
         self._bSkipFlag = false
         self._bStopFlag = false
         
-        hEntity:SetThink("OnThink", self, "AAMThink", 0.1)
+        hExtEntity:SetThink("OnThink", self, "AAMThink", 0.1)
     end},
     {}, nil)
 end
 
 function CActionAutomatorModule:GetEntity()
-	return self._hEntity
+	return self._hExtEntity
 end
 
 function CActionAutomatorModule:GetCurrentAction()
@@ -49,7 +49,7 @@ end
 
 function CActionAutomatorModule:PerformAction(tActionDef)
     if tActionDef then
-        local hEntity           = self._hEntity
+        local hExtEntity      = self.hExtEntity
         local nTargetFlags    = tActionDef.TargetFlags
         local tConditionFlags = {tActionDef.ConditionFlags1 or 0, tActionDef.ConditionFlags2 or 0}
         local hAction         = tActionDef.Action
@@ -66,9 +66,9 @@ function CActionAutomatorModule:PerformAction(tActionDef)
         local bDeadFlag = (bit32.extract(tConditionFlags[2], 0, 1) == 1)
         
         if nTargetTeam == AAM_TARGET_RELATION_SELF then
-            tTargetList = {self._hEntity}
+            tTargetList = {hExtEntity}
         else
-            tTargetList = GetAllUnits(self._hEntity, nTargetTeam, fMinDistance, fMaxDistance, bDeadFlag and DOTA_UNIT_TARGET_FLAG_DEAD or 0)
+            tTargetList = GetAllUnits(hExtEntity, nTargetTeam, fMinDistance, fMaxDistance, bDeadFlag and DOTA_UNIT_TARGET_FLAG_DEAD or 0)
         end
         
         if tTargetList == nil or next(tTargetList) == nil then
@@ -106,17 +106,9 @@ function CActionAutomatorModule:PerformAction(tActionDef)
         
         local hInternalAction = stInternalAbilityLookupTable[hAction]
         if hInternalAction then
-            return hInternalAction(hEntity, self, hTarget)
-        elseif hAction:IsFullyCastable() and not hEntity:IsSilenced() then
+            return hInternalAction(hExtEntity, self, hTarget)
+        elseif hExtEntity:CanCastAbility(hAction:GetAbilityName(), hTarget) then
             local nActionBehavior = hAction:GetBehavior()
-            local nTargetTeam = hAction:GetAbilityTargetTeam()
-            
-            if nTargetTeam == DOTA_UNIT_TARGET_TEAM_ENEMY and hTarget:GetTeamNumber() == hEntity:GetTeamNumber() then
-                return false
-            elseif nTargetTeam == DOTA_UNIT_TARGET_TEAM_FRIENDLY and hTarget:GetTeamNumber() ~= hEntity:GetTeamNumber() then
-                return false
-            end
-            
             local nPlayerIndex = hEntity:GetPlayerOwnerID()
             if (bit32.btest(nActionBehavior, DOTA_ABILITY_BEHAVIOR_NO_TARGET)) then
                 hEntity:CastAbilityNoTarget(hAction, nPlayerIndex)

@@ -1,0 +1,42 @@
+//Note: Each entry is a unique ID. Do not repeat these throughout maps
+"IcewrackSpawnData"
+{
+	"20"
+	{
+		"Name"			"npc_dota_hero_legion_commander"
+		"Position"		"1440 600 128"
+		"Orientation"		"-1 -1 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+	}
+
+	"50"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"604 476 128"
+		"Orientation"		"1 -0.6 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+	}
+
+	"51"
+	{
+		"Name"			"iw_npc_expedition_merc_2"
+		"Position"		"-420 1696 396"
+		"Orientation"		"0 1 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"FindClearSpace"	"FALSE"
+	}
+
+	"52"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"-1200 -160 128"
+		"Orientation"		"0 1 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"WaypointStart"		"1"
+		"WaypointEnd"		"2"
+		"Modifiers"
+		{
+			"internal_walk_buff"	"52"
+		}
+	}
+}

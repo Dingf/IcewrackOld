@@ -152,7 +152,9 @@ function DealDamage(args)
 			if hVictim:GetTeamNumber() ~= PlayerResource:GetTeam(0) then
 				local tActiveMemberList = CIcewrackParty:GetActiveMembers()
 				for k,v in pairs(tActiveMemberList) do
-					v:AddExperience(hVictim:GetDeathXP(), false, false)
+				    if IsValidEntity(v) then
+					    v:AddExperience(hVictim:GetDeathXP(), false, false)
+					end
 				end
 			end
 		end

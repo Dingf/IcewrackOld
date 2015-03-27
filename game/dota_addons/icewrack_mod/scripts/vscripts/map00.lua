@@ -22,6 +22,7 @@ function Precache(context)
 end
 
 function Activate()
+	CIcewrackSaveManager:InitSaveManager()
 	CIcewrackMap0:InitMap()
 end
 
@@ -60,11 +61,18 @@ function CIcewrackMap0:AcceptCharacterSelect(szHeroName)
 end
 
 function CIcewrackMap0:InitMap()
+	CIcewrackSaveManager:LoadMapSpawns()
+	
 	Convars:SetInt("dota_camera_pitch_max", 20)
 	
-	CIcewrackSaveManager:InitSaveManager()
-	local tSpawnList = CIcewrackSaveManager:LoadSpawnsFromFile("/scripts/npc/spawns_map00.txt")
-	if tSpawnList then
+	for k,v in pairs(CIcewrackNPC._stRefIDLookupTable) do
+		local hExtEntity = v._hExtEntity
+		if hExtEntity then
+			hExtEntity._vOriginalPosition = v:GetAbsOrigin()
+			hExtEntity._vReturnPosition = v:GetAbsOrigin() - (v:GetForwardVector() * 32.0)
+		end
+	end
+	--[[if tSpawnList then
 		for k,v in pairs(tSpawnList) do
 			if not self._hSnowAttachDummy then
 				self._hSnowAttachDummy = v	--We just need an entity to attach the snow effect to, doesn't matter which one
@@ -74,7 +82,7 @@ function CIcewrackMap0:InitMap()
 			hExtEntity._vReturnPosition = v:GetAbsOrigin() - (v:GetForwardVector() * 32.0)
 		end
 		
-	end
+	end]]
 	
 	Convars:RegisterCommand("iw_ui_character_select_accept",
 		function(szCmdName, szArgs)
@@ -120,6 +128,7 @@ function CIcewrackMap0:OnPlayerConnectFull(keys)
 	local hPlayerInstance = PlayerInstanceFromIndex(keys.index + 1)
     local hLookDummy = CreateHeroForPlayer("npc_dota_hero_base", hPlayerInstance)
 	hLookDummy:ModifyHealth(0, hLookDummy, true, 0)
+	self._hLookDummy = hLookDummy
 	PlayerResource:SetCameraTarget(keys.index, hLookDummy)
 end
 
@@ -134,7 +143,7 @@ function CIcewrackMap0:DelayedInit(keys)
 		SendToConsole("custom_ui_unload bgshadow")
 		SendToConsole("dota_center_message 1000000 \"Select Your Hero\"")
 		CTimer(function()
-				ParticleManager:CreateParticle("particles/rain_fx/econ_snow.vpcf", PATTACH_EYES_FOLLOW, self._hSnowAttachDummy)
+				ParticleManager:CreateParticle("particles/rain_fx/econ_snow.vpcf", PATTACH_EYES_FOLLOW, self._hLookDummy)
 				
 				GameRules:SendCustomMessage("Hint: If you're having trouble selecting a hero, try dragging a box around them.", 2, 0);
 				StopListeningToGameEvent(self._nDelayedInitID)

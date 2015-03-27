@@ -35,7 +35,8 @@ if CTimer == nil then
         
         table.insert(CTimer._stTimerList, self)
     end},
-    {_stTimerList = {}}, nil)
+    { _stTimerList = {},
+	  _shTimerDummy = nil }, nil)
 end
 
 function CTimer:GetEndTime()
@@ -94,4 +95,11 @@ function ProcessTimers()
         end
     end
     return TIMER_THINK_INTERVAL
+end
+
+CTimer._shTimerDummy = CreateUnitByName("iw_npc_generic_dummy", Vector(0, 0, 0), false, nil, nil, 0)
+if IsValidEntity(CTimer._shTimerDummy) then
+	CTimer._shTimerDummy:AddAbility("internal_dummy_buff")
+	CTimer._shTimerDummy:FindAbilityByName("internal_dummy_buff"):SetLevel(1)
+	CTimer._shTimerDummy:SetThink(ProcessTimers, "TimerThink", TIMER_THINK_INTERVAL)
 end

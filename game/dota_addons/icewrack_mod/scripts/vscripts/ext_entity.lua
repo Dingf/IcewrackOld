@@ -2,6 +2,11 @@
     Icewrack Extended Entity
 ]]
 
+if _VERSION < "Lua 5.2" then
+    bit = require("numberlua")
+    bit32 = bit.bit32
+end
+
 require("timer")
 require("attributes")
 require("damage_types")
@@ -237,27 +242,15 @@ if CIcewrackExtendedEntity == nil then
 			self:CalculateStatBonus()
 			
 			self.Stamina = self:GetMaxStamina()
-			self._nStaminaRegenTime = 0
+			self._fStaminaRegenTime = 0
 			
 			CTimer(function()
-				local bAliveFlag, bErrorFlag = self:IsAlive()
-				if bAliveFlag == true then
-					local fStamina = self.Stamina
-					local fMaxStamina = self:GetMaxStamina()
-					if fStamina < fMaxStamina and GameRules:GetGameTime() > self._nStaminaRegenTime then
-						if fStamina == 0 then
-							self:RemoveModifierByName("modifier_internal_stamina_drain_slow")
-						end
-						local fStaminaRegen = self.StaminaRegen + self.StaminaRegenBonus + (self:GetAttributeValue(IW_ATTRIBUTE_VIGOR) * 0.05)
-						self.Stamina = math.max(0.0, math.min(fMaxStamina, fStamina + fStaminaRegen/30.0))
-					elseif fStamina > fMaxStamina then
-						self.Stamina = fMaxStamina
+					if IsValidExtendedEntity(self) then
+						self:RegenerateStamina()
+					else
+						return TIMER_STOP
 					end
-				end
-				if bErrorFlag or (not bAliveFlag and (not hEntity:IsHero() or hEntity:IsIllusion())) then
-					return TIMER_STOP
-				end
-			end, 0, 0.033)
+				end, 0, TIMER_THINK_INTERVAL)
 		
 			return self
 		end},
@@ -488,6 +481,23 @@ function CIcewrackExtendedEntity:AddManasteal(fAmount)
 	end
 end
 
+function CIcewrackExtendedEntity:RegenerateStamina()
+	local fStamina = self.Stamina
+	local fMaxStamina = self:GetMaxStamina()
+	if fStamina < fMaxStamina and GameRules:GetGameTime() > self._fStaminaRegenTime then
+		if fStamina == 0 then
+			self:RemoveModifierByName("modifier_internal_stamina_drain_slow")
+		end
+		local fStaminaRegen = self.StaminaRegen + self.StaminaRegenBonus + (self:GetAttributeValue(IW_ATTRIBUTE_VIGOR) * 0.05)
+		if self:HasModifier("modifier_internal_walk_buff") then
+			fStaminaRegen = fStaminaRegen * 0.2
+		end
+		self.Stamina = math.max(0.0, math.min(fMaxStamina, fStamina + fStaminaRegen/30.0))
+	elseif fStamina > fMaxStamina then
+		self.Stamina = fMaxStamina
+	end
+end
+
 function CIcewrackExtendedEntity:ApplyModifierProperties(tProperties, bRemove)
 	if tProperties then
 		for k,v in pairs(tProperties) do
@@ -500,25 +510,44 @@ function CIcewrackExtendedEntity:ApplyModifierProperties(tProperties, bRemove)
 	end
 end
 
+function CIcewrackExtendedEntity:CanCastAbility(szAbilityName, hTarget)
+	if not self:IsSilenced() then
+		local hAbility = self:FindAbilityByName(szAbilityName)
+		if hAbility and hAbility:GetCooldownTimeRemaining() == 0 and hAbility:IsFullyCastable() then
+			if IsValidEntity(hTarget) then
+				local nActionBehavior = hAbility:GetBehavior()
+				if bit32.btest(nActionBehavior, DOTA_ABILITY_BEHAVIOR_UNIT_TARGET) then
+					local nTargetTeam = hAbility:GetAbilityTargetTeam()
+					if nTargetTeam == DOTA_UNIT_TARGET_TEAM_ENEMY and hTarget:GetTeamNumber() == hEntity:GetTeamNumber() then
+						return false
+					elseif nTargetTeam == DOTA_UNIT_TARGET_TEAM_FRIENDLY and hTarget:GetTeamNumber() ~= hEntity:GetTeamNumber() then
+						return false
+					end
+				end
+			end
+			return true
+		end
+	end
+	return false
+end
+
 function CIcewrackExtendedEntity:IssueOrder(nOrder, hTarget, hAbility, vPosition, bQueue)
-    local unitIndex = self:entindex()
-    
-    local targetIndex = nil
-    if hTarget then
-        targetIndex = hTarget:entindex()
+    local nTargetIndex = nil
+    if IsValidEntity(hTarget) then
+        nTargetIndex = hTarget:entindex()
     end
     
-    local abilityIndex = nil
-    if hAbility then
-        abilityIndex = hAbility:entindex()
+    local nAbilityIndex = nil
+    if IsValidEntity(hAbility) then
+        nAbilityIndex = hAbility:entindex()
     end
     
     local tNextOrder =
     {
-        UnitIndex = unitIndex,
+        UnitIndex = self:entindex(),
         OrderType = nOrder,
-        TargetIndex = targetIndex,
-        AbilityIndex = abilityIndex,
+        TargetIndex = nTargetIndex,
+        AbilityIndex = nAbilityIndex,
         Position = vPosition,
         Queue = bQueue
     }
@@ -600,10 +629,10 @@ end
 
 function DrainStamina(args)
 	local hEntity = args.caster
-	if IsValidEntity(hEntity) then
+	if IsValidEntity(hEntity) and not hEntity:HasModifier("modifier_internal_walk_buff") then
 		local hExtEntity = LookupExtendedEntity(hEntity)
 		if IsValidExtendedEntity(hExtEntity) then
-			hExtEntity._nStaminaRegenTime = GameRules:GetGameTime() + 3.0
+			hExtEntity._fStaminaRegenTime = GameRules:GetGameTime() + 3.0
 			--TODO: Make inventory factor into stamina drain?
 			if hExtEntity.Stamina > 0 then
 				hExtEntity.Stamina = hExtEntity.Stamina - math.max(0, (0.1 * (hExtEntity.StaminaDrainMove + hExtEntity.StaminaDrainMoveBonus)))
