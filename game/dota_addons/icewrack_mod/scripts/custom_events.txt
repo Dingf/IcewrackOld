@@ -87,6 +87,17 @@
 		"maximum_xp"	"float"
 	}
 
+	"iw_ui_spellbar_return_ability"
+	{
+		"slot"		"byte"
+		"level"		"byte"
+		"ability_name"	"string"
+		"mana_cost"	"short"
+		"stamina_cost"	"short"
+		"cd_start"	"float"
+		"cd_end"	"float"
+	}
+
 	//IcewrackSpellbar
 	"iw_ui_spellbar_return_abilities"
 	{

@@ -44,13 +44,22 @@ function CIcewrackUIMainBar:ReturnAbilities()
 		local hSpellbook = hExtEntity._hSpellbook
 		if hSpellbook then
 			SetActiveSpellbookEntity(hExtEntity)
-			FireGameEvent("iw_ui_spellbar_return_abilities",
-						  { ability1 = hSpellbook:GetBoundAbilityName(0) or "empty",
-							ability2 = hSpellbook:GetBoundAbilityName(1) or "empty",
-							ability3 = hSpellbook:GetBoundAbilityName(2) or "empty",
-							ability4 = hSpellbook:GetBoundAbilityName(3) or "empty",
-							ability5 = hSpellbook:GetBoundAbilityName(4) or "empty",
-							ability6 = hSpellbook:GetBoundAbilityName(5) or "empty"})
+			for i=0,5 do
+				local hAbility = hSpellbook:GetBoundAbility(i)
+				local tCooldown = nil
+				if hAbility then
+					tCooldown = hSpellbook._tCooldowns[hAbility:GetAbilityName()]
+				end
+				local tCurrentTime = GameRules:GetGameTime()
+				FireGameEvent("iw_ui_spellbar_return_ability",
+							  { slot = i,
+								level = hAbility and hAbility:GetLevel() or 0,
+								ability_name = hAbility and hAbility:GetAbilityName() or "empty",
+								mana_cost = hAbility and hAbility:GetManaCost(hAbility:GetLevel()-1) or 0,
+								stamina_cost = 0,		--TODO: Implement stamina cost for spells
+								cd_start = tCooldown and tCooldown[1] - tCurrentTime or nil,
+								cd_end = tCooldown and tCooldown[1] - tCurrentTime + tCooldown[2] or nil })
+			end
 		end
 	end
 end

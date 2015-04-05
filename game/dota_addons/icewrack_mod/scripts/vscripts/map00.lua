@@ -12,7 +12,8 @@ if CIcewrackMap0 == nil then
 end
 
 function Precache(context)
-	PrecacheResource("particle", "particles/rain_fx/econ_snow.vpcf", context)
+	print("Precaching stuff")
+	PrecacheResource("particle", "particles/rain_fx/econ_snow_light.vpcf", context)
 	PrecacheUnitByNameSync("npc_dota_hero_sven", context)
 	PrecacheUnitByNameSync("npc_dota_hero_dragon_knight", context)
 	PrecacheUnitByNameSync("npc_dota_hero_drow_ranger", context)
@@ -72,17 +73,6 @@ function CIcewrackMap0:InitMap()
 			hExtEntity._vReturnPosition = v:GetAbsOrigin() - (v:GetForwardVector() * 32.0)
 		end
 	end
-	--[[if tSpawnList then
-		for k,v in pairs(tSpawnList) do
-			if not self._hSnowAttachDummy then
-				self._hSnowAttachDummy = v	--We just need an entity to attach the snow effect to, doesn't matter which one
-			end
-			local hExtEntity = LookupExtendedEntity(v)
-			hExtEntity._vOriginalPosition = v:GetAbsOrigin()
-			hExtEntity._vReturnPosition = v:GetAbsOrigin() - (v:GetForwardVector() * 32.0)
-		end
-		
-	end]]
 	
 	Convars:RegisterCommand("iw_ui_character_select_accept",
 		function(szCmdName, szArgs)
@@ -143,7 +133,7 @@ function CIcewrackMap0:DelayedInit(keys)
 		SendToConsole("custom_ui_unload bgshadow")
 		SendToConsole("dota_center_message 1000000 \"Select Your Hero\"")
 		CTimer(function()
-				ParticleManager:CreateParticle("particles/rain_fx/econ_snow.vpcf", PATTACH_EYES_FOLLOW, self._hLookDummy)
+				ParticleManager:CreateParticle("particles/rain_fx/econ_snow_light.vpcf", PATTACH_EYES_FOLLOW, self._hLookDummy)
 				
 				GameRules:SendCustomMessage("Hint: If you're having trouble selecting a hero, try dragging a box around them.", 2, 0);
 				StopListeningToGameEvent(self._nDelayedInitID)

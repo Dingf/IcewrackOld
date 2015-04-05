@@ -2,8 +2,10 @@
 {
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
-	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	import flash.utils.Timer;
+	import flash.events.TimerEvent;
+	import flash.events.MouseEvent;
 	import flash.filters.ColorMatrixFilter;
 
 	public class SpellIcon extends MovieClip
@@ -15,13 +17,17 @@
 		private var spellSlot : Number;
 		private var scale : Number;
 		private var secondary : Boolean;
+		private var active : Boolean = true;
 		
 		private var texture : Sprite;
-		//private var desaturatedTexture : Sprite;
+		private var desaturatedTexture : Sprite;
 		private var overState : Sprite;
 		private var border : Sprite;
 		
-		//private var extras : SpellIconExtras = null;
+		private var values:Object = IcewrackValues.GetInstance();
+		private var updateTimer : Timer = null;
+		
+		private var extras : SpellIconExtras = null;
 		private var tooltip : Tooltip = null;
 		
 		private static var desaturateFilter : ColorMatrixFilter = new ColorMatrixFilter(
@@ -32,6 +38,22 @@
 		
 		public function SpellIcon() : void
 		{
+		
+		}
+		
+		public function OnUnload() : void
+		{
+			if (extras != null)
+			{
+				extras.OnUnload();
+				extras = null;
+			}
+			if (updateTimer != null)
+			{
+				updateTimer.stop();
+				updateTimer = null;
+			}
+			DestroyTooltip();
 		}
 		
 		private function OnMouseOver(e:MouseEvent)
@@ -44,12 +66,7 @@
 				var point : Point = this.localToGlobal(new Point(0, 0));
 				var adjScale : Number = scale * (this.secondary ? this.parent.parent.parent.scaleY : this.parent.scaleY);
 				
-				globals.Loader_overlay.movieClip.hud_overlay.ability_tooltip.content.abilityLevel.text = "Level 100";
-				globals.Loader_overlay.movieClip.hud_overlay.ability_tooltip.content.abilityName.text = "Testing123";
-				
 				//TODO: Figure out how to use the actionpanel version instead (which presumably shows the current spell level, things like that)
-				//globals.Loader_overlay.movieClip.showGenericTextTooltip(point.x + adjScale * 128.0, point.y + adjScale * 32 - 200, spellName);
-				
 				globals.Loader_rad_mode_panel.gameAPI.OnShowAbilityTooltip(point.x + adjScale * 128.0, point.y + adjScale * 32, spellName);
 			}
 			else
@@ -107,12 +124,57 @@
 			}
 		}
 		
-		//Arguments:
-		//----------------------------------------------------------------
-		//szName - name of spell
-		//szTextureName - name of spell texture (should be the same as above)
-		//nSize - size of the spell icon (in px)
-		public function Create(gameAPI:Object, globals:Object, resName:String, /*manaCost:Number, */slot:Number, size:Number, isSecondary:Boolean = false)
+		public function OnUpdate()
+		{
+			if (desaturatedTexture != null)
+			{
+				if (active == false)
+				{
+					desaturatedTexture.visible = true;
+					if (extras != null)
+					{
+						extras.visible = false;
+					}
+				}
+				else if ((extras != null) && (values != null))
+				{
+					desaturatedTexture.visible = false;
+					extras.oom.visible = false;
+					extras.oos.visible = false;
+					extras.ooms.visible = false;
+					if ((values.currentMP < extras.GetManaCost()) && (values.currentSP < extras.GetStaminaCost()))
+					{
+						desaturatedTexture.visible = true;
+						extras.ooms.visible = true;
+					}
+					else if (values.currentMP < extras.GetManaCost())
+					{
+						desaturatedTexture.visible = true;
+						extras.oom.visible = true;
+					}
+					else if (values.currentSP < extras.GetStaminaCost())
+					{
+						desaturatedTexture.visible = true;
+						extras.oos.visible = true;
+					}
+				}
+			}
+		}
+		
+		public function SetActive(activeState:Boolean) : void
+		{
+			active = activeState;
+		}
+		
+		public function SetCooldown(cdStart:Number, cdEnd:Number) : void
+		{
+			if (extras != null)
+			{
+				extras.SetCooldown(cdStart, cdEnd);
+			}
+		}
+
+		public function Create(gameAPI:Object, globals:Object, resName:String, slot:Number, size:Number, isSecondary:Boolean = false)
 		{
 			this.gameAPI = gameAPI;
 			this.globals = globals;
@@ -123,28 +185,48 @@
 			this.secondary = isSecondary;
 			
 			texture = LoadImage("images/spellicons/" + resName + ".png", 128.0 * scale, 128.0 * scale);
-			//desaturatedTexture = LoadImage("images/spellicons/" + resName + ".png", 128.0 * scale, 128.0 * scale);
-			//desaturatedTexture.filters = [desaturateFilter];
-			//desaturatedTexture.visible = false;
-			overState = LoadImage("images/ui/spellicon_over_128px.png", 128.0 * scale, 128.0 * scale);
-			overState.visible = false;
+			desaturatedTexture = LoadImage("images/spellicons/" + resName + ".png", 128.0 * scale, 128.0 * scale);
+			desaturatedTexture.filters = [desaturateFilter];
+			desaturatedTexture.visible = false;
 			
 			if (isSecondary == false)
 			{
-				//extras = new SpellIconExtras(manaCost);
-				//extras.width = 128.0 * scale;
-				//extras.height = 128.0 * scale;
+				extras = new SpellIconExtras(0, 0);
+				extras.scaleX = extras.scaleY = size/128.0;
+				extras.x = extras.y = 64 * scale;
+				extras.visible = false;
+				this.addChild(extras);
 			}
+			
+			overState = LoadImage("images/ui/spellicon_over_128px.png", 128.0 * scale, 128.0 * scale);
+			overState.visible = false;
 			
 			border = LoadImage("images/ui/spellicon_border_144px.png", 144.0 * scale, 144.0 * scale);
 			border.x = border.y = -8.0 * scale;
 			
+			OnUpdate();
+			updateTimer = new Timer(100.0);
+			updateTimer.addEventListener(TimerEvent.TIMER, OnUpdate);
+			updateTimer.start();
+
 			addEventListener(MouseEvent.ROLL_OVER, OnMouseOver);
 			addEventListener(MouseEvent.ROLL_OUT, OnMouseOut);
 			
 			addEventListener(MouseEvent.MOUSE_DOWN, OnMouseDown);
 			addEventListener(MouseEvent.MOUSE_UP, OnMouseUp);
 			addEventListener(MouseEvent.CLICK, OnMouseClick); 
+		}
+		
+		//Technically, the extras are already created (so that they will appear under the border instead of on top of it)
+		//This just initializes the extras and makes them visible
+		public function CreateExtras(manaCost:Number, staminaCost:Number)
+		{
+			if (this.secondary == false)
+			{
+				extras.SetManaCost(manaCost);
+				extras.SetStaminaCost(staminaCost);
+				extras.visible = true;
+			}
 		}
 		
 		public function DestroyTooltip() : void

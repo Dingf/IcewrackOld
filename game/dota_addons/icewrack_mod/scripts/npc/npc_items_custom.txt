@@ -105,7 +105,25 @@
 					"RunScript"
 					{
 						"ScriptFile"			"scripts/vscripts/ext_entity.lua"
-						"Function"			"DrainStamina"
+						"Function"			"OnStaminaDrainMove"
+					}
+				}
+				"OnAttackStart"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"scripts/vscripts/ext_entity.lua"
+						"Function"			"OnStaminaDrainAttack"
+						"Amount"			"0.0"
+					}
+				}
+				"OnAttack"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"scripts/vscripts/ext_entity.lua"
+						"Function"			"OnStaminaDrainAttack"
+						"Amount"			"2.0"
 					}
 				}
 			}
@@ -115,6 +133,7 @@
            			"IsHidden"					"1"
 				"Properties"
 				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"      "-100"
 					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"      "-50"
 				}
 			}

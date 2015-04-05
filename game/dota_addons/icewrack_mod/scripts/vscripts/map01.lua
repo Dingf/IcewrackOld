@@ -20,8 +20,9 @@ function WoodcutterAxeTrigger(tTriggerInfo)
 end
 
 function Precache(context)
-	PrecacheResource("particle", "particles/rain_fx/econ_snowstorm_med.vpcf", context)
+	PrecacheResource("particle", "particles/rain_fx/econ_snow_heavy.vpcf", context)
 	PrecacheUnitByNameSync("npc_dota_hero_legion_commander", context)
+	PrecacheUnitByNameSync("iw_npc_training_dummy", context)
 	PrecacheUnitByNameSync("iw_npc_expedition_merc_1", context)
 	PrecacheUnitByNameSync("iw_npc_expedition_merc_2", context)
 	PrecacheUnitByNameSync("npc_dota_hero_sven", context)
@@ -41,36 +42,7 @@ function CIcewrackMap1:InitMap()
 	CIcewrackSaveManager:LoadMapSpawns()
 
 	Convars:SetInt("dota_camera_pitch_max", 60)
-	
-	
-	
-	--[[local tSpawnList = CIcewrackSaveManager:LoadSpawnsFromFile("/scripts/maps/spawns_map01.txt")
-	
-	for k,v in pairs(_G) do
-		local asdf = string.lower(k)
-		--if string.find(asdf, "select") ~= nil then
-			print(k, asdf, v)
-		--end
-	end]]
-	
-	--[[local tPatrolList1 = { tSpawnList[52], tSpawnList[53], tSpawnList[54], tSpawnList[55], tSpawnList[56], tSpawnList[57] }
-	for k,v in pairs(tPatrolList1) do
-		local hExtEntity = LookupExtendedEntity(v)
-		if hExtEntity then
-			hExtEntity:AddPatrolPoint(hExtEntity:GetAbsOrigin() + Vector(30, 128, 0), 10, 0)
-			hExtEntity:AddPatrolPoint(hExtEntity:GetAbsOrigin() - Vector(30, 128, 0), 10, 5)
-		end
-	end
-	
-	local hEntity = tSpawnList[58]
-	local hExtEntity = LookupExtendedEntity(hEntity)
-	hExtEntity:AddPatrolPoint(Vector(-736, 862, 128), 40, -39)
-	hExtEntity:AddPatrolPoint(Vector(500, 1115, 128), 40, -31)
-	hExtEntity:AddPatrolPoint(Vector(852, 300, 128), 40, -23)
-	hExtEntity:AddPatrolPoint(Vector(-224, -286, 128), 40, -15)
-	hExtEntity:AddPatrolPoint(Vector(-1088, -96, 128), 40, -7)]]
-	
-	
+
 	ListenToGameEvent("player_connect_full", Dynamic_Wrap(CIcewrackMap1, "OnPlayerConnectFull"), self)
     self._nDelayedInitID = ListenToGameEvent("game_rules_state_change", Dynamic_Wrap(CIcewrackMap1, "DelayedInit"), self)
 end
@@ -91,7 +63,7 @@ function CIcewrackMap1:DelayedInit(keys)
 				hEntity:AddAbility("internal_loadout_stance")
 				hEntity:FindAbilityByName("internal_loadout_stance"):ApplyDataDrivenModifier(hEntity, hEntity, "modifier_internal_loadout_stance", {})
 				hEntity:RemoveAbility("internal_loadout_stance")
-				ParticleManager:CreateParticle("particles/rain_fx/econ_snowstorm_med.vpcf", PATTACH_EYES_FOLLOW, hEntity)
+				ParticleManager:CreateParticle("particles/rain_fx/econ_snow_heavy.vpcf", PATTACH_EYES_FOLLOW, hEntity)
 				StopListeningToGameEvent(self._nDelayedInitID)
 			end, 1.0)
 	end

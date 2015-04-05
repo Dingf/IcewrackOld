@@ -284,7 +284,7 @@ function CIcewrackSaveManager:LoadSelectedSave()
 end
 
 function CIcewrackSaveManager:GetSaveList()
-	--TODO
+	return self._tSaveList
 end
 
 function CIcewrackSaveManager:LoadMapSpawns()
@@ -298,6 +298,12 @@ function CIcewrackSaveManager:LoadMapSpawns()
 				tWaypointTable[nWaypointID] = {}
 				tWaypointTable[nWaypointID]["Type"] = (v.Type == "WP_TYPE_RELATIVE")
 				tWaypointTable[nWaypointID]["Position"] = StringToVector(v.Position)
+				tWaypointTable[nWaypointID]["LingerMin"] = v.LingerMin
+				tWaypointTable[nWaypointID]["LingerMax"] = v.LingerMax
+				
+				--Uncomment these out if you want to see where the waypoints are
+				--DebugDrawCircle(StringToVector(v.Position), Vector(255, 0, 0), 255, 64, true, 1000.0)
+				--DebugDrawText(StringToVector(v.Position), tostring(k), true, 1000.0)
 				local tNextWaypointTable = {}
 				for k2,v2 in pairs(v.NextWaypoints) do
 					local nNextWaypointID = tonumber(k2)
@@ -340,6 +346,7 @@ function CIcewrackSaveManager:LoadMapSpawns()
 					CIcewrackNPC(hExtEntity, tonumber(k))
 					if v.WaypointStart and v.WaypointEnd then
 						local hNPCEntity = LookupNPC(tonumber(k))
+						hNPCEntity._nBehavior = _G[v.Behavior]
 						hNPCEntity._bWaypointActive = true
 						hNPCEntity._nLastWaypointID = v.WaypointStart
 						hNPCEntity._nNextWaypointID = v.WaypointEnd

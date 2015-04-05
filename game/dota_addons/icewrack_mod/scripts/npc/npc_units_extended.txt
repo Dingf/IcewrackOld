@@ -312,11 +312,25 @@
 		}
 	}
 
+	
+	"iw_npc_training_dummy"
+	{
+		"UnitClass"			"IEE_UNIT_CLASS_NORMAL"
+		"UnitType"			"IEE_UNIT_TYPE_MELEE"
+		"UnitSubtype"			"IEE_UNIT_SUBTYPE_MECHANICLAL"
+
+		"HealthRegen"			"1000.0"
+		"DodgeScore"			"-1000"
+	}
+
+
 	"iw_npc_expedition_merc_1"
 	{
 		"UnitClass"			"IEE_UNIT_CLASS_HERO"
 		"UnitType"			"IEE_UNIT_TYPE_MELEE"
 		"UnitSubtype"			"IEE_UNIT_SUBTYPE_BIOLOGICAL"
+
+		"StaminaDrainAttack"		"0.0"
 
 		"StaminaMax"			"100"
 		"StaminaRegen"			"20.0"
@@ -329,14 +343,14 @@
 		"AccuracyScore"			"100"
 		"DodgeScore"			"0"
 	}
-
 	
-
 	"iw_npc_expedition_merc_2"
 	{
-		"UnitClass"			"IEE_UNIT_CLASS_HERO"
+		"UnitClass"			"IEE_UNIT_CLASS_NORMAL"
 		"UnitType"			"IEE_UNIT_TYPE_RANGED"
 		"UnitSubtype"			"IEE_UNIT_SUBTYPE_BIOLOGICAL"
+
+		"StaminaDrainAttack"		"0.0"
 
 		"StaminaMax"			"50"
 		"StaminaRegen"			"10.0"

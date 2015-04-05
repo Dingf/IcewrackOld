@@ -1,7 +1,7 @@
 ﻿package
 {
 	import flash.display.MovieClip;
-	
+
 	public class IcewrackSpellBar extends MovieClip 
 	{
 		public var gameAPI : Object;
@@ -10,8 +10,9 @@
 		
 		private static var knownList : Array = new Array;
 		private var abilityIcons : Array = new Array(null, null, null, null, null, null);
+		private var abilityIconExtras : Array = new Array(null, null, null, null, null, null);
 		
-		public function SnowOverlay() : void
+		public function IcewrackSpellBar() : void
 		{
 			// constructor code
 		}
@@ -21,14 +22,15 @@
 			visible = true;
 			
 			globals.resizeManager.AddListener(this);
-			gameAPI.SubscribeToGameEvent("iw_ui_spellbar_return_abilities", OnUnitAbilityReturn);
+			gameAPI.SubscribeToGameEvent("iw_ui_spellbar_return_ability", OnUnitAbilityReturn);
 			gameAPI.SubscribeToGameEvent("iw_ui_spellbar_send_known_list", OnSendKnownAbilityList);
 			gameAPI.SubscribeToGameEvent("iw_ui_mainbar_set_visible", OnSetVisible);
 			
-			var args : Object = { ability1:"empty", ability2:"empty", ability3:"empty", 
-								  ability4:"empty", ability5:"empty", ability6:"empty" };
-			
-			OnUnitAbilityReturn(args);
+			for (var i:int = 0; i < 6; i++)
+			{
+				var args:Object = { slot:i, level:0, ability_name:"empty", mana_cost:0, stamina_cost:0 }
+				OnUnitAbilityReturn(args);
+			}
 		}
 		
 		private function OnSetVisible(args:Object) : void
@@ -71,23 +73,35 @@
 		
 		private function OnUnitAbilityReturn(args:Object) : void
 		{
-			var abilityNames = new Array(args.ability1, args.ability2, args.ability3, args.ability4, args.ability5, args.ability6);
-			//var manaCosts = new Array(args.manaCost1, args.manaCost2, args.manaCost3, args.manaCost4, args.manaCost5, args.manaCost6);
-			for (var i:int = 5; i >= 0; i--)
+			if (args != null)
 			{
-				if (abilityIcons[i] != null)
+				var slot = args.slot
+				if ((slot >= 0) && (slot < 6))
 				{
-					this.removeChild(abilityIcons[i]);
-					abilityIcons[i] = null;
+					if (abilityIcons[slot] != null)
+					{
+						abilityIcons[slot].OnUnload();
+						this.removeChild(abilityIcons[slot]);
+						abilityIcons[slot] = null;
+					}
+						
+					var spellIcon = new SpellIcon;
+					spellIcon.Create(gameAPI, globals, args.ability_name, slot, 64);
+					this.addChild(spellIcon);
+					spellIcon.x = 578 + (slot * 72);
+					spellIcon.y = 1006;
+					abilityIcons[slot] = spellIcon;
+					spellIcon.CreateExtras(args.mana_cost, args.stamina_cost);
+					if (args.cd_start != args.cd_end)
+					{
+						spellIcon.SetCooldown(args.cd_start, args.cd_end);
+					}
+					if (args.level == 0)
+					{
+						spellIcon.SetActive(false);
+					}
+					spellIcon.OnUpdate();
 				}
-				
-				var spellIcon = new SpellIcon;
-				spellIcon.Create(gameAPI, globals, abilityNames[i],/* manaCosts[i],*/ i, 64);
-				this.addChild(spellIcon);
-				spellIcon.x = 578 + (i * 72);
-				spellIcon.y = 1006;
-				
-				abilityIcons[i] = spellIcon;
 			}
 		}
 		
@@ -125,5 +139,4 @@
 			trace("this.scaleY = " + this.scaleY)
 		}
 	}
-	
 }

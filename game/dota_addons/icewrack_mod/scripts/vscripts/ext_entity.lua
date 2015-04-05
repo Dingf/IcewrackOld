@@ -627,7 +627,7 @@ function CIcewrackExtendedEntity:DeleteEntity()
 	self:RemoveSelf()
 end
 
-function DrainStamina(args)
+function OnStaminaDrainMove(args)
 	local hEntity = args.caster
 	if IsValidEntity(hEntity) and not hEntity:HasModifier("modifier_internal_walk_buff") then
 		local hExtEntity = LookupExtendedEntity(hEntity)
@@ -636,6 +636,23 @@ function DrainStamina(args)
 			--TODO: Make inventory factor into stamina drain?
 			if hExtEntity.Stamina > 0 then
 				hExtEntity.Stamina = hExtEntity.Stamina - math.max(0, (0.1 * (hExtEntity.StaminaDrainMove + hExtEntity.StaminaDrainMoveBonus)))
+				if hExtEntity.Stamina <= 0 then
+					hExtEntity.Stamina = 0
+					CIcewrackExtendedEntity._shStaminaDrain:ApplyDataDrivenModifier(hExtEntity, hExtEntity, "modifier_internal_stamina_drain_slow", {})
+				end
+			end
+		end
+	end
+end
+
+function OnStaminaDrainAttack(args)
+	local hEntity = args.caster
+	if IsValidEntity(hEntity) then
+		local hExtEntity = LookupExtendedEntity(hEntity)
+		if IsValidExtendedEntity(hExtEntity) then
+			hExtEntity._fStaminaRegenTime = GameRules:GetGameTime() + 3.0
+			if hExtEntity.Stamina > 0 then
+				hExtEntity.Stamina = hExtEntity.Stamina - math.max(0, (args.Amount * (hExtEntity.StaminaDrainAttack + hExtEntity.StaminaDrainAttackBonus)))
 				if hExtEntity.Stamina <= 0 then
 					hExtEntity.Stamina = 0
 					CIcewrackExtendedEntity._shStaminaDrain:ApplyDataDrivenModifier(hExtEntity, hExtEntity, "modifier_internal_stamina_drain_slow", {})

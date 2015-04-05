@@ -96,7 +96,7 @@ function CActionAutomatorModule:PerformAction(tActionDef)
         end
         
         for k,v in pairs(tTargetList) do
-            if not IsValidEntity(v) or not (v:IsAlive() or bDeadFlag) or v:IsInvulnerable() or not hEntity:CanEntityBeSeenByMyTeam(v) then
+            if not IsValidEntity(v) or not (v:IsAlive() or bDeadFlag) or v:IsInvulnerable() or not hExtEntity:CanEntityBeSeenByMyTeam(v) then
                 tTargetList[k] = nil
             end
         end
@@ -111,11 +111,11 @@ function CActionAutomatorModule:PerformAction(tActionDef)
             local nActionBehavior = hAction:GetBehavior()
             local nPlayerIndex = hEntity:GetPlayerOwnerID()
             if (bit32.btest(nActionBehavior, DOTA_ABILITY_BEHAVIOR_NO_TARGET)) then
-                hEntity:CastAbilityNoTarget(hAction, nPlayerIndex)
+				hExtEntity:IssueOrder(DOTA_UNIT_ORDER_CAST_NO_TARGET, nil, hAction, nil, false)
             elseif (bit32.btest(nActionBehavior, DOTA_ABILITY_BEHAVIOR_POINT) or bit32.btest(nActionBehavior, DOTA_ABILITY_BEHAVIOR_AOE)) then
-                hEntity:CastAbilityOnPosition(hTarget:GetAbsOrigin(), hAction, nPlayerIndex)
+				hExtEntity:IssueOrder(DOTA_UNIT_ORDER_CAST_POSITION, nil, hAction, hTarget:GetAbsOrigin(), false)
             elseif (bit32.btest(nActionBehavior, DOTA_ABILITY_BEHAVIOR_UNIT_TARGET)) then
-                hEntity:CastAbilityOnTarget(hTarget, hAction, nPlayerIndex)
+				hExtEntity:IssueOrder(DOTA_UNIT_ORDER_CAST_TARGET, hTarget, hAction, nil, false)
             end
             return true and not self._bSkipFlag
         end

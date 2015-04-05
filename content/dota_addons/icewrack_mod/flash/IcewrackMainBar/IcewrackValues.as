@@ -3,18 +3,18 @@
 	//Data transfer object that shares values between UI elements (like HP, MP, etc.)
 	public class IcewrackValues
 	{
-		private static var locked : Boolean = true;
-		private static var instance : IcewrackValues;
+		private static var locked:Boolean = true;
+		private static var instance:IcewrackValues;
 		
 		//Breaks encapsulation, but since we're just storing these values for transfer, it doesn't really matter
-		public var currentHP : Number;
-		public var maximumHP : Number;
-		public var currentMP : Number;
-		public var maximumMP : Number;
-		public var currentSP : Number;
-		public var maximumSP : Number;
-		public var currentXP : Number;
-		public var maximumXP : Number;
+		public var currentHP:Number;
+		public var maximumHP:Number;
+		public var currentMP:Number;
+		public var maximumMP:Number;
+		public var currentSP:Number;
+		public var maximumSP:Number;
+		public var currentXP:Number;
+		public var maximumXP:Number;
 		
 		public function IcewrackValues()
 		{

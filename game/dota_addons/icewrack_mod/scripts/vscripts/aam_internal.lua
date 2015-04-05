@@ -29,9 +29,8 @@ function MoveTowardsTarget(hExtEntity, hAutomator, hTarget)
     if IsValidExtendedEntity(hExtEntity) and hAutomator and hTarget then
         local vDirection = hTarget:GetAbsOrigin() - hExtEntity:GetAbsOrigin()
         local vPosition = hExtEntity:GetAbsOrigin() + (vDirection:Normalized() * 100.0)
-        
-		--TODO: Make this based on the hull size, rather than some arbitrary value
-        if GridNav:IsTraversable(vPosition) and vDirection:Length2D() > 128.0 then
+		local fDistance = CalcDistanceBetweenEntityOBB(hTarget, hExtEntity)
+        if GridNav:IsTraversable(vPosition) and fDistance > 128.0 then
             hExtEntity:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, GetGroundPosition(vPosition, hExtEntity._hBaseEntity), hExtEntity:IsAttacking())
             return true
         else
@@ -68,21 +67,18 @@ end
 function MoveTowardsEnemies(hExtEntity, hAutomator)
     if IsValidExtendedEntity(hExtEntity) and hAutomator then
         local tEnemiesList = GetAllUnits(hExtEntity, DOTA_UNIT_TARGET_TEAM_ENEMY, 0.0, hExtEntity:GetCurrentVisionRange())
-        
-        local nCount = 0
         local vNetDirection = Vector(0, 0, 0)
         for k,v in pairs(tEnemiesList) do
             local vDirection = (v:GetAbsOrigin() - hExtEntity:GetAbsOrigin())
-			--TODO: Make this based on the hull size, rather than some arbitrary value
-            if vDirection:Length2D() < 128.0 then
+			local fDistance = CalcDistanceBetweenEntityOBB(v, hExtEntity)
+            if fDistance <= 128.0 then
                 hAutomator:SkipAction()
                 return false
             end
             vNetDirection = vNetDirection + vDirection:Normalized()/vDirection:Length2D()
-            nCount = nCount + 1
         end
         
-        if nCount > 0 then
+        if not vNetDirection == Vector(0, 0, 0) then
             local vPosition = hExtEntity:GetAbsOrigin() + (vNetDirection:Normalized() * 100.0)
             if GridNav:IsTraversable(vPosition) then
                 hExtEntity:IssueOrder(DOTA_UNIT_ORDER_MOVE_TO_POSITION, nil, nil, GetGroundPosition(vPosition, hExtEntity._hBaseEntity), hExtEntity:IsAttacking())

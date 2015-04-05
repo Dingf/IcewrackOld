@@ -12,6 +12,8 @@
 		public var globals : Object;
 		public var elementName : String;
 		
+		private var values:Object = IcewrackValues.GetInstance();
+		
 		private var abilityIcons : Array = new Array(null, null, null, null, null, null);
 		private var snowOverlay : MovieClip;
 		
@@ -19,16 +21,6 @@
 		private var selectionTimer : Timer;
 		
 		private var rollOverTimer:Timer = null;
-		
-		private var currentHP:Number = 0;
-		private var maximumHP:Number = 0;
-		private var currentMP:Number = 0;
-		private var maximumMP:Number = 0;
-		private var currentSP:Number = 0;
-		private var maximumSP:Number = 0;
-		private var currentXP:Number = 0;
-		private var maximumXP:Number = 0;
-		
 		
 		public function IcewrackMainBar()
 		{
@@ -77,13 +69,13 @@
 				rollOverTimer.start();
 			}
 			
-			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "HP:" + currentHP + "/" + maximumHP;
+			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "HP:" + values.currentHP + "/" + values.maximumHP;
 			globals.Loader_overlay.movieClip.showDroppedItemTooltip(e.stageX, e.stageY, "0xffffff");
 		}
 		
 		private function OnHPBarUpdate(e:TimerEvent) : void
 		{
-			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "HP:" + currentHP + "/" + maximumHP;
+			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "HP:" + values.currentHP + "/" + values.maximumHP;
 			globals.Loader_overlay.movieClip.showDroppedItemTooltip(stage.mouseX, stage.mouseY, "0xffffff");
 		}
 		
@@ -96,13 +88,13 @@
 				rollOverTimer.start();
 			}
 			
-			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "MP:" + currentMP + "/" + maximumMP;
+			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "MP:" + values.currentMP + "/" + values.maximumMP;
 			globals.Loader_overlay.movieClip.showDroppedItemTooltip(e.stageX, e.stageY, "0xffffff");
 		}
 		
 		private function OnMPBarUpdate(e:TimerEvent) : void
 		{
-			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "MP:" + currentMP + "/" + maximumMP;
+			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "MP:" + values.currentMP + "/" + values.maximumMP;
 			globals.Loader_overlay.movieClip.showDroppedItemTooltip(stage.mouseX, stage.mouseY, "0xffffff");
 		}
 		
@@ -115,13 +107,13 @@
 				rollOverTimer.start();
 			}
 			
-			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "SP:" + int(currentSP) + "/" + int(maximumSP);
+			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "SP:" + int(values.currentSP) + "/" + int(values.maximumSP);
 			globals.Loader_overlay.movieClip.showDroppedItemTooltip(e.stageX, e.stageY, "0xffffff");
 		}
 		
 		private function OnSPBarUpdate(e:TimerEvent) : void
 		{
-			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "SP:" + int(currentSP) + "/" + int(maximumSP);
+			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "SP:" + int(values.currentSP) + "/" + int(values.maximumSP);
 			globals.Loader_overlay.movieClip.showDroppedItemTooltip(stage.mouseX, stage.mouseY, "0xffffff");
 		}
 		
@@ -134,13 +126,13 @@
 				rollOverTimer.start();
 			}
 			
-			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "XP:" + currentXP + "/" + maximumXP;
+			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "XP:" + values.currentXP + "/" + values.maximumXP;
 			globals.Loader_overlay.movieClip.showDroppedItemTooltip(e.stageX, e.stageY, "0xffffff");
 		}
 		
 		private function OnXPBarUpdate(e:TimerEvent) : void
 		{
-			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "XP:" + currentXP + "/" + maximumXP;
+			globals.Loader_overlay.movieClip.hud_overlay.dropped_item_tooltip.itemName.text = "XP:" + values.currentXP + "/" + values.maximumXP;
 			globals.Loader_overlay.movieClip.showDroppedItemTooltip(stage.mouseX, stage.mouseY, "0xffffff");
 		}
 		
@@ -196,29 +188,6 @@
 		{
 			if (args != null)
 			{
-				currentHP = args.current_hp;
-				maximumHP = args.maximum_hp;
-				currentMP = args.current_mp;
-				maximumMP = args.maximum_mp;
-				currentSP = args.current_sp;
-				maximumSP = args.maximum_sp;
-				currentXP = args.current_xp;
-				maximumXP = args.maximum_xp;
-				
-				mp_mask.rotation = (maximumMP == 0) ? 180.0 : (1.0 - (currentMP/maximumMP)) * 180.0;
-				sp_mask.rotation = (maximumSP == 0) ? -180.0 : (1.0 - (currentSP/maximumSP)) * -180.0;
-				
-				hp_bar.hp_percent.scaleY = (maximumHP == 0) ? 1.0 : (1.0 - (currentHP/maximumHP)) * 1.0;
-				hp_bar.hp_percent.visible = (hp_bar.hp_percent.scaleY >= 0.01);
-				
-				xp_bar.width = (currentXP/maximumXP) * 320.0;
-				
-				mp_indicator.rotation = mp_mask.rotation * 0.975;
-				mp_indicator.visible = ((mp_mask.rotation != 0) && (mp_mask.rotation != 180.0));
-				sp_indicator.rotation = sp_mask.rotation * 0.975;
-				sp_indicator.visible = ((sp_mask.rotation != 0) && (sp_mask.rotation != -180.0));
-				
-				var values = IcewrackValues.GetInstance();
 				values.currentHP = args.current_hp;
 				values.maximumHP = args.maximum_hp;
 				values.currentMP = args.current_mp;
@@ -227,6 +196,19 @@
 				values.maximumSP = args.maximum_sp;
 				values.currentXP = args.current_xp;
 				values.maximumXP = args.maximum_xp;
+				
+				mp_mask.rotation = (args.maximum_mp == 0) ? 180.0 : (1.0 - (args.current_mp/args.maximum_mp)) * 180.0;
+				sp_mask.rotation = (args.maximum_sp == 0) ? -180.0 : (1.0 - (args.current_sp/args.maximum_sp)) * -180.0;
+				
+				hp_bar.hp_percent.scaleY = (args.maximum_hp == 0) ? 1.0 : (1.0 - (args.current_hp/args.maximum_hp)) * 1.0;
+				hp_bar.hp_percent.visible = (hp_bar.hp_percent.scaleY >= 0.01);
+				
+				xp_bar.width = (args.maximum_xp == 0) ? 0 : (args.current_xp/args.maximum_xp) * 320.0;
+				
+				mp_indicator.rotation = mp_mask.rotation * 0.975;
+				mp_indicator.visible = ((mp_mask.rotation != 0) && (mp_mask.rotation != 180.0));
+				sp_indicator.rotation = sp_mask.rotation * 0.975;
+				sp_indicator.visible = ((sp_mask.rotation != 0) && (sp_mask.rotation != -180.0));
 			}
 		}
 		

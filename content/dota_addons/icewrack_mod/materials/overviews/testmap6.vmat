@@ -1,7 +1,12 @@
-"Layer0"
+// THIS FILE IS AUTO-GENERATED
+
+Layer0
 {
-	"Shader"	"ui.vfx"
-	"F_STENCIL_MASKING"	"1"
-	"F_TRANSLUCENT"	"0"
-	"Texture"	"materials/overviews/testmap6.tga"
+	shader "global_lit_simple.vfx"
+
+	//---- Color ----
+	g_vColorTint "[1.000000 1.000000 1.000000 0.000000]"
+	g_vTexCoordOffset "[0.000 0.000]"
+	g_vTexCoordScale "[1.000 1.000]"
+	TextureColor "materials/default/default_color.tga"
 }

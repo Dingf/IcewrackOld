@@ -12,12 +12,6 @@ require("ui_mainbar")
 --  *When resizing the window (from 1280x720 to 1600x900 at least), the scaleform UI sometimes causes a CTD
 --  *The HP bar sometimes sends a console command after the server has shutdown, resulting in a CTD (temporarily disabled)
 
---TODO:
---	*Make a NPC class, extends from extended entity
---		*Can talk(DONE), give quests(DONE... sort of), and trade
---  *IEE units Stamina drain on attack
---      *50% IAS slow as well if no stamina
-
 if CIcewrackGameMode == nil then
 	CIcewrackGameMode = class({})
 end

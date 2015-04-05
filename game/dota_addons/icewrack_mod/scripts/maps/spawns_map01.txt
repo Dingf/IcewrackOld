@@ -7,6 +7,17 @@
 		"Position"		"1440 600 128"
 		"Orientation"		"-1 -1 0"
 		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+	}
+
+	"30"
+	{
+		"Name"			"iw_npc_training_dummy"
+		"Position"		"1856 -64 256"
+		"Orientation"		"0 1 0"
+		"Team"			"DOTA_TEAM_BADGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+		"FindClearSpace"	"FALSE"
 	}
 
 	"50"
@@ -15,6 +26,7 @@
 		"Position"		"604 476 128"
 		"Orientation"		"1 -0.6 0"
 		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
 	}
 
 	"51"
@@ -23,6 +35,7 @@
 		"Position"		"-420 1696 396"
 		"Orientation"		"0 1 0"
 		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
 		"FindClearSpace"	"FALSE"
 	}
 
@@ -32,8 +45,147 @@
 		"Position"		"-1200 -160 128"
 		"Orientation"		"0 1 0"
 		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
 		"WaypointStart"		"1"
 		"WaypointEnd"		"2"
+		"Modifiers"
+		{
+			"internal_walk_buff"	"52"
+		}
+	}
+
+	"53"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"0 -64 128"
+		"Orientation"		"0 1 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+		"WaypointStart"		"6"
+		"WaypointEnd"		"5"
+		"Modifiers"
+		{
+			"internal_walk_buff"	"52"
+		}
+	}
+
+	"54"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"384 1224 128"
+		"Orientation"		"0 1 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+		"WaypointStart"		"3"
+		"WaypointEnd"		"4"
+		"Modifiers"
+		{
+			"internal_walk_buff"	"52"
+		}
+	}
+
+	"55"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"1856 64 128"
+		"Orientation"		"0 1 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+	}
+
+	"56"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"-1344 576 128"
+		"Orientation"		"1 -1 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+	}
+
+	"57"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"384 1824 128"
+		"Orientation"		"-0.2 1 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+	}
+
+	"58"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"-160 1728 128"
+		"Orientation"		"-0.3 1 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+	}
+
+	"59"
+	{
+		"Name"			"iw_npc_expedition_merc_2"
+		"Position"		"96 288 128"
+		"Orientation"		"1 -0.3 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+	}
+
+	"60"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"64 512 128"
+		"Orientation"		"1 0.3 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+	}
+
+	"61"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"160 576 128"
+		"Orientation"		"-1 -0.3 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+	}
+
+	"62"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"-1376 -928 128"
+		"Orientation"		"0 1 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+		"WaypointStart"		"30"
+		"WaypointEnd"		"28"
+		"Modifiers"
+		{
+			"internal_walk_buff"	"52"
+		}
+	}
+
+	"63"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"192 -832 128"
+		"Orientation"		"0 1 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+		"WaypointStart"		"24"
+		"WaypointEnd"		"23"
+		"Modifiers"
+		{
+			"internal_walk_buff"	"52"
+		}
+	}
+
+	"64"
+	{
+		"Name"			"iw_npc_expedition_merc_1"
+		"Position"		"224 992 128"
+		"Orientation"		"0 1 0"
+		"Team"			"DOTA_TEAM_GOODGUYS"
+		"Behavior"		"IW_NPC_BEHAVIOR_AGGRESSIVE"
+		"WaypointStart"		"12"
+		"WaypointEnd"		"13"
 		"Modifiers"
 		{
 			"internal_walk_buff"	"52"

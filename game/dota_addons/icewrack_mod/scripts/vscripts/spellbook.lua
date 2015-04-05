@@ -30,6 +30,7 @@ if CIcewrackSpellbook == nil then
 			end
 			
 			self._nCooldownListenerID = ListenToGameEvent("dota_player_used_ability", Dynamic_Wrap(CIcewrackSpellbook, "OnAbilityUsed"), self)
+			self._nCooldownListenerID = ListenToGameEvent("dota_player_learned_ability", Dynamic_Wrap(CIcewrackSpellbook, "OnAbilityLearned"), self)
 		end},
 		--TODO: Change these to user-set binds instead
 		{ _shActiveSpellbook = nil,
@@ -47,7 +48,7 @@ function CIcewrackSpellbook:UnbindAbility(nSlot)
 			hExtEntity:SwapAbilities(szEmptySlotName, szAbilityName, true, true)
 			hExtEntity:RemoveAbility(szAbilityName)
 			self._tBoundAbilities[nSlot] = szEmptySlotName
-			FireGameEvent("iw_spellbook_refresh", {})
+			FireGameEventLocal("iw_spellbook_refresh", {})
 		end
 	end
 end
@@ -109,7 +110,7 @@ function CIcewrackSpellbook:BindAbility(szNewAbilityName, nSlot)
 			self._tBoundAbilities[nSlot] = szNewAbilityName
 			SendToConsole("bind \"" .. CIcewrackSpellbook._stKeybindTable[nSlot] .. "\" \"dota_ability_execute " .. hNewAbility:GetAbilityIndex() .. "\"")
 		end
-		FireGameEvent("iw_spellbook_refresh", {})
+		FireGameEventLocal("iw_spellbook_refresh", {})
 	end
 end
 
@@ -127,10 +128,10 @@ function CIcewrackSpellbook:LearnAbility(szAbilityName, nLevel)
 	end
 end
 
-function CIcewrackSpellbook:GetBoundAbilityName(nSlot)
+function CIcewrackSpellbook:GetBoundAbility(nSlot)
 	local szAbilityName = self._tBoundAbilities[nSlot]
 	if szAbilityName and string.find(szAbilityName, "ui_spellbar_empty") == nil then
-		return szAbilityName
+		return self._hExtEntity:FindAbilityByName(szAbilityName)
 	end
 	return nil
 end
@@ -167,7 +168,8 @@ end
 
 function CIcewrackSpellbook:GetCooldown(szAbilityName)
 	if self._tCooldowns[szAbilityName] then
-		return self._tCooldowns[szAbilityName] - GameRules:GetGameTime()
+		local tCooldownTime = self._tCooldowns[szAbilityName][1] + self._tCooldowns[szAbilityName][2]
+		return tCooldownTime - GameRules:GetGameTime()
 	else
 		return 0
 	end
@@ -175,10 +177,27 @@ end
 
 function CIcewrackSpellbook:SetCooldown(szAbilityName, fDuration)
 	if self._tKnownAbilities[szAbilityName] and not self._tCooldowns[sAbilityName] then
-		self._tCooldowns[szAbilityName] = GameRules:GetGameTime() + fDuration
+		self._tCooldowns[szAbilityName] = { GameRules:GetGameTime(), fDuration }
 		CTimer(function()
 				self._tCooldowns[szAbilityName] = nil
 			end, fDuration)
+	end
+end
+
+function CIcewrackSpellbook:OnAbilityLearned(args)
+	if CIcewrackSpellbook._shActiveSpellbook == self then
+		local hEntity = self._hExtEntity._hBaseEntity
+		if IsValidEntity(hEntity) then
+			local hOwner = hEntity:GetOwner()
+			if IsValidEntity(hOwner) then
+				local nPlayerID = hOwner:GetPlayerID()
+				if args.player == (nPlayerID + 1) then
+					FireGameEventLocal("iw_spellbook_refresh", {})
+				end
+			end
+		else
+			StopListeningToGameEvent(self._nCooldownListenerID)
+		end
 	end
 end
 
@@ -193,6 +212,9 @@ function CIcewrackSpellbook:OnAbilityUsed(args)
 					local hAbility = hEntity:FindAbilityByName(args.abilityname)
 					if hAbility then
 						self:SetCooldown(args.abilityname, hAbility:GetCooldownTimeRemaining())
+						if CIcewrackSpellbook._shActiveSpellbook == self then
+							FireGameEventLocal("iw_spellbook_refresh", {})
+						end
 					end
 				end
 			end

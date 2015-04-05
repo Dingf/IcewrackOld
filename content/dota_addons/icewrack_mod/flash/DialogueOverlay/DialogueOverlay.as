@@ -285,8 +285,7 @@
 				}
 			}
 			
-			var middleOption = optionsList[int(optionsList.length/2)]
-			this.overlay.choices.y = -128.0 - (middleOption.y + (middleOption.height)/2) 
+			this.overlay.choices.y = -128.0 - (currentY/2) 
 		}
 		
 		public function onResize(re:Object) : void
