@@ -38,7 +38,6 @@ function CIcewrackGameMode:InitGameMode()
 	print( "Loading Icewrack mod..." )
 	
 	Convars:SetInt("scaleform_spew", 1)
-	Convars:SetInt("dota_allow_orders_while_paused", 1)
 	
     --Hide all of the default UI elements
 	Convars:SetInt("dota_sf_hud_actionpanel", 0)
@@ -98,7 +97,6 @@ function CIcewrackGameMode:OnSpawned(keys)
 		end
 		
 		print("Extended entity spawned:", hEntity:GetName())
-		
 		
 		--TESTING CODE BELOW; DELETE SOON PLS
 		hSpellbook:LearnAbility("omniknight_purification", 1)

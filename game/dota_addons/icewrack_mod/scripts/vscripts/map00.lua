@@ -7,6 +7,8 @@ require("ext_entity")
 require("game_states")
 require("save_manager")
 
+counter = 0;
+
 if CIcewrackMap0 == nil then
 	CIcewrackMap0 = class({})
 end
@@ -31,6 +33,9 @@ function CIcewrackMap0:AcceptCharacterSelect(szHeroName)
 	local hEntity = Entities:FindByClassname(nil, szHeroName)
 	CIcewrackParty:AddMember(hEntity)
 	
+				if counter == 0 then
+					counter = 1
+				else
 	if szHeroName == "npc_dota_hero_sven" then
 		SetGameStateValue("IWGS_GLOBAL_PICKED_HERO", 1)
 		SetGameStateValue("IWGS_M01_TALKED_TO_SVEN", 1)
@@ -58,7 +63,7 @@ function CIcewrackMap0:AcceptCharacterSelect(szHeroName)
 	end
 	
 	CIcewrackSaveManager:TempsaveGame()
-	CIcewrackSaveManager:SelectSave(CIcewrackSaveManager._szTempsaveFilename)
+	CIcewrackSaveManager:SelectSave(CIcewrackSaveManager._szTempsaveFilename) end
 end
 
 function CIcewrackMap0:InitMap()

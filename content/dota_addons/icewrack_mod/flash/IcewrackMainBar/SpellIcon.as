@@ -204,10 +204,13 @@
 			border = LoadImage("images/ui/spellicon_border_144px.png", 144.0 * scale, 144.0 * scale);
 			border.x = border.y = -8.0 * scale;
 			
-			OnUpdate();
-			updateTimer = new Timer(100.0);
-			updateTimer.addEventListener(TimerEvent.TIMER, OnUpdate);
-			updateTimer.start();
+			if (isSecondary == false)
+			{
+				OnUpdate();
+				updateTimer = new Timer(100.0);
+				updateTimer.addEventListener(TimerEvent.TIMER, OnUpdate);
+				updateTimer.start();
+			}
 
 			addEventListener(MouseEvent.ROLL_OVER, OnMouseOver);
 			addEventListener(MouseEvent.ROLL_OUT, OnMouseOut);
@@ -233,6 +236,10 @@
 		{
 			if (tooltip != null)
 			{
+				while (tooltip.numChildren > 0)
+				{
+					tooltip.removeChildAt(0);
+				}
 				tooltip = null;
 			}
 		}

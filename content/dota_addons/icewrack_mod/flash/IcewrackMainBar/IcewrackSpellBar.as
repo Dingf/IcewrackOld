@@ -10,7 +10,7 @@
 		
 		private static var knownList : Array = new Array;
 		private var abilityIcons : Array = new Array(null, null, null, null, null, null);
-		private var abilityIconExtras : Array = new Array(null, null, null, null, null, null);
+		//private var abilityIconExtras : Array = new Array(null, null, null, null, null, null);
 		
 		public function IcewrackSpellBar() : void
 		{
@@ -21,6 +21,7 @@
 		{
 			visible = true;
 			
+			gameAPI.OnUnload = this.OnUnload;
 			globals.resizeManager.AddListener(this);
 			gameAPI.SubscribeToGameEvent("iw_ui_spellbar_return_ability", OnUnitAbilityReturn);
 			gameAPI.SubscribeToGameEvent("iw_ui_spellbar_send_known_list", OnSendKnownAbilityList);
@@ -31,6 +32,18 @@
 				var args:Object = { slot:i, level:0, ability_name:"empty", mana_cost:0, stamina_cost:0 }
 				OnUnitAbilityReturn(args);
 			}
+		}
+		
+		public function OnUnload() : Boolean
+		{
+			for (var i:int = 0; i < 6; i++)
+			{
+				if (abilityIcons[i] != null)
+				{
+					abilityIcons[i].OnUnload();
+				}
+			}
+			return true;
 		}
 		
 		private function OnSetVisible(args:Object) : void
